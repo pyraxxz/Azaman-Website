@@ -177,7 +177,6 @@ const PAYMENT_METHOD_DATA = {
   headers: ['Payment Method', 'Risk Level', 'Base Margin', 'UI Tag'],
   rows: [
     ['Bank Transfer', <Tag key="t1" variant="low">Low Risk</Tag>, '15%', 'Irreversible, bank-verified'],
-    ['Mobile Money', <Tag key="t2" variant="low">Low Risk</Tag>, '15%', 'Instant, carrier-backed'],
     ['CashApp / Zelle', <Tag key="t3" variant="med">Medium Risk</Tag>, '12% - 15%', 'Chargebacks within 72h'],
     ['PayPal / Venmo', <Tag key="t4" variant="high">High Risk</Tag>, '15% - 20%', 'Reversible up to 180 days'],
   ],
