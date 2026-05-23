@@ -1,30 +1,27 @@
 import { useEffect, useRef, useState } from 'react'
+import { motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 
 const NAV_LINKS = [
-  { label: 'Overview', href: '#executive-overview' },
-  { label: 'Treasury', href: '#treasury' },
-  { label: 'P2P', href: '#p2p-marketplace' },
-  { label: 'Chat', href: '#chat-systems' },
-  { label: 'AI', href: '#ai-systems' },
-  { label: 'Admin', href: '#admin-war-room' },
-  { label: 'Compliance', href: '#compliance-gamification' },
-  { label: 'Revenue', href: '#revenue' },
-  { label: 'Vision', href: '#strategic-vision' },
+  { label: 'Features', href: '#features' },
+  { label: 'App', href: '#showcase' },
+  { label: 'Themes', href: '#themes' },
+  { label: 'Investors', href: '#investors' },
 ]
 
 export default function Navigation() {
   const [visible, setVisible] = useState(true)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [activeSection, setActiveSection] = useState('')
+  const [scrolled, setScrolled] = useState(false)
   const lastScrollY = useRef(0)
 
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY
+      setScrolled(currentY > 20)
       if (currentY < 10) {
         setVisible(true)
-      } else if (currentY > lastScrollY.current && currentY > 60) {
+      } else if (currentY > lastScrollY.current && currentY > 80) {
         setVisible(false)
         setMobileOpen(false)
       } else {
@@ -34,24 +31,6 @@ export default function Navigation() {
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection('#' + entry.target.id)
-          }
-        })
-      },
-      { threshold: 0.3 }
-    )
-    NAV_LINKS.forEach((link) => {
-      const el = document.querySelector(link.href)
-      if (el) observer.observe(el)
-    })
-    return () => observer.disconnect()
   }, [])
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -64,84 +43,95 @@ export default function Navigation() {
   }
 
   return (
-    <>
-      <nav
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 50,
-          background: 'rgba(10, 10, 10, 0.8)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          borderBottom: '1px solid #2a2a3e',
-          transform: visible ? 'translateY(0)' : 'translateY(-100%)',
-          transition: 'transform 0.3s ease',
-        }}
-      >
-        <div className="max-w-[1200px] mx-auto px-5 lg:px-12 flex items-center justify-between h-16">
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault()
-              window.scrollTo({ top: 0, behavior: 'smooth' })
-            }}
-            className="flex flex-col shrink-0"
-          >
-            <span className="text-[#00d4ff] font-bold text-lg leading-tight" style={{ fontFamily: 'Space Grotesk' }}>
-              AZAMAN
-            </span>
-            <span className="text-[10px] text-[#888] uppercase tracking-[0.15em]">Architecture</span>
-          </a>
+    <motion.nav
+      initial={{ y: 0 }}
+      animate={{ y: visible ? 0 : -100 }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+      className="fixed top-0 left-0 right-0 z-50"
+      style={{
+        background: scrolled ? 'rgba(5, 5, 8, 0.85)' : 'transparent',
+        backdropFilter: scrolled ? 'blur(20px)' : 'none',
+        WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'none',
+        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.05)' : '1px solid transparent',
+        transition: 'background 0.3s, border-color 0.3s, backdrop-filter 0.3s',
+      }}
+    >
+      <div className="max-w-[1200px] mx-auto px-5 lg:px-12 flex items-center justify-between h-16 lg:h-18">
+        {/* Logo */}
+        <a
+          href="#"
+          onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+          className="flex items-center gap-2 shrink-0"
+        >
+          <span className="text-xl font-bold bg-gradient-to-r from-[#00d4ff] to-[#ffd700] bg-clip-text text-transparent" style={{ fontFamily: 'Space Grotesk' }}>
+            AZAMAN
+          </span>
+        </a>
 
-          <div className="hidden lg:flex items-center gap-1 overflow-x-auto">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleClick(e, link.href)}
-                className="px-3 py-1.5 text-[11px] font-medium uppercase tracking-wider rounded transition-colors relative"
-                style={{
-                  color: activeSection === link.href ? '#00d4ff' : '#888',
-                }}
-              >
-                {link.label}
-                {activeSection === link.href && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-[2px] bg-[#00d4ff] rounded-full" />
-                )}
-              </a>
-            ))}
-          </div>
-
-          <button
-            className="lg:hidden text-white p-2"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+        {/* Desktop nav */}
+        <div className="hidden lg:flex items-center gap-8">
+          {NAV_LINKS.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              onClick={(e) => handleClick(e, link.href)}
+              className="text-sm font-medium text-[#888] hover:text-white transition-colors"
+            >
+              {link.label}
+            </a>
+          ))}
         </div>
 
-        {mobileOpen && (
-          <div
-            className="lg:hidden border-t border-[#2a2a3e] py-3 px-5"
-            style={{ background: 'rgba(10, 10, 10, 0.95)' }}
+        {/* CTA */}
+        <div className="hidden lg:flex items-center gap-3">
+          <a href="#" className="text-sm font-medium text-[#888] hover:text-white transition-colors">
+            Sign In
+          </a>
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="px-5 py-2 rounded-xl text-sm font-semibold text-black bg-gradient-to-r from-[#00d4ff] to-[#00ff88] shadow-[0_0_20px_rgba(0,212,255,0.2)] hover:shadow-[0_0_30px_rgba(0,212,255,0.4)] transition-shadow"
           >
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleClick(e, link.href)}
-                className="block py-2 text-sm font-medium"
-                style={{ color: activeSection === link.href ? '#00d4ff' : '#aaa' }}
-              >
-                {link.label}
-              </a>
-            ))}
+            Download App
+          </motion.button>
+        </div>
+
+        {/* Mobile toggle */}
+        <button
+          className="lg:hidden text-white p-2"
+          onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label="Toggle menu"
+        >
+          {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
+      </div>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="lg:hidden border-t border-white/5 py-4 px-5"
+          style={{ background: 'rgba(5, 5, 8, 0.98)' }}
+        >
+          {NAV_LINKS.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              onClick={(e) => handleClick(e, link.href)}
+              className="block py-3 text-sm font-medium text-[#aaa] hover:text-white transition-colors"
+            >
+              {link.label}
+            </a>
+          ))}
+          <div className="mt-4 pt-4 border-t border-white/5 flex flex-col gap-3">
+            <a href="#" className="text-sm font-medium text-[#888]">Sign In</a>
+            <button className="w-full px-5 py-3 rounded-xl text-sm font-semibold text-black bg-gradient-to-r from-[#00d4ff] to-[#00ff88]">
+              Download App
+            </button>
           </div>
-        )}
-      </nav>
-    </>
+        </motion.div>
+      )}
+    </motion.nav>
   )
 }
