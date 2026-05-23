@@ -65,13 +65,13 @@ const FEATURES = [
 ]
 
 const containerVariants = {
-  hidden: {},
+  hidden: {} as const,
   visible: { transition: { staggerChildren: 0.08 } },
 }
 
 const cardVariants = {
   hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as number[] } },
 }
 
 export default function FeaturesGrid() {
@@ -111,7 +111,7 @@ export default function FeaturesGrid() {
               <motion.div
                 key={i}
                 variants={cardVariants}
-                whileHover={{ y: -4, borderColor: `${feature.color}40` }}
+                whileHover={{ y: -4 }}
                 className="group relative p-6 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm transition-all duration-300 hover:bg-white/[0.04] hover:shadow-[0_0_30px_rgba(0,0,0,0.3)]"
               >
                 <div
