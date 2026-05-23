@@ -65,13 +65,13 @@ const FEATURES = [
 ]
 
 const containerVariants = {
-  hidden: {} as const,
+  hidden: {},
   visible: { transition: { staggerChildren: 0.08 } },
 }
 
 const cardVariants = {
   hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as number[] } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
 }
 
 export default function FeaturesGrid() {
