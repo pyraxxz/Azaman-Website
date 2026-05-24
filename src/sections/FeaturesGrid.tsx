@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Shield, Zap, Users, MessageCircle, TrendingUp, Smartphone, Lock, Palette, Bot, Wallet } from 'lucide-react'
+import { StaggerContainer, ScaleOnHover } from '@/components/ScrollAnimations'
 
 const FEATURES = [
   {
@@ -64,14 +66,26 @@ const FEATURES = [
   },
 ]
 
-const containerVariants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.08 } },
-}
+function AnimatedCounter({ target }: { target: number }) {
+  const [count, setCount] = useState(0)
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0 },
+  useEffect(() => {
+    let frame = 0
+    const totalFrames = 40
+    const timer = setInterval(() => {
+      frame++
+      const progress = frame / totalFrames
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setCount(Math.round(target * eased))
+      if (frame >= totalFrames) {
+        setCount(target)
+        clearInterval(timer)
+      }
+    }, 30)
+    return () => clearInterval(timer)
+  }, [target])
+
+  return <span>{count}</span>
 }
 
 export default function FeaturesGrid() {
@@ -89,51 +103,63 @@ export default function FeaturesGrid() {
           <span className="text-xs font-semibold text-[#00d4ff] uppercase tracking-[0.2em] mb-4 block">Platform Features</span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4" style={{ fontFamily: 'Space Grotesk' }}>
             Everything you need.{' '}
-            <span className="bg-gradient-to-r from-[#00d4ff] to-[#ffd700] bg-clip-text text-transparent">Nothing you don't.</span>
+            <span className="text-[#D4AF37]">Nothing you don't.</span>
           </h2>
           <p className="text-[#888] text-lg max-w-2xl mx-auto">
             Built from the ground up for the African market. Every feature is designed to make digital finance accessible, safe, and rewarding.
           </p>
+
+          {/* Animated feature counter */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="inline-flex items-center gap-2 mt-6 px-4 py-2 rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/5"
+          >
+            <span className="text-[#D4AF37] font-bold text-lg" style={{ fontFamily: 'Space Grotesk' }}>
+              <AnimatedCounter target={10} />
+            </span>
+            <span className="text-[#888] text-sm">features packed in</span>
+          </motion.div>
         </motion.div>
 
-        {/* Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-50px' }}
+        {/* Grid wrapped with StaggerContainer */}
+        <StaggerContainer
+          staggerDelay={0.08}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4"
         >
           {FEATURES.map((feature, i) => {
             const Icon = feature.icon
-            // First row: 5 items, second row: 5 items
             return (
-              <motion.div
-                key={i}
-                variants={cardVariants}
-                whileHover={{ y: -4 }}
-                className="group relative p-6 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm transition-all duration-300 hover:bg-white/[0.04] hover:shadow-[0_0_30px_rgba(0,0,0,0.3)]"
-              >
+              <ScaleOnHover key={i} scale={1.03}>
                 <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110"
-                  style={{ background: `${feature.color}15`, border: `1px solid ${feature.color}30` }}
+                  className="group relative p-6 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm transition-all duration-300 hover:bg-white/[0.04] hover:shadow-[0_0_30px_rgba(0,0,0,0.3)]"
+                  style={{
+                    transition: 'border-color 0.3s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.borderColor = feature.color
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,255,255,0.05)'
+                  }}
                 >
-                  <Icon size={20} style={{ color: feature.color }} />
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110"
+                    style={{ background: `${feature.color}15`, border: `1px solid ${feature.color}30` }}
+                  >
+                    <Icon size={20} style={{ color: feature.color }} />
+                  </div>
+                  <h3 className="text-white font-semibold text-sm mb-2" style={{ fontFamily: 'Space Grotesk' }}>
+                    {feature.title}
+                  </h3>
+                  <p className="text-[#888] text-xs leading-relaxed">{feature.description}</p>
                 </div>
-                <h3 className="text-white font-semibold text-sm mb-2" style={{ fontFamily: 'Space Grotesk' }}>
-                  {feature.title}
-                </h3>
-                <p className="text-[#888] text-xs leading-relaxed">{feature.description}</p>
-
-                {/* Glow on hover */}
-                <div
-                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                  style={{ background: `radial-gradient(ellipse at 50% 0%, ${feature.color}08 0%, transparent 70%)` }}
-                />
-              </motion.div>
+              </ScaleOnHover>
             )
           })}
-        </motion.div>
+        </StaggerContainer>
       </div>
     </section>
   )

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
+import { RevealOnScroll } from '@/components/ScrollAnimations'
 
 function Counter({ target, prefix = '', suffix = '', decimals = 0 }: { target: number; prefix?: string; suffix?: string; decimals?: number }) {
   const [count, setCount] = useState(0)
@@ -18,7 +19,7 @@ function Counter({ target, prefix = '', suffix = '', decimals = 0 }: { target: n
           const timer = setInterval(() => {
             frame++
             const progress = frame / totalFrames
-            const eased = 1 - Math.pow(1 - progress, 3) // ease-out cubic
+            const eased = 1 - Math.pow(1 - progress, 3)
             const current = target * eased
             setCount(current)
             if (frame >= totalFrames) {
@@ -37,8 +38,16 @@ function Counter({ target, prefix = '', suffix = '', decimals = 0 }: { target: n
   const display = decimals > 0 ? count.toFixed(decimals) : Math.floor(count).toLocaleString()
 
   return (
-    <div ref={ref} className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white" style={{ fontFamily: 'Space Grotesk' }}>
-      {prefix}{display}{suffix}
+    <div ref={ref}>
+      <span
+        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white"
+        style={{
+          fontFamily: 'Space Grotesk',
+          textShadow: '0 0 20px rgba(212, 175, 55, 0.3), 0 0 40px rgba(212, 175, 55, 0.1)',
+        }}
+      >
+        {prefix}{display}{suffix}
+      </span>
     </div>
   )
 }
@@ -53,9 +62,20 @@ const STATS = [
 export default function StatsSection() {
   return (
     <section className="relative py-24 lg:py-32 border-y border-white/5">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#050508] via-[#0a0a15] to-[#050508]" />
-      <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 30% 50%, rgba(0,255,136,0.03) 0%, transparent 50%), radial-gradient(ellipse at 70% 50%, rgba(255,215,0,0.03) 0%, transparent 50%)' }} />
+      {/* Background: noise texture + subtle single ambient glow */}
+      <div className="absolute inset-0 bg-[#050508]" />
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+        }}
+      />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at 50% 50%, rgba(212, 175, 55, 0.04) 0%, transparent 60%)',
+        }}
+      />
 
       <div className="relative max-w-[1200px] mx-auto px-5 lg:px-12">
         <motion.div
@@ -68,24 +88,19 @@ export default function StatsSection() {
           <span className="text-xs font-semibold text-[#00ff88] uppercase tracking-[0.2em] mb-4 block">Platform Metrics</span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold" style={{ fontFamily: 'Space Grotesk' }}>
             Numbers that{' '}
-            <span className="bg-gradient-to-r from-[#00ff88] to-[#00d4ff] bg-clip-text text-transparent">speak volumes</span>
+            <span className="text-[#D4AF37]">speak volumes</span>
           </h2>
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {STATS.map((stat, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="text-center"
-            >
-              <Counter target={stat.target} prefix={stat.prefix} suffix={stat.suffix} decimals={stat.decimals} />
-              <div className="text-white font-medium mt-3 mb-1">{stat.label}</div>
-              <div className="text-[#888] text-sm">{stat.sublabel}</div>
-            </motion.div>
+            <RevealOnScroll key={i} direction="up" delay={i * 0.15}>
+              <div className="text-center">
+                <Counter target={stat.target} prefix={stat.prefix} suffix={stat.suffix} decimals={stat.decimals} />
+                <div className="text-white font-medium mt-3 mb-1">{stat.label}</div>
+                <div className="text-[#888] text-sm">{stat.sublabel}</div>
+              </div>
+            </RevealOnScroll>
           ))}
         </div>
       </div>
