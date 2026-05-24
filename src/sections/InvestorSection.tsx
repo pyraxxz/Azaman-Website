@@ -31,7 +31,7 @@ export default function InvestorSection() {
           <span className="text-xs font-semibold text-[#ffd700] uppercase tracking-[0.2em] mb-4 block">For Investors</span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4" style={{ fontFamily: 'Space Grotesk' }}>
             A $50B market.{' '}
-            <span className="bg-gradient-to-r from-[#ffd700] to-[#ff6b35] bg-clip-text text-transparent">One platform.</span>
+            <span className="text-[#D4AF37]">One platform.</span>
           </h2>
           <p className="text-[#888] text-lg max-w-2xl mx-auto">
             Africa's digital finance market is projected to reach $50B by 2028. Azaman is positioned at the intersection of crypto adoption, neo-banking, and social finance.
@@ -104,7 +104,8 @@ export default function InvestorSection() {
             href="mailto:investors@azaman.app?subject=Investor%20Deck%20Request"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
-            className="inline-block px-10 py-4 rounded-2xl font-semibold text-black bg-gradient-to-r from-[#ffd700] to-[#ff6b35] shadow-[0_0_40px_rgba(255,215,0,0.2)] hover:shadow-[0_0_60px_rgba(255,215,0,0.4)] transition-shadow cursor-pointer"
+            className="inline-block px-10 py-4 rounded-2xl font-semibold text-black transition-shadow cursor-pointer"
+            style={{ backgroundColor: '#D4AF37', boxShadow: '0 0 40px rgba(212,175,55,0.3)' }}
           >
             Request Investor Deck →
           </motion.a>

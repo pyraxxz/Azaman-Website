@@ -32,7 +32,7 @@ export default function ThemeShowcase() {
           <span className="text-xs font-semibold text-[#e040fb] uppercase tracking-[0.2em] mb-4 block">Personalization</span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4" style={{ fontFamily: 'Space Grotesk' }}>
             11 Immersive Themes.{' '}
-            <span className="bg-gradient-to-r from-[#e040fb] to-[#00d4ff] bg-clip-text text-transparent">Your Vibe.</span>
+            <span className="text-[#e040fb]">Your Vibe.</span>
           </h2>
           <p className="text-[#888] text-lg max-w-xl mx-auto">
             Every theme transforms the entire app — backgrounds, accents, glows, cards, and typography. Not just colors — entire identities.
