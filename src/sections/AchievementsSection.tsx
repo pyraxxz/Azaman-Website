@@ -16,7 +16,7 @@ interface Achievement {
   id: string
   title: string
   description: string
-  icon: React.ComponentType<{ size?: number; className?: string }>
+  icon: React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>
   rarity: 'common' | 'rare' | 'epic' | 'legendary'
   xp: number
   progress: number  // 0-100
@@ -355,7 +355,7 @@ function AchievementDetailModal({ achievement, onClose, theme }: AchievementDeta
 interface StatPillProps {
   label: string
   value: string
-  icon: React.ComponentType<{ size?: number; className?: string }>
+  icon: React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>
   color: string
   theme: ThemeColors
 }
