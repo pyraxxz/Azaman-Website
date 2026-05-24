@@ -59,7 +59,7 @@ const TABS: Tab[] = [
     icon: TrendingUp,
     title: 'Goal-Based Savings',
     description:
-      'Lock funds toward goals with daily/weekly/monthly schedules. Streak tracking rewards consistency. Early withdrawal triggers a configurable penalty — discipline by design.',
+      'Lock funds toward goals with daily/weekly/monthly schedules. Streak tracking rewards consistency. Early withdrawal triggers a configurable penalty discipline by design.',
     highlight: 'Streak rewards · Auto-deposits',
   },
   {
