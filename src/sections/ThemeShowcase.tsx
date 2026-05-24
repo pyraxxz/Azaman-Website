@@ -53,7 +53,7 @@ export default function ThemeShowcase() {
           </h2>
           <p className="text-lg max-w-2xl mx-auto" style={{ color: theme.textMuted }}>
             Tap any theme below to instantly transform this entire website. Background,
-            accents, glows, cards — all change together. The same engine powers the mobile app.
+            accents, glows, cards all change together. The same engine powers the mobile app.
           </p>
         </motion.div>
 
@@ -163,8 +163,8 @@ export default function ThemeShowcase() {
                 ● Active Now
               </div>
               <p className="text-sm sm:text-base mb-6 leading-relaxed" style={{ color: theme.textSecondary }}>
-                Notice how the entire page shifted? Every element on this site — navigation,
-                cards, buttons, text, glows — is now powered by the {theme.name} palette.
+                Notice how the entire page shifted? Every element on this site: navigation,
+                cards, buttons, text, glows is now powered by the {theme.name} palette.
                 The mobile app does this too, in milliseconds, with full haptic feedback.
               </p>
 
