@@ -38,7 +38,7 @@ export function ParallaxLayer({
   const y = useTransform(
     scrollYProgress,
     [0, 1],
-    prefersReducedMotion ? [0, 0] : [`${clampedSpeed * -100}px`, `${clampedSpeed * 100}px`]
+    [`${prefersReducedMotion ? 0 : clampedSpeed * -100}px`, `${prefersReducedMotion ? 0 : clampedSpeed * 100}px`]
   );
 
   return (
