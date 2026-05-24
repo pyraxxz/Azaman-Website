@@ -10,7 +10,7 @@ import { useTheme } from '@/contexts/ThemeContext'
 interface Tab {
   id: string
   label: string
-  icon: React.ComponentType<{ size?: number; className?: string }>
+  icon: React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>
   title: string
   description: string
   highlight: string

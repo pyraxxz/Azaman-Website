@@ -228,7 +228,7 @@ interface PodiumCardProps {
   vendor: Vendor
   height: string
   delay: number
-  icon: React.ComponentType<{ size?: number; className?: string }>
+  icon: React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>
   theme: ThemeColors
   isFirst?: boolean
 }
