@@ -35,11 +35,10 @@ export function ParallaxLayer({
   });
 
   const clampedSpeed = Math.max(-1, Math.min(1, speed));
-  const y = useTransform(
-    scrollYProgress,
-    [0, 1],
-    [`${prefersReducedMotion ? 0 : clampedSpeed * -100}px`, `${prefersReducedMotion ? 0 : clampedSpeed * 100}px`]
-  );
+  const outputRange: string[] = prefersReducedMotion
+    ? ["0px", "0px"]
+    : [`${clampedSpeed * -100}px`, `${clampedSpeed * 100}px`];
+  const y = useTransform(scrollYProgress, [0, 1], outputRange);
 
   return (
     <motion.div ref={ref} style={{ y }} className={className}>
