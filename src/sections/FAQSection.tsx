@@ -20,7 +20,7 @@ const FAQS: FAQItem[] = [
     category: 'fees',
     question: 'Does Azaman charge fees?',
     answer:
-      'Internal Azaman-to-Azaman transfers are completely free. For P2P trades, our revenue comes from the spread between corporate and retail rates — meaning users never see explicit "fees" on the rate they get. There is a flat 2% exit fee only when withdrawing fiat or crypto out of the platform.',
+      'Internal Azaman-to-Azaman transfers are completely free. For P2P trades, our revenue comes from the spread between corporate and retail rates, meaning users never see explicit "fees" on the rate they get. There is a flat 2% exit fee only when withdrawing fiat or crypto out of the platform.',
   },
   {
     category: 'security',
@@ -32,7 +32,7 @@ const FAQS: FAQItem[] = [
     category: 'general',
     question: 'How fast are transactions?',
     answer:
-      'Internal transfers between Azaman users are instant — under 0.3 seconds, settled in our database. P2P trades average 2-5 minutes once payment is confirmed. Crypto withdrawals to external wallets typically settle within 1-3 minutes depending on network congestion.',
+      'Internal transfers between Azaman users are instant: under 0.3 seconds, settled in our database. P2P trades average 2-5 minutes once payment is confirmed. Crypto withdrawals to external wallets typically settle within 1-3 minutes depending on network congestion.',
   },
   {
     category: 'vendors',
@@ -50,7 +50,7 @@ const FAQS: FAQItem[] = [
     category: 'fees',
     question: 'Why do I need to deposit GHS first?',
     answer:
-      'Pre-funding your fiat wallet means you can grab the best vendor rates instantly without delays. Deposits are free via mobile money (MoMo) or bank transfer. Funds are credited within 60 seconds. Your money stays yours — withdraw anytime with the standard 2% exit fee.',
+      'Pre-funding your fiat wallet means you can grab the best vendor rates instantly without delays. Deposits are free via mobile money (MoMo) or bank transfer. Funds are credited within 60 seconds. Your money stays yours. Withdraw anytime with the standard 2% exit fee.',
   },
   {
     category: 'general',
@@ -62,7 +62,7 @@ const FAQS: FAQItem[] = [
     category: 'general',
     question: 'Is there a mobile app?',
     answer:
-      'Yes — native iOS and Android apps with full feature parity. Available on the App Store and Google Play. The web version is coming soon for desktop traders. All apps stay in sync via real-time WebSocket connections.',
+      'Yes, native iOS and Android apps with full feature parity. Available on the App Store and Google Play. The web version is coming soon for desktop traders. All apps stay in sync via real-time WebSocket connections.',
   },
   {
     category: 'fees',
