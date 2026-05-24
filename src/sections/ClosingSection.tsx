@@ -72,7 +72,7 @@ export default function ClosingSection() {
             style={{ color: theme.textSecondary }}
           >
             Whether you're a trader looking for the best rates, a vendor building your business,
-            or an investor seeking the next frontier — Azaman is built for you.
+            or an investor seeking the next frontier, Azaman is built for you.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
