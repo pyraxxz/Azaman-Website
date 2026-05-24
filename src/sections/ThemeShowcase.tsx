@@ -40,28 +40,28 @@ export default function ThemeShowcase() {
         </motion.div>
 
         {/* Theme selector grid */}
-        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-11 gap-3 mb-12">
+        <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-6 xl:grid-cols-11 gap-2 sm:gap-3 mb-12">
           {THEMES.map((t, i) => (
             <motion.button
               key={t.name}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setActiveTheme(i)}
-              className={`relative flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all ${
+              className={`relative flex flex-col items-center gap-1 sm:gap-1.5 p-2 sm:p-3 rounded-xl border transition-all ${
                 activeTheme === i
                   ? 'border-white/30 bg-white/5 shadow-lg'
                   : 'border-white/5 hover:border-white/10'
               }`}
             >
               <div
-                className="w-8 h-8 rounded-full border-2 transition-all"
+                className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 transition-all"
                 style={{
                   background: `linear-gradient(135deg, ${t.bg}, ${t.surface})`,
                   borderColor: activeTheme === i ? t.accent : 'transparent',
                   boxShadow: activeTheme === i ? `0 0 12px ${t.glow}40` : 'none',
                 }}
               />
-              <span className="text-[9px] font-medium text-[#aaa]">{t.name}</span>
+              <span className="text-[8px] sm:text-[9px] font-medium text-[#aaa] truncate w-full text-center">{t.name}</span>
               {activeTheme === i && (
                 <motion.div
                   layoutId="theme-indicator"
@@ -79,17 +79,17 @@ export default function ThemeShowcase() {
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4 }}
-          className="rounded-3xl p-8 border relative overflow-hidden"
+          className="rounded-2xl sm:rounded-3xl p-5 sm:p-8 border relative overflow-hidden"
           style={{ background: theme.bg, borderColor: `${theme.accent}20` }}
         >
           {/* Glow */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] -translate-y-1/2 rounded-full blur-3xl opacity-20" style={{ background: theme.glow }} />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] sm:w-[400px] h-[150px] sm:h-[200px] -translate-y-1/2 rounded-full blur-3xl opacity-20" style={{ background: theme.glow }} />
 
-          <div className="relative z-10 flex flex-col lg:flex-row items-center gap-8">
+          <div className="relative z-10 flex flex-col lg:flex-row items-center gap-6 sm:gap-8">
             {/* Theme info */}
-            <div className="flex-1">
+            <div className="flex-1 text-center lg:text-left">
               <div className="text-3xl mb-2">{theme.icon}</div>
-              <h3 className="text-2xl font-bold mb-2" style={{ color: theme.text, fontFamily: 'Space Grotesk' }}>
+              <h3 className="text-xl sm:text-2xl font-bold mb-2" style={{ color: theme.text, fontFamily: 'Space Grotesk' }}>
                 {theme.name} Theme
               </h3>
               <p className="text-sm mb-6" style={{ color: `${theme.text}99` }}>
@@ -97,7 +97,7 @@ export default function ThemeShowcase() {
               </p>
 
               {/* Color swatches */}
-              <div className="flex gap-3">
+              <div className="flex gap-3 justify-center lg:justify-start">
                 {[
                   { label: 'Background', color: theme.bg },
                   { label: 'Surface', color: theme.surface },
@@ -106,10 +106,10 @@ export default function ThemeShowcase() {
                 ].map(swatch => (
                   <div key={swatch.label} className="text-center">
                     <div
-                      className="w-10 h-10 rounded-lg border border-white/10 mb-1"
+                      className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg border border-white/10 mb-1"
                       style={{ background: swatch.color }}
                     />
-                    <span className="text-[8px] uppercase tracking-wider" style={{ color: `${theme.text}60` }}>{swatch.label}</span>
+                    <span className="text-[7px] sm:text-[8px] uppercase tracking-wider" style={{ color: `${theme.text}60` }}>{swatch.label}</span>
                   </div>
                 ))}
               </div>
@@ -117,7 +117,7 @@ export default function ThemeShowcase() {
 
             {/* Mini phone preview */}
             <div
-              className="w-48 h-80 rounded-3xl p-4 flex flex-col border"
+              className="w-40 h-72 sm:w-48 sm:h-80 rounded-2xl sm:rounded-3xl p-3 sm:p-4 flex flex-col border flex-shrink-0"
               style={{ background: theme.surface, borderColor: `${theme.accent}20` }}
             >
               <div className="flex justify-between items-center mb-3">

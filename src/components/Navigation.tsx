@@ -1,3 +1,4 @@
+import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
@@ -7,6 +8,7 @@ const NAV_LINKS = [
   { label: 'App', href: '#showcase' },
   { label: 'Themes', href: '#themes' },
   { label: 'Investors', href: '#investors' },
+  { label: 'Download', href: '#download' },
 ]
 
 export default function Navigation() {
@@ -84,16 +86,22 @@ export default function Navigation() {
 
         {/* CTA */}
         <div className="hidden lg:flex items-center gap-3">
-          <a href="#" className="text-sm font-medium text-[#888] hover:text-white transition-colors">
+          <a
+            href="#download"
+            onClick={(e) => handleClick(e, '#download')}
+            className="text-sm font-medium text-[#888] hover:text-white transition-colors"
+          >
             Sign In
           </a>
-          <motion.button
+          <motion.a
+            href="#download"
+            onClick={(e: React.MouseEvent<HTMLAnchorElement>) => handleClick(e, '#download')}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="px-5 py-2 rounded-xl text-sm font-semibold text-black bg-gradient-to-r from-[#00d4ff] to-[#00ff88] shadow-[0_0_20px_rgba(0,212,255,0.2)] hover:shadow-[0_0_30px_rgba(0,212,255,0.4)] transition-shadow"
+            className="px-5 py-2 rounded-xl text-sm font-semibold text-black bg-gradient-to-r from-[#00d4ff] to-[#00ff88] shadow-[0_0_20px_rgba(0,212,255,0.2)] hover:shadow-[0_0_30px_rgba(0,212,255,0.4)] transition-shadow cursor-pointer"
           >
             Download App
-          </motion.button>
+          </motion.a>
         </div>
 
         {/* Mobile toggle */}
@@ -125,10 +133,14 @@ export default function Navigation() {
             </a>
           ))}
           <div className="mt-4 pt-4 border-t border-white/5 flex flex-col gap-3">
-            <a href="#" className="text-sm font-medium text-[#888]">Sign In</a>
-            <button className="w-full px-5 py-3 rounded-xl text-sm font-semibold text-black bg-gradient-to-r from-[#00d4ff] to-[#00ff88]">
+            <a href="#download" onClick={(e) => handleClick(e, '#download')} className="text-sm font-medium text-[#888]">Sign In</a>
+            <a
+              href="#download"
+              onClick={(e) => handleClick(e, '#download')}
+              className="w-full px-5 py-3 rounded-xl text-sm font-semibold text-black bg-gradient-to-r from-[#00d4ff] to-[#00ff88] text-center block"
+            >
               Download App
-            </button>
+            </a>
           </div>
         </motion.div>
       )}

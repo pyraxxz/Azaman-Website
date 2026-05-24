@@ -274,21 +274,21 @@ export default function AppShowcase() {
           </p>
         </motion.div>
 
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+        <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
           {/* Phone mockup */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="relative flex-shrink-0"
+            className="relative flex-shrink-0 order-1 lg:order-none"
           >
             {/* Phone frame */}
-            <div className="relative w-[280px] h-[580px] rounded-[40px] border-[3px] border-[#333] bg-black shadow-[0_0_60px_rgba(0,0,0,0.8),0_0_100px_rgba(0,212,255,0.1)] overflow-hidden">
+            <div className="relative w-[240px] h-[500px] sm:w-[280px] sm:h-[580px] rounded-[36px] sm:rounded-[40px] border-[3px] border-[#333] bg-black shadow-[0_0_60px_rgba(0,0,0,0.8),0_0_100px_rgba(0,212,255,0.1)] overflow-hidden">
               {/* Notch */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-6 bg-black rounded-b-2xl z-20" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 sm:w-28 h-5 sm:h-6 bg-black rounded-b-2xl z-20" />
               {/* Screen content */}
-              <div className="absolute inset-[3px] rounded-[37px] overflow-hidden">
+              <div className="absolute inset-[3px] rounded-[33px] sm:rounded-[37px] overflow-hidden">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeScreen}
@@ -303,30 +303,30 @@ export default function AppShowcase() {
                 </AnimatePresence>
               </div>
               {/* Home indicator */}
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-24 h-1 rounded-full bg-white/20 z-20" />
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-20 sm:w-24 h-1 rounded-full bg-white/20 z-20" />
             </div>
             {/* Glow behind phone */}
             <div className="absolute -inset-10 -z-10 rounded-full blur-3xl opacity-20 bg-[#00d4ff]" />
           </motion.div>
 
           {/* Tab navigation + description */}
-          <div className="flex-1 max-w-lg">
+          <div className="flex-1 w-full max-w-lg order-2 lg:order-none">
             {/* Tabs */}
-            <div className="flex flex-wrap gap-2 mb-8">
+            <div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-8">
               {SCREENS.map((screen, i) => {
                 const Icon = screen.icon
                 return (
                   <button
                     key={screen.id}
                     onClick={() => setActiveScreen(i)}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                    className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
                       activeScreen === i
                         ? 'bg-[#00d4ff]/10 text-[#00d4ff] border border-[#00d4ff]/30'
                         : 'text-[#888] border border-white/5 hover:border-white/10 hover:text-white/60'
                     }`}
                   >
                     <Icon size={14} />
-                    {screen.label}
+                    <span className="hidden xs:inline sm:inline">{screen.label}</span>
                   </button>
                 )
               })}
@@ -340,11 +340,12 @@ export default function AppShowcase() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
+                className="text-center lg:text-left"
               >
-                <h3 className="text-2xl font-bold text-white mb-3" style={{ fontFamily: 'Space Grotesk' }}>
+                <h3 className="text-xl sm:text-2xl font-bold text-white mb-3" style={{ fontFamily: 'Space Grotesk' }}>
                   {SCREENS[activeScreen].title}
                 </h3>
-                <p className="text-[#aaa] leading-relaxed">
+                <p className="text-[#aaa] text-sm sm:text-base leading-relaxed">
                   {SCREENS[activeScreen].description}
                 </p>
               </motion.div>

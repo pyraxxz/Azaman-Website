@@ -1,3 +1,4 @@
+import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight, Shield, Zap, Globe } from 'lucide-react'
@@ -60,7 +61,7 @@ export default function HeroSection() {
           </div>
 
           {/* Headline */}
-          <h1 className="text-5xl sm:text-6xl lg:text-[88px] font-bold leading-[0.92] tracking-[-0.03em] mb-6" style={{ fontFamily: 'Space Grotesk' }}>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[88px] font-bold leading-[0.92] tracking-[-0.03em] mb-6" style={{ fontFamily: 'Space Grotesk' }}>
             <span className="block text-white">The Future of</span>
             <span className="block bg-gradient-to-r from-[#00d4ff] via-[#00ff88] to-[#ffd700] bg-clip-text text-transparent">
               P2P Finance
@@ -68,29 +69,41 @@ export default function HeroSection() {
           </h1>
 
           {/* Subheadline */}
-          <p className="text-lg sm:text-xl lg:text-2xl text-[#999] font-light max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-base sm:text-lg lg:text-2xl text-[#999] font-light max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed px-2">
             Trade USDC instantly. Send money for free. Protect your wealth from currency devaluation. The most advanced P2P exchange built for Africa.
           </p>
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-            <motion.button
+            <motion.a
+              href="#download"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
-              className="group flex items-center gap-3 px-8 py-4 rounded-2xl font-semibold text-black bg-gradient-to-r from-[#00d4ff] to-[#00ff88] shadow-[0_0_40px_rgba(0,212,255,0.3)] transition-shadow hover:shadow-[0_0_60px_rgba(0,212,255,0.5)]"
+              onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                e.preventDefault()
+                const el = document.getElementById('download')
+                if (el) el.scrollIntoView({ behavior: 'smooth' })
+              }}
+              className="group flex items-center gap-3 px-8 py-4 rounded-2xl font-semibold text-black bg-gradient-to-r from-[#00d4ff] to-[#00ff88] shadow-[0_0_40px_rgba(0,212,255,0.3)] transition-shadow hover:shadow-[0_0_60px_rgba(0,212,255,0.5)] cursor-pointer"
             >
               Download the App
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-            </motion.button>
+            </motion.a>
 
-            <motion.button
+            <motion.a
+              href="#investors"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
-              className="flex items-center gap-3 px-8 py-4 rounded-2xl font-semibold text-white border border-white/10 bg-white/5 backdrop-blur-sm hover:border-[#ffd700]/40 hover:bg-[#ffd700]/5 transition-all"
+              onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                e.preventDefault()
+                const el = document.getElementById('investors')
+                if (el) el.scrollIntoView({ behavior: 'smooth' })
+              }}
+              className="flex items-center gap-3 px-8 py-4 rounded-2xl font-semibold text-white border border-white/10 bg-white/5 backdrop-blur-sm hover:border-[#ffd700]/40 hover:bg-[#ffd700]/5 transition-all cursor-pointer"
             >
               Investor Deck
               <ArrowRight size={18} />
-            </motion.button>
+            </motion.a>
           </div>
         </motion.div>
 
@@ -99,7 +112,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="flex flex-wrap justify-center gap-8 mb-16"
+          className="flex flex-wrap justify-center gap-4 sm:gap-8 mb-12 sm:mb-16"
         >
           {[
             { icon: Shield, label: 'Act 1154 Compliant' },
@@ -118,7 +131,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-3xl mx-auto"
+          className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 max-w-3xl mx-auto"
         >
           {[
             { value: <AnimatedCounter target={50000} suffix="+" />, label: 'Users Onboarded' },

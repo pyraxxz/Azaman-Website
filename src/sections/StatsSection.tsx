@@ -37,7 +37,7 @@ function Counter({ target, prefix = '', suffix = '', decimals = 0 }: { target: n
   const display = decimals > 0 ? count.toFixed(decimals) : Math.floor(count).toLocaleString()
 
   return (
-    <div ref={ref} className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white" style={{ fontFamily: 'Space Grotesk' }}>
+    <div ref={ref} className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white" style={{ fontFamily: 'Space Grotesk' }}>
       {prefix}{display}{suffix}
     </div>
   )
