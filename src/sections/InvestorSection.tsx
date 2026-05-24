@@ -100,13 +100,14 @@ export default function InvestorSection() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="mt-16 text-center"
         >
-          <motion.button
+          <motion.a
+            href="mailto:investors@azaman.app?subject=Investor%20Deck%20Request"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
-            className="px-10 py-4 rounded-2xl font-semibold text-black bg-gradient-to-r from-[#ffd700] to-[#ff6b35] shadow-[0_0_40px_rgba(255,215,0,0.2)] hover:shadow-[0_0_60px_rgba(255,215,0,0.4)] transition-shadow"
+            className="inline-block px-10 py-4 rounded-2xl font-semibold text-black bg-gradient-to-r from-[#ffd700] to-[#ff6b35] shadow-[0_0_40px_rgba(255,215,0,0.2)] hover:shadow-[0_0_60px_rgba(255,215,0,0.4)] transition-shadow cursor-pointer"
           >
             Request Investor Deck →
-          </motion.button>
+          </motion.a>
           <p className="text-[#888] text-sm mt-4">Detailed financials, projections, and team bios available on request.</p>
         </motion.div>
       </div>

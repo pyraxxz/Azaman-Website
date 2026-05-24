@@ -21,8 +21,8 @@ export default function ParticleCanvas() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const PARTICLE_COUNT = 80
-    const CONNECTION_DISTANCE = 120
+    const PARTICLE_COUNT = window.innerWidth < 768 ? 40 : 80
+    const CONNECTION_DISTANCE = window.innerWidth < 768 ? 80 : 120
     const MOUSE_DISTANCE = 150
     const MAX_SPEED = 0.3
 
@@ -132,14 +132,29 @@ export default function ParticleCanvas() {
       mouseRef.current = { x: -1000, y: -1000 }
     }
 
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        const rect = canvas.getBoundingClientRect()
+        mouseRef.current = { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top }
+      }
+    }
+
+    const handleTouchEnd = () => {
+      mouseRef.current = { x: -1000, y: -1000 }
+    }
+
     canvas.addEventListener('mousemove', handleMouseMove)
     canvas.addEventListener('mouseleave', handleMouseLeave)
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: true })
+    canvas.addEventListener('touchend', handleTouchEnd)
     window.addEventListener('resize', () => { resize(); initParticles() })
 
     return () => {
       cancelAnimationFrame(rafRef.current)
       canvas.removeEventListener('mousemove', handleMouseMove)
       canvas.removeEventListener('mouseleave', handleMouseLeave)
+      canvas.removeEventListener('touchmove', handleTouchMove)
+      canvas.removeEventListener('touchend', handleTouchEnd)
     }
   }, [])
 

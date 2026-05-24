@@ -1,9 +1,15 @@
+import type React from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 
 export default function ClosingSection() {
+  const handleDownload = () => {
+    const el = document.getElementById('download')
+    if (el) el.scrollIntoView({ behavior: 'smooth' })
+  }
+
   return (
-    <section className="relative py-24 lg:py-40 overflow-hidden">
+    <section id="download" className="relative py-24 lg:py-40 overflow-hidden">
       {/* Gradient background */}
       <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 50% 80%, rgba(0,212,255,0.08) 0%, transparent 60%)' }} />
 
@@ -14,7 +20,7 @@ export default function ClosingSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight" style={{ fontFamily: 'Space Grotesk' }}>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight" style={{ fontFamily: 'Space Grotesk' }}>
             Ready to join the{' '}
             <span className="bg-gradient-to-r from-[#00d4ff] via-[#00ff88] to-[#ffd700] bg-clip-text text-transparent">
               future of finance?
@@ -28,19 +34,26 @@ export default function ClosingSection() {
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
+              onClick={handleDownload}
               className="group flex items-center gap-3 px-10 py-4 rounded-2xl font-semibold text-black bg-gradient-to-r from-[#00d4ff] to-[#00ff88] shadow-[0_0_40px_rgba(0,212,255,0.3)] hover:shadow-[0_0_80px_rgba(0,212,255,0.5)] transition-shadow"
             >
               Get Started Free
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </motion.button>
 
-            <motion.button
+            <motion.a
+              href="#investors"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
-              className="flex items-center gap-3 px-10 py-4 rounded-2xl font-semibold text-white border border-white/10 bg-white/5 backdrop-blur-sm hover:border-white/20 transition-all"
+              onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                e.preventDefault()
+                const el = document.getElementById('investors')
+                if (el) el.scrollIntoView({ behavior: 'smooth' })
+              }}
+              className="flex items-center gap-3 px-10 py-4 rounded-2xl font-semibold text-white border border-white/10 bg-white/5 backdrop-blur-sm hover:border-white/20 transition-all cursor-pointer"
             >
               Read the Whitepaper
-            </motion.button>
+            </motion.a>
           </div>
 
           {/* Trust line */}
