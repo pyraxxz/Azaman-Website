@@ -8,7 +8,7 @@
 // =============================================================================
 
 import type React from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowRight, ShieldCheck, Zap, Globe, Sparkles, TrendingUp } from 'lucide-react'
 import ParticleCanvas from '@/components/ParticleCanvas'
@@ -38,13 +38,8 @@ const VENDOR_GRID = [
 export default function HeroBridge() {
   const { theme } = useTheme()
   const { scrollTo } = useLenis()
-  const [isMobile, setIsMobile] = useState(false)
-  const mobileRef = useRef<HTMLDivElement>(null)
-
-  // Detect mobile once on mount
-  useEffect(() => {
-    setIsMobile(window.innerWidth < 1024)
-  }, [])
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024
+  const heroRef = useRef<HTMLDivElement>(null)
 
   // Outer parallax for orbs (Framer-driven, separate from the GSAP timeline)
   const outerRef = useRef<HTMLElement>(null)
@@ -55,11 +50,11 @@ export default function HeroBridge() {
   const yBg = useTransform(scrollYProgress, [0, 1], ['0%', '40%'])
   const yMid = useTransform(scrollYProgress, [0, 1], ['0%', '20%'])
 
-  // MOBILE: plain useEffect animation (bypasses useGSAP which may not fire on touch)
+  // MOBILE: plain useEffect animation — queries from heroRef which wraps the entire scene
   useEffect(() => {
     if (!isMobile) return
     if (prefersReducedMotion()) return
-    const root = mobileRef.current
+    const root = heroRef.current
     if (!root) return
 
     const phone = root.querySelector('[data-phone]') as HTMLElement | null
@@ -70,30 +65,30 @@ export default function HeroBridge() {
     const railNodes = root.querySelectorAll<HTMLElement>('[data-rail]')
 
     // Set initial states
-    gsapCore.set(phone, { y: 50, opacity: 0 })
+    gsapCore.set(phone, { y: 60, opacity: 0 })
     gsapCore.set(headlineWords, { y: 30, opacity: 0 })
     gsapCore.set([subline, ctas, trust], { y: 20, opacity: 0 })
-    gsapCore.set(railNodes, { opacity: 0, scale: 0.3, x: (_, el) => {
-      const pos = (el as HTMLElement).style
-      return pos.left ? 80 : -80
-    }, y: (_, el) => {
-      const pos = (el as HTMLElement).style
-      return pos.top && parseInt(pos.top) > 50 ? -50 : 50
-    }})
+    // Rails start pushed inward toward center and invisible
+    railNodes.forEach((rail, i) => {
+      const pushX = i < 2 ? 100 : -100 // left rails push right, right rails push left
+      const pushY = i % 2 === 0 ? 60 : -60
+      gsapCore.set(rail, { opacity: 0, scale: 0.3, x: pushX, y: pushY })
+    })
 
-    // Animate in
-    const tl = gsapCore.timeline({ delay: 0.2, defaults: { ease: 'power3.out' } })
-    tl.to(phone, { y: 0, opacity: 1, duration: 0.6 }, 0)
+    // Animate everything in
+    const tl = gsapCore.timeline({ delay: 0.15, defaults: { ease: 'power3.out' } })
+    tl.to(phone, { y: 0, opacity: 1, duration: 0.7 }, 0)
       .to(headlineWords, { y: 0, opacity: 1, duration: 0.5, stagger: 0.04 }, 0.1)
-      .to(subline, { y: 0, opacity: 1, duration: 0.4 }, 0.35)
-      .to(ctas, { y: 0, opacity: 1, duration: 0.4 }, 0.45)
-      .to(trust, { y: 0, opacity: 1, duration: 0.4 }, 0.55)
+      .to(subline, { y: 0, opacity: 1, duration: 0.4 }, 0.4)
+      .to(ctas, { y: 0, opacity: 1, duration: 0.4 }, 0.5)
+      .to(trust, { y: 0, opacity: 1, duration: 0.4 }, 0.6)
+      // Rails fly outward from center with bounce
       .to(railNodes, {
         opacity: 1, scale: 1, x: 0, y: 0,
-        duration: 0.6,
-        stagger: 0.1,
+        duration: 0.8,
+        stagger: 0.12,
         ease: 'back.out(1.7)',
-      }, 0.3)
+      }, 0.25)
 
     return () => { tl.kill() }
   }, [isMobile])
@@ -194,7 +189,7 @@ export default function HeroBridge() {
       className="relative w-full"
       style={{ backgroundColor: theme.background }}
     >
-      <div ref={sceneRef} className="relative w-full h-[100dvh] overflow-hidden">
+      <div ref={(el) => { heroRef.current = el; (sceneRef as unknown as React.MutableRefObject<HTMLDivElement | null>).current = el }} className="relative w-full min-h-[100dvh] lg:h-[100dvh] lg:overflow-hidden">
         <ParticleCanvas />
 
         {/* Layer A — slowest parallax, ambient orbs */}
@@ -349,7 +344,7 @@ export default function HeroBridge() {
         </div>
 
         {/* Foreground content */}
-        <div ref={mobileRef} className="relative z-[3] h-full w-full flex items-center">
+        <div className="relative z-[3] min-h-full w-full flex items-start lg:items-center pt-24 lg:pt-0 pb-10 lg:pb-0">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-6 w-full max-w-[1280px] mx-auto px-5 lg:px-12 items-center">
             {/* Left — copy */}
             <div className="lg:col-span-7 order-2 lg:order-1 text-center lg:text-left">
@@ -484,8 +479,7 @@ export default function HeroBridge() {
               style={{ perspective: '1400px' }}
             >
               <div data-phone-shell style={{ transformStyle: 'preserve-3d' }}>
-                {/* Actual smaller phone on mobile — not CSS scale which doesn't reduce layout box */}
-                <PhoneFrame width={isMobile ? 200 : 300} height={isMobile ? 400 : 620} tilt>
+                <PhoneFrame width={300} height={620} tilt>
                   <HeroPhoneScreen />
                 </PhoneFrame>
               </div>
