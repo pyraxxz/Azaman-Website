@@ -50,7 +50,7 @@ export default function HeroBridge() {
   const yBg = useTransform(scrollYProgress, [0, 1], ['0%', '40%'])
   const yMid = useTransform(scrollYProgress, [0, 1], ['0%', '20%'])
 
-  // MOBILE: plain useEffect animation — queries from heroRef which wraps the entire scene
+  // MOBILE: useEffect for intro + scroll-driven rail movement
   useEffect(() => {
     if (!isMobile) return
     if (prefersReducedMotion()) return
@@ -64,33 +64,49 @@ export default function HeroBridge() {
     const trust = root.querySelector('[data-trust]') as HTMLElement | null
     const railNodes = root.querySelectorAll<HTMLElement>('[data-rail]')
 
-    // Set initial states
-    gsapCore.set(phone, { y: 60, opacity: 0 })
+    // Intro: phone and text fade in
+    gsapCore.set(phone, { y: 50, opacity: 0 })
     gsapCore.set(headlineWords, { y: 30, opacity: 0 })
     gsapCore.set([subline, ctas, trust], { y: 20, opacity: 0 })
-    // Rails start pushed inward toward center and invisible
-    railNodes.forEach((rail, i) => {
-      const pushX = i < 2 ? 100 : -100 // left rails push right, right rails push left
-      const pushY = i % 2 === 0 ? 60 : -60
-      gsapCore.set(rail, { opacity: 0, scale: 0.3, x: pushX, y: pushY })
-    })
 
-    // Animate everything in
-    const tl = gsapCore.timeline({ delay: 0.15, defaults: { ease: 'power3.out' } })
-    tl.to(phone, { y: 0, opacity: 1, duration: 0.7 }, 0)
+    const intro = gsapCore.timeline({ delay: 0.15, defaults: { ease: 'power3.out' } })
+    intro
+      .to(phone, { y: 0, opacity: 1, duration: 0.7 }, 0)
       .to(headlineWords, { y: 0, opacity: 1, duration: 0.5, stagger: 0.04 }, 0.1)
       .to(subline, { y: 0, opacity: 1, duration: 0.4 }, 0.4)
       .to(ctas, { y: 0, opacity: 1, duration: 0.4 }, 0.5)
       .to(trust, { y: 0, opacity: 1, duration: 0.4 }, 0.6)
-      // Rails fly outward from center with bounce
-      .to(railNodes, {
-        opacity: 1, scale: 1, x: 0, y: 0,
-        duration: 0.8,
-        stagger: 0.12,
-        ease: 'back.out(1.7)',
-      }, 0.25)
 
-    return () => { tl.kill() }
+    // Scroll-driven: chips fly outward from phone as user scrolls
+    const scrollTl = gsapCore.timeline({
+      scrollTrigger: {
+        trigger: root,
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 0.5,
+      },
+    })
+
+    // Each rail starts at center (0,0) and moves outward as you scroll
+    const flyDistances = [
+      { x: -80, y: -50 },  // zelle → flies top-left
+      { x: -70, y: 60 },   // cashapp → flies bottom-left
+      { x: 80, y: -40 },   // momo → flies top-right
+      { x: 70, y: 50 },    // bank → flies bottom-right
+    ]
+    railNodes.forEach((rail, i) => {
+      gsapCore.set(rail, { opacity: 0, scale: 0.5 })
+      const fly = flyDistances[i] || { x: 0, y: 0 }
+      scrollTl
+        .to(rail, { opacity: 1, scale: 1, duration: 0.3 }, i * 0.05)
+        .to(rail, { x: fly.x, y: fly.y, duration: 0.7, ease: 'power2.out' }, 0.1 + i * 0.05)
+    })
+
+    return () => {
+      intro.kill()
+      scrollTl.scrollTrigger?.kill()
+      scrollTl.kill()
+    }
   }, [isMobile])
 
   // DESKTOP: GSAP scroll timeline with pin/scrub
@@ -478,14 +494,14 @@ export default function HeroBridge() {
               className="lg:col-span-5 order-1 lg:order-2 flex items-center justify-center relative"
               style={{ perspective: '1400px' }}
             >
-              {/* Mobile rail chips — positioned around the phone */}
+              {/* Mobile rail chips — positioned around the phone, will be moved by scroll */}
               {isMobile && RAILS.map((rail, i) => {
-                // Position chips around the phone: top-left, bottom-left, top-right, bottom-right
+                // Start centered on the phone — scroll animation moves them outward
                 const positions = [
-                  { top: '-8px', left: '-12px' },
-                  { bottom: '40px', left: '-16px' },
-                  { top: '10px', right: '-12px' },
-                  { bottom: '60px', right: '-16px' },
+                  { top: '20%', left: '10%' },
+                  { bottom: '20%', left: '5%' },
+                  { top: '15%', right: '10%' },
+                  { bottom: '25%', right: '5%' },
                 ]
                 return (
                   <div
@@ -514,8 +530,9 @@ export default function HeroBridge() {
                   </div>
                 )
               })}
+              {/* Phone — smaller on mobile so text/content is proportional */}
               <div data-phone-shell style={{ transformStyle: 'preserve-3d' }}>
-                <PhoneFrame width={isMobile ? 220 : 300} height={isMobile ? 450 : 620} tilt>
+                <PhoneFrame width={isMobile ? 174 : 300} height={isMobile ? 360 : 620} tilt>
                   <HeroPhoneScreen />
                 </PhoneFrame>
               </div>
