@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react'
 import { useTheme } from '@/contexts/ThemeContext'
+import { useLenis } from '@/lib/lenis'
 
 interface Particle {
   x: number
@@ -10,8 +11,15 @@ interface Particle {
   baseRadius: number
 }
 
-export default function ParticleCanvas() {
+interface Props {
+  /** When true (default) the particles react to Lenis scroll velocity. */
+  reactToScroll?: boolean
+  density?: number
+}
+
+export default function ParticleCanvas({ reactToScroll = true, density }: Props) {
   const { theme } = useTheme()
+  const { intensityRef } = useLenis()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const mouseRef = useRef({ x: -1000, y: -1000 })
   const particlesRef = useRef<Particle[]>([])
@@ -29,7 +37,7 @@ export default function ParticleCanvas() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const PARTICLE_COUNT = window.innerWidth < 768 ? 40 : 80
+    const PARTICLE_COUNT = density ?? (window.innerWidth < 768 ? 40 : 80)
     const CONNECTION_DISTANCE = window.innerWidth < 768 ? 80 : 120
     const MOUSE_DISTANCE = 150
     const MAX_SPEED = 0.3
@@ -69,13 +77,19 @@ export default function ParticleCanvas() {
       if (!ctx || !canvas) return
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
+      // Lenis-driven warp coefficient (0..1, smoothed). Reads ref every frame so
+      // we never re-bind the canvas effect.
+      const warp = reactToScroll ? Math.min(1.4, intensityRef.current) : 0
+      const speedMul = 1 + warp * 1.6
+      const stretchY = 1 + warp * 1.2 // vertical stretch on the rendered shapes
+
       const [r, g, b] = hexToRgb(accentRef.current)
       const particles = particlesRef.current
       const mouse = mouseRef.current
 
       for (const p of particles) {
-        p.x += p.vx
-        p.y += p.vy
+        p.x += p.vx * speedMul
+        p.y += p.vy * speedMul
         if (p.x < 0) p.x = canvas.width
         if (p.x > canvas.width) p.x = 0
         if (p.y < 0) p.y = canvas.height
@@ -106,7 +120,7 @@ export default function ParticleCanvas() {
           const dy = particles[i].y - particles[j].y
           const d = Math.hypot(dx, dy)
           if (d < CONNECTION_DISTANCE) {
-            const opacity = (1 - d / CONNECTION_DISTANCE) * 0.14
+            const opacity = (1 - d / CONNECTION_DISTANCE) * (0.14 + warp * 0.18)
             ctx.beginPath()
             ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`
             ctx.lineWidth = 0.6
@@ -129,10 +143,15 @@ export default function ParticleCanvas() {
           ctx.lineTo(mouse.x, mouse.y)
           ctx.stroke()
         }
+        ctx.save()
+        ctx.translate(p.x, p.y)
+        // Vertical stretch ellipse during fast scroll for "warp" feel
+        ctx.scale(1, stretchY)
         ctx.beginPath()
-        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.5)`
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${0.5 + warp * 0.25})`
+        ctx.arc(0, 0, p.radius, 0, Math.PI * 2)
         ctx.fill()
+        ctx.restore()
       }
 
       rafRef.current = requestAnimationFrame(animate)
@@ -177,7 +196,7 @@ export default function ParticleCanvas() {
       canvas.removeEventListener('touchend', handleTouchEnd)
       window.removeEventListener('resize', handleResize)
     }
-  }, [])
+  }, [density, reactToScroll, intensityRef])
 
   return (
     <canvas

@@ -1,13 +1,68 @@
 import type React from 'react'
 import { Mail } from 'lucide-react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useTheme } from '@/contexts/ThemeContext'
+import { useLenis } from '@/lib/lenis'
+
+interface FooterLink {
+  label: string
+  /** Either a hash (#section) or absolute path (/vendors). */
+  to: string
+}
 
 export default function FooterSection() {
   const { theme } = useTheme()
-  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+  const { scrollTo } = useLenis()
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, to: string) => {
     e.preventDefault()
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+    if (to.startsWith('/')) {
+      navigate(to)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+    if (location.pathname !== '/') {
+      navigate('/')
+      window.setTimeout(() => scrollTo(to, { offset: -64 }), 80)
+    } else {
+      scrollTo(to, { offset: -64 })
+    }
   }
+
+  const sections: { title: string; links: FooterLink[] }[] = [
+    {
+      title: 'Product',
+      links: [
+        { label: 'Ecosystem', to: '#ecosystem' },
+        { label: 'Susu Engine', to: '#susu' },
+        { label: 'Vendor Auction', to: '#auction' },
+        { label: 'Become a Vendor', to: '/vendors' },
+        { label: 'App Showcase', to: '#showcase' },
+      ],
+    },
+    {
+      title: 'Company',
+      links: [
+        { label: 'About Us', to: '#ecosystem' },
+        { label: 'Investors', to: '#investors' },
+        { label: 'FAQ', to: '#faq' },
+        { label: 'Contact', to: '#download' },
+        { label: 'Press', to: '#investors' },
+      ],
+    },
+    {
+      title: 'Legal',
+      links: [
+        { label: 'Privacy Policy', to: '#download' },
+        { label: 'Terms of Service', to: '#download' },
+        { label: 'AML/CFT Policy', to: '#download' },
+        { label: 'Act 1154 License', to: '#download' },
+        { label: 'Cookie Settings', to: '#download' },
+      ],
+    },
+  ]
 
   return (
     <footer
@@ -60,38 +115,7 @@ export default function FooterSection() {
             </div>
           </div>
 
-          {[
-            {
-              title: 'Product',
-              links: [
-                { label: 'P2P Exchange', id: 'features' },
-                { label: 'Savings', id: 'showcase' },
-                { label: 'Leaderboard', id: 'leaderboard' },
-                { label: 'Achievements', id: 'achievements' },
-                { label: 'Themes', id: 'themes' },
-              ],
-            },
-            {
-              title: 'Company',
-              links: [
-                { label: 'About Us', id: 'features' },
-                { label: 'Investors', id: 'investors' },
-                { label: 'FAQ', id: 'faq' },
-                { label: 'Contact', id: 'download' },
-                { label: 'Press', id: 'investors' },
-              ],
-            },
-            {
-              title: 'Legal',
-              links: [
-                { label: 'Privacy Policy', id: 'download' },
-                { label: 'Terms of Service', id: 'download' },
-                { label: 'AML/CFT Policy', id: 'download' },
-                { label: 'Act 1154 License', id: 'download' },
-                { label: 'Cookie Settings', id: 'download' },
-              ],
-            },
-          ].map((section) => (
+          {sections.map((section) => (
             <div key={section.title}>
               <h4
                 className="font-bold text-sm mb-4"
@@ -103,8 +127,8 @@ export default function FooterSection() {
                 {section.links.map((item) => (
                   <li key={item.label}>
                     <a
-                      href={`#${item.id}`}
-                      onClick={(e) => scrollToSection(e, item.id)}
+                      href={item.to}
+                      onClick={(e) => handleClick(e, item.to)}
                       className="text-sm transition-colors cursor-pointer hover:opacity-100"
                       style={{ color: theme.textMuted }}
                       onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = theme.accent)}

@@ -2,18 +2,23 @@ import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Palette, Check } from 'lucide-react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useTheme } from '@/contexts/ThemeContext'
+import { useLenis } from '@/lib/lenis'
 
 const NAV_LINKS = [
-  { label: 'Features', href: '#features' },
-  { label: 'App', href: '#showcase' },
-  { label: 'Themes', href: '#themes' },
-  { label: 'Leaderboard', href: '#leaderboard' },
+  { label: 'Ecosystem', href: '#ecosystem' },
+  { label: 'Susu', href: '#susu' },
+  { label: 'Auction', href: '#auction' },
+  { label: 'Vendors', href: '/vendors' },
   { label: 'FAQ', href: '#faq' },
 ]
 
 export default function Navigation() {
   const { theme, themeId, setThemeId, themes } = useTheme()
+  const { scrollTo } = useLenis()
+  const navigate = useNavigate()
+  const location = useLocation()
   const [visible, setVisible] = useState(true)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -52,10 +57,20 @@ export default function Navigation() {
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault()
-    const el = document.querySelector(href)
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' })
-      setMobileOpen(false)
+    setMobileOpen(false)
+    // Absolute path → React Router
+    if (href.startsWith('/')) {
+      navigate(href)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+    // Anchor link
+    if (location.pathname !== '/') {
+      // Go home first, then scroll once the layout has rendered
+      navigate('/')
+      window.setTimeout(() => scrollTo(href, { offset: -64 }), 80)
+    } else {
+      scrollTo(href, { offset: -64 })
     }
   }
 
@@ -76,9 +91,12 @@ export default function Navigation() {
       <div className="max-w-[1280px] mx-auto px-5 lg:px-8 flex items-center justify-between h-16 lg:h-18">
         {/* Logo */}
         <a
-          href="#"
+          href="/"
           onClick={(e) => {
             e.preventDefault()
+            if (location.pathname !== '/') {
+              navigate('/')
+            }
             window.scrollTo({ top: 0, behavior: 'smooth' })
           }}
           className="flex items-center gap-2 shrink-0"
