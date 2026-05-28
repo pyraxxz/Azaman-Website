@@ -62,11 +62,20 @@ export default function Glass({
   const glowRef = useMouseGlow<HTMLDivElement>()
 
   const surfaceMix = `color-mix(in srgb, ${theme.surface} ${surfaceOpacity}%, transparent)`
+  // backdrop-filter is extremely expensive on mobile GPUs (especially iOS).
+  // On touch devices, use a more opaque surface instead.
+  const isTouchDevice = typeof window !== 'undefined' && window.matchMedia('(hover: none) and (pointer: coarse)').matches
   const innerStyle: CSSProperties = {
-    backgroundColor: surfaceMix,
+    backgroundColor: isTouchDevice
+      ? `color-mix(in srgb, ${theme.surface} ${Math.min(surfaceOpacity + 25, 95)}%, transparent)`
+      : surfaceMix,
     border: `1px solid ${theme.border}`,
-    backdropFilter: 'blur(20px) saturate(140%)',
-    WebkitBackdropFilter: 'blur(20px) saturate(140%)',
+    ...(isTouchDevice
+      ? {}
+      : {
+          backdropFilter: 'blur(20px) saturate(140%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(140%)',
+        }),
     boxShadow: elevated
       ? `0 24px 60px -20px rgba(0,0,0,0.55), inset 0 1px 0 0 color-mix(in srgb, ${theme.textPrimary} 6%, transparent)`
       : `0 12px 32px -16px rgba(0,0,0,0.45), inset 0 1px 0 0 color-mix(in srgb, ${theme.textPrimary} 4%, transparent)`,

@@ -14,4 +14,17 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          gsap: ['gsap'],
+          framer: ['framer-motion'],
+          lenis: ['lenis'],
+          icons: ['lucide-react'],
+        },
+      },
+    },
+  },
 });

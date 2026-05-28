@@ -90,8 +90,12 @@ export default function ChatTicketsSection() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) startLoop()
-        else tl?.kill()
+        if (entry.isIntersecting) {
+          if (tl) tl.resume()
+          else startLoop()
+        } else {
+          tl?.pause()
+        }
       },
       { threshold: 0.3 }
     )

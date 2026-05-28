@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom'
 import Glass from '@/components/Glass'
 import { useTheme } from '@/contexts/ThemeContext'
 import { Flip, gsap, prefersReducedMotion } from '@/lib/gsap'
+import { useInViewport } from '@/hooks/use-in-viewport'
 
 interface Vendor {
   id: string
@@ -47,10 +48,14 @@ export default function AzmAuctionSection() {
   const [burnedToday, setBurnedToday] = useState(47128)
   const [pulseId, setPulseId] = useState<string | null>(null)
   const listRef = useRef<HTMLDivElement>(null)
+  const [sectionRef, isVisible] = useInViewport<HTMLElement>(0.15)
 
-  // Random burn loop: every 6s, an underdog ups their bid and re-sorts the list with Flip.
+  // Random burn loop: every 8s (slowed from 6s), an underdog ups their bid.
+  // Pauses when section is offscreen.
   useEffect(() => {
     if (prefersReducedMotion()) return
+    if (!isVisible) return
+
     const id = setInterval(() => {
       // Pick a non-leader to escalate
       setVendors((prev) => {
@@ -85,12 +90,13 @@ export default function AzmAuctionSection() {
       })
       // Clear pulse after animation
       window.setTimeout(() => setPulseId(null), 2200)
-    }, 6000)
+    }, 8000)
     return () => clearInterval(id)
-  }, [])
+  }, [isVisible])
 
   return (
     <section
+      ref={sectionRef}
       id="auction"
       className="relative py-24 lg:py-32 overflow-hidden"
       style={{ backgroundColor: theme.background }}
