@@ -523,11 +523,26 @@ function SecurityCell() {
 // -----------------------------------------------------------------------------
 function OracleCell() {
   const { theme } = useTheme()
+  const cellRef = useRef<HTMLDivElement>(null)
+  const inViewRef = useRef(true)
   const [points, setPoints] = useState<number[]>(() =>
     Array.from({ length: 40 }, () => 11.4 + Math.random() * 0.4)
   )
+
+  useEffect(() => {
+    const el = cellRef.current
+    if (!el) return
+    const obs = new IntersectionObserver(
+      ([entry]) => (inViewRef.current = entry.isIntersecting),
+      { rootMargin: '100px' }
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+
   useEffect(() => {
     const id = setInterval(() => {
+      if (!inViewRef.current || document.hidden) return
       setPoints((prev) => {
         const next = prev.slice(1)
         const last = prev[prev.length - 1]
@@ -535,7 +550,7 @@ function OracleCell() {
         next.push(Math.max(11.2, Math.min(11.8, last + drift)))
         return next
       })
-    }, 1000)
+    }, 1500)
     return () => clearInterval(id)
   }, [])
 
@@ -556,7 +571,7 @@ function OracleCell() {
 
   return (
     <Glass tilt tiltMax={5} radius="2xl" padding="lg" className="h-full">
-      <div className="grid grid-cols-1 sm:grid-cols-5 gap-5 items-center h-full">
+      <div ref={cellRef} className="grid grid-cols-1 sm:grid-cols-5 gap-5 items-center h-full">
         <div className="sm:col-span-3">
           <div className="text-xs uppercase tracking-[0.2em] mb-1" style={{ color: theme.textMuted }}>
             Live Oracle

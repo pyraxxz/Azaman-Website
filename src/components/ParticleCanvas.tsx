@@ -25,6 +25,7 @@ export default function ParticleCanvas({ reactToScroll = true, density }: Props)
   const particlesRef = useRef<Particle[]>([])
   const rafRef = useRef<number>(0)
   const accentRef = useRef(theme.accent)
+  const visibleRef = useRef(true)
 
   // Keep accent ref updated so the running animation picks up theme changes
   useEffect(() => {
@@ -34,13 +35,18 @@ export default function ParticleCanvas({ reactToScroll = true, density }: Props)
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d', { alpha: true })
     if (!ctx) return
 
-    const PARTICLE_COUNT = density ?? (window.innerWidth < 768 ? 40 : 80)
-    const CONNECTION_DISTANCE = window.innerWidth < 768 ? 80 : 120
-    const MOUSE_DISTANCE = 150
+    const w = window.innerWidth
+    const isMobile = w < 768
+    const isTouch = window.matchMedia('(hover: none)').matches
+    const drawConnections = !isMobile // skip O(n²) lines on phones
+    const PARTICLE_COUNT = density ?? (isMobile ? 22 : 70)
+    const CONNECTION_DISTANCE = isMobile ? 70 : 120
+    const MOUSE_DISTANCE = isTouch ? 0 : 150 // touch devices skip mouse FX
     const MAX_SPEED = 0.3
+    const dpr = Math.min(window.devicePixelRatio || 1, 2) // cap DPR for fill-rate
 
     function hexToRgb(hex: string): [number, number, number] {
       const clean = hex.replace('#', '')
@@ -51,18 +57,26 @@ export default function ParticleCanvas({ reactToScroll = true, density }: Props)
     }
 
     function resize() {
-      canvas!.width = canvas!.offsetWidth
-      canvas!.height = canvas!.offsetHeight
+      const cw = canvas!.offsetWidth
+      const ch = canvas!.offsetHeight
+      canvas!.width = Math.floor(cw * dpr)
+      canvas!.height = Math.floor(ch * dpr)
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
     resize()
 
+    function logicalSize() {
+      return { w: canvas!.offsetWidth, h: canvas!.offsetHeight }
+    }
+
     function initParticles() {
+      const { w: cw, h: ch } = logicalSize()
       const particles: Particle[] = []
       for (let i = 0; i < PARTICLE_COUNT; i++) {
-        const radius = 1.5 + Math.random()
+        const radius = 1.2 + Math.random()
         particles.push({
-          x: Math.random() * canvas!.width,
-          y: Math.random() * canvas!.height,
+          x: Math.random() * cw,
+          y: Math.random() * ch,
           vx: (Math.random() - 0.5) * MAX_SPEED * 2,
           vy: (Math.random() - 0.5) * MAX_SPEED * 2,
           radius,
@@ -75,13 +89,19 @@ export default function ParticleCanvas({ reactToScroll = true, density }: Props)
 
     function animate() {
       if (!ctx || !canvas) return
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      // Pause loop when canvas is offscreen — IO updates visibleRef.
+      if (!visibleRef.current) {
+        rafRef.current = requestAnimationFrame(animate)
+        return
+      }
 
-      // Lenis-driven warp coefficient (0..1, smoothed). Reads ref every frame so
-      // we never re-bind the canvas effect.
+      const { w: cw, h: ch } = logicalSize()
+      ctx.clearRect(0, 0, cw, ch)
+
+      // Lenis-driven warp coefficient (0..1, smoothed)
       const warp = reactToScroll ? Math.min(1.4, intensityRef.current) : 0
       const speedMul = 1 + warp * 1.6
-      const stretchY = 1 + warp * 1.2 // vertical stretch on the rendered shapes
+      const stretchY = 1 + warp * 1.2
 
       const [r, g, b] = hexToRgb(accentRef.current)
       const particles = particlesRef.current
@@ -90,20 +110,22 @@ export default function ParticleCanvas({ reactToScroll = true, density }: Props)
       for (const p of particles) {
         p.x += p.vx * speedMul
         p.y += p.vy * speedMul
-        if (p.x < 0) p.x = canvas.width
-        if (p.x > canvas.width) p.x = 0
-        if (p.y < 0) p.y = canvas.height
-        if (p.y > canvas.height) p.y = 0
+        if (p.x < 0) p.x = cw
+        if (p.x > cw) p.x = 0
+        if (p.y < 0) p.y = ch
+        if (p.y > ch) p.y = 0
 
-        const dMouse = Math.hypot(p.x - mouse.x, p.y - mouse.y)
-        if (dMouse < MOUSE_DISTANCE) {
-          const force = ((MOUSE_DISTANCE - dMouse) / MOUSE_DISTANCE) * 0.5
-          const angle = Math.atan2(p.y - mouse.y, p.x - mouse.x)
-          p.vx += Math.cos(angle) * force * 0.1
-          p.vy += Math.sin(angle) * force * 0.1
-          p.radius = p.baseRadius + 0.5
-        } else {
-          p.radius += (p.baseRadius - p.radius) * 0.1
+        if (MOUSE_DISTANCE > 0) {
+          const dMouse = Math.hypot(p.x - mouse.x, p.y - mouse.y)
+          if (dMouse < MOUSE_DISTANCE) {
+            const force = ((MOUSE_DISTANCE - dMouse) / MOUSE_DISTANCE) * 0.5
+            const angle = Math.atan2(p.y - mouse.y, p.x - mouse.x)
+            p.vx += Math.cos(angle) * force * 0.1
+            p.vy += Math.sin(angle) * force * 0.1
+            p.radius = p.baseRadius + 0.5
+          } else {
+            p.radius += (p.baseRadius - p.radius) * 0.1
+          }
         }
 
         const speed = Math.hypot(p.vx, p.vy)
@@ -113,50 +135,77 @@ export default function ParticleCanvas({ reactToScroll = true, density }: Props)
         }
       }
 
-      // Lines between particles
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x
-          const dy = particles[i].y - particles[j].y
-          const d = Math.hypot(dx, dy)
-          if (d < CONNECTION_DISTANCE) {
-            const opacity = (1 - d / CONNECTION_DISTANCE) * (0.14 + warp * 0.18)
+      // Lines between particles — desktop only
+      if (drawConnections) {
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x
+            const dy = particles[i].y - particles[j].y
+            const d = Math.hypot(dx, dy)
+            if (d < CONNECTION_DISTANCE) {
+              const opacity = (1 - d / CONNECTION_DISTANCE) * (0.14 + warp * 0.18)
+              ctx.beginPath()
+              ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`
+              ctx.lineWidth = 0.6
+              ctx.moveTo(particles[i].x, particles[i].y)
+              ctx.lineTo(particles[j].x, particles[j].y)
+              ctx.stroke()
+            }
+          }
+        }
+
+        // Mouse connection lines (desktop only)
+        for (const p of particles) {
+          const dMouse = Math.hypot(p.x - mouse.x, p.y - mouse.y)
+          if (dMouse < MOUSE_DISTANCE) {
+            const opacity = (1 - dMouse / MOUSE_DISTANCE) * 0.25
             ctx.beginPath()
             ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`
             ctx.lineWidth = 0.6
-            ctx.moveTo(particles[i].x, particles[i].y)
-            ctx.lineTo(particles[j].x, particles[j].y)
+            ctx.moveTo(p.x, p.y)
+            ctx.lineTo(mouse.x, mouse.y)
             ctx.stroke()
           }
         }
       }
 
-      // Particles + mouse lines
+      // Particles
+      const fill = `rgba(${r}, ${g}, ${b}, ${0.5 + warp * 0.25})`
+      ctx.fillStyle = fill
       for (const p of particles) {
-        const dMouse = Math.hypot(p.x - mouse.x, p.y - mouse.y)
-        if (dMouse < MOUSE_DISTANCE) {
-          const opacity = (1 - dMouse / MOUSE_DISTANCE) * 0.25
+        if (stretchY === 1) {
           ctx.beginPath()
-          ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`
-          ctx.lineWidth = 0.6
-          ctx.moveTo(p.x, p.y)
-          ctx.lineTo(mouse.x, mouse.y)
-          ctx.stroke()
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2)
+          ctx.fill()
+        } else {
+          ctx.save()
+          ctx.translate(p.x, p.y)
+          ctx.scale(1, stretchY)
+          ctx.beginPath()
+          ctx.arc(0, 0, p.radius, 0, Math.PI * 2)
+          ctx.fill()
+          ctx.restore()
         }
-        ctx.save()
-        ctx.translate(p.x, p.y)
-        // Vertical stretch ellipse during fast scroll for "warp" feel
-        ctx.scale(1, stretchY)
-        ctx.beginPath()
-        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${0.5 + warp * 0.25})`
-        ctx.arc(0, 0, p.radius, 0, Math.PI * 2)
-        ctx.fill()
-        ctx.restore()
       }
 
       rafRef.current = requestAnimationFrame(animate)
     }
     rafRef.current = requestAnimationFrame(animate)
+
+    // Pause RAF when offscreen
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        visibleRef.current = entry.isIntersecting
+      },
+      { rootMargin: '50px', threshold: 0 }
+    )
+    observer.observe(canvas)
+
+    // Pause when tab is hidden too (saves battery)
+    const onVisibility = () => {
+      visibleRef.current = !document.hidden
+    }
+    document.addEventListener('visibilitychange', onVisibility)
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect()
@@ -165,35 +214,25 @@ export default function ParticleCanvas({ reactToScroll = true, density }: Props)
     const handleMouseLeave = () => {
       mouseRef.current = { x: -1000, y: -1000 }
     }
-    const handleTouchMove = (e: TouchEvent) => {
-      if (e.touches.length > 0) {
-        const rect = canvas.getBoundingClientRect()
-        mouseRef.current = {
-          x: e.touches[0].clientX - rect.left,
-          y: e.touches[0].clientY - rect.top,
-        }
-      }
-    }
-    const handleTouchEnd = () => {
-      mouseRef.current = { x: -1000, y: -1000 }
-    }
     const handleResize = () => {
       resize()
       initParticles()
     }
 
-    canvas.addEventListener('mousemove', handleMouseMove)
-    canvas.addEventListener('mouseleave', handleMouseLeave)
-    canvas.addEventListener('touchmove', handleTouchMove, { passive: true })
-    canvas.addEventListener('touchend', handleTouchEnd)
+    if (!isTouch) {
+      canvas.addEventListener('mousemove', handleMouseMove)
+      canvas.addEventListener('mouseleave', handleMouseLeave)
+    }
     window.addEventListener('resize', handleResize)
 
     return () => {
       cancelAnimationFrame(rafRef.current)
-      canvas.removeEventListener('mousemove', handleMouseMove)
-      canvas.removeEventListener('mouseleave', handleMouseLeave)
-      canvas.removeEventListener('touchmove', handleTouchMove)
-      canvas.removeEventListener('touchend', handleTouchEnd)
+      observer.disconnect()
+      document.removeEventListener('visibilitychange', onVisibility)
+      if (!isTouch) {
+        canvas.removeEventListener('mousemove', handleMouseMove)
+        canvas.removeEventListener('mouseleave', handleMouseLeave)
+      }
       window.removeEventListener('resize', handleResize)
     }
   }, [density, reactToScroll, intensityRef])

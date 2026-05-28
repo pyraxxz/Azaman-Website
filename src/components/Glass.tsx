@@ -62,11 +62,17 @@ export default function Glass({
   const glowRef = useMouseGlow<HTMLDivElement>()
 
   const surfaceMix = `color-mix(in srgb, ${theme.surface} ${surfaceOpacity}%, transparent)`
+  // Honor 'low data' / mobile by skipping backdrop-filter — it's the heaviest
+  // single CSS property on phones and Safari's biggest scroll-jank source.
+  const isMobileViewport =
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 1024px)').matches
   const innerStyle: CSSProperties = {
-    backgroundColor: surfaceMix,
+    backgroundColor: isMobileViewport
+      ? `color-mix(in srgb, ${theme.surface} ${Math.min(95, surfaceOpacity + 25)}%, transparent)`
+      : surfaceMix,
     border: `1px solid ${theme.border}`,
-    backdropFilter: 'blur(20px) saturate(140%)',
-    WebkitBackdropFilter: 'blur(20px) saturate(140%)',
+    backdropFilter: isMobileViewport ? undefined : 'blur(20px) saturate(140%)',
+    WebkitBackdropFilter: isMobileViewport ? undefined : 'blur(20px) saturate(140%)',
     boxShadow: elevated
       ? `0 24px 60px -20px rgba(0,0,0,0.55), inset 0 1px 0 0 color-mix(in srgb, ${theme.textPrimary} 6%, transparent)`
       : `0 12px 32px -16px rgba(0,0,0,0.45), inset 0 1px 0 0 color-mix(in srgb, ${theme.textPrimary} 4%, transparent)`,

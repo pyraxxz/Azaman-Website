@@ -46,12 +46,27 @@ export default function AzmAuctionSection() {
   const [vendors, setVendors] = useState<Vendor[]>(SEED_VENDORS)
   const [burnedToday, setBurnedToday] = useState(47128)
   const [pulseId, setPulseId] = useState<string | null>(null)
+  const sectionRef = useRef<HTMLElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
+  const inViewRef = useRef(false)
 
-  // Random burn loop: every 6s, an underdog ups their bid and re-sorts the list with Flip.
+  // Track viewport visibility — only run the auction loop while visible
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    const obs = new IntersectionObserver(
+      ([entry]) => (inViewRef.current = entry.isIntersecting),
+      { rootMargin: '100px' }
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+
+  // Random burn loop: every 8s while in view, an underdog ups their bid.
   useEffect(() => {
     if (prefersReducedMotion()) return
     const id = setInterval(() => {
+      if (!inViewRef.current || document.hidden) return
       // Pick a non-leader to escalate
       setVendors((prev) => {
         if (!listRef.current) return prev
@@ -85,12 +100,13 @@ export default function AzmAuctionSection() {
       })
       // Clear pulse after animation
       window.setTimeout(() => setPulseId(null), 2200)
-    }, 6000)
+    }, 8000)
     return () => clearInterval(id)
   }, [])
 
   return (
     <section
+      ref={sectionRef}
       id="auction"
       className="relative py-24 lg:py-32 overflow-hidden"
       style={{ backgroundColor: theme.background }}

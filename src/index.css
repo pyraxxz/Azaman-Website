@@ -201,4 +201,14 @@ html, body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+  .marquee-track, .marquee-track-reverse {
+    animation: none !important;
+  }
+}
+
+/* Mobile: drop expensive blurs that cause scroll jank on Safari/Chrome iOS. */
+@media (max-width: 1024px) {
+  .tilt-card:hover {
+    transform: none;
+  }
 }

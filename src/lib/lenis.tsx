@@ -32,18 +32,21 @@ export function LenisProvider({ children }: { children: ReactNode }) {
   const intensityRef = useRef(0)
 
   useEffect(() => {
-    // Reduced motion: skip Lenis entirely so screen-readers + system prefs are honored.
-    if (prefersReducedMotion()) {
+    // Reduced motion or touch devices: skip Lenis. Native scroll on touch is
+    // smoother than any JS-driven smoothing — and matches OS expectations.
+    const isTouch =
+      typeof window !== 'undefined' &&
+      (window.matchMedia('(hover: none)').matches || 'ontouchstart' in window)
+    if (prefersReducedMotion() || isTouch) {
       ScrollTrigger.defaults({ scroller: window })
       return
     }
 
     const instance = new Lenis({
-      lerp: 0.1,
-      duration: 1.2,
+      lerp: 0.085,
+      duration: 1.0,
       smoothWheel: true,
-      // Lenis v1 disables touch smoothing by default — keeps native iOS momentum.
-      // We respect that for accessibility.
+      // Touch smoothing is off — native momentum stays.
       wheelMultiplier: 1,
       touchMultiplier: 1.5,
     })

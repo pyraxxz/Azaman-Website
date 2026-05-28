@@ -52,6 +52,11 @@ export default function HeroBridge() {
   const sceneRef = useScrollAnim<HTMLDivElement>(({ ref, gsap }) => {
     if (prefersReducedMotion()) return
 
+    // On mobile/tablets, skip pin+scrub entirely. Pinned timelines on phones
+    // are jank-prone and cost real GPU/CPU. The same story is told via a
+    // clean vertical stack with one-shot intro tweens.
+    const isSmall = window.matchMedia('(max-width: 1024px)').matches
+
     const root = ref.current
     if (!root) return
 
@@ -82,8 +87,16 @@ export default function HeroBridge() {
       .to(subline, { y: 0, opacity: 1, duration: 0.6 }, 0.7)
       .to(ctas, { y: 0, opacity: 1, duration: 0.6 }, 0.8)
       .to(trust, { y: 0, opacity: 1, duration: 0.6 }, 0.95)
+      .to(railNodes, { opacity: 1, scale: 1, duration: 0.5, stagger: 0.05 }, 1.1)
 
-    // Scroll timeline — pin and scrub the journey (Acts 2 + 3)
+    // On mobile we stop here — no pin, no scrub.
+    if (isSmall) {
+      return () => {
+        intro.kill()
+      }
+    }
+
+    // Desktop only: scrubbed pinned timeline (Acts 2 + 3)
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: root,
@@ -96,18 +109,15 @@ export default function HeroBridge() {
       defaults: { ease: 'power2.inOut' },
     })
 
-    // Phase 1 (0 -> 0.4): rails fade in, USDC chip detaches and shoots to all rails
-    tl.to(railNodes, { opacity: 1, scale: 1, duration: 0.5, stagger: 0.05 }, 0)
     if (usdcChip) {
       tl.to(usdcChip, { y: -40, scale: 1.05, duration: 0.4 }, 0.05)
       tl.to(usdcChip, { x: -180, opacity: 0.3, duration: 0.5 }, 0.4)
-      tl.to(usdcChip, { x: 0, opacity: 1, duration: 0.001 }, 0.9) // reset for cleanliness
+      tl.to(usdcChip, { x: 0, opacity: 1, duration: 0.001 }, 0.9)
     }
     if (phoneShell) {
       tl.to(phoneShell, { rotateY: -8, scale: 1.02, duration: 0.6 }, 0.2)
     }
 
-    // Phase 2 (0.5 -> 1): phone explodes into 6 panels, grid reveals behind
     const explodes = [
       { x: -260, y: -120, rotation: -22 },
       { x: 270, y: -110, rotation: 18 },
@@ -145,7 +155,7 @@ export default function HeroBridge() {
       className="relative w-full"
       style={{ backgroundColor: theme.background }}
     >
-      <div ref={sceneRef} className="relative w-full h-[100dvh] overflow-hidden">
+      <div ref={sceneRef} className="relative w-full min-h-[100dvh] lg:h-[100dvh] overflow-hidden">
         <ParticleCanvas />
 
         {/* Layer A — slowest parallax, ambient orbs */}
@@ -186,7 +196,7 @@ export default function HeroBridge() {
             }}
           />
           <motion.div
-            className="absolute"
+            className="absolute hidden lg:block"
             style={{
               top: '14%',
               right: '14%',
@@ -199,7 +209,7 @@ export default function HeroBridge() {
             transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
           />
           <motion.div
-            className="absolute"
+            className="absolute hidden lg:block"
             style={{
               bottom: '18%',
               left: '6%',
@@ -214,8 +224,8 @@ export default function HeroBridge() {
           />
         </motion.div>
 
-        {/* Rails layer — currency network chips that react during scrub */}
-        <div className="absolute inset-0 z-[2] pointer-events-none">
+        {/* Rails layer — desktop only, drives the pinned scrub */}
+        <div className="absolute inset-0 z-[2] pointer-events-none hidden lg:block">
           {RAILS.map((rail) => (
             <div
               key={rail.id}
@@ -252,10 +262,10 @@ export default function HeroBridge() {
           ))}
         </div>
 
-        {/* Hidden marketplace grid — revealed in Act 3 */}
+        {/* Hidden marketplace grid — desktop only, revealed in Act 3 */}
         <div
           data-grid
-          className="absolute inset-0 z-[1] pointer-events-none flex items-center justify-center"
+          className="absolute inset-0 z-[1] pointer-events-none items-center justify-center hidden lg:flex"
         >
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-3xl px-6 mx-auto">
             {VENDOR_GRID.map((v) => (
@@ -300,7 +310,7 @@ export default function HeroBridge() {
         </div>
 
         {/* Foreground content */}
-        <div className="relative z-[3] h-full w-full flex items-center">
+        <div className="relative z-[3] py-20 lg:py-0 lg:absolute lg:inset-0 lg:flex lg:items-center">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 w-full max-w-[1280px] mx-auto px-5 lg:px-12 items-center">
             {/* Left — copy */}
             <div className="lg:col-span-7 order-2 lg:order-1 text-center lg:text-left">
@@ -443,11 +453,11 @@ export default function HeroBridge() {
           </div>
         </div>
 
-        {/* Scroll indicator */}
+        {/* Scroll indicator (desktop only) */}
         <motion.div
           animate={{ y: [0, 10, 0] }}
           transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut' }}
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[3]"
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[3] hidden lg:block"
         >
           <div
             className="w-6 h-10 rounded-full flex items-start justify-center p-1.5"
