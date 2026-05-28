@@ -62,7 +62,6 @@ export default function HeroBridge() {
     const subline = root.querySelector('[data-subline]') as HTMLElement | null
     const ctas = root.querySelector('[data-ctas]') as HTMLElement | null
     const trust = root.querySelector('[data-trust]') as HTMLElement | null
-    const railNodes = root.querySelectorAll<HTMLElement>('[data-phone] [data-rail]')
 
     // Intro: phone and text fade in
     gsapCore.set(phone, { y: 40, opacity: 0 })
@@ -77,43 +76,7 @@ export default function HeroBridge() {
       .to(ctas, { y: 0, opacity: 1, duration: 0.35 }, 0.4)
       .to(trust, { y: 0, opacity: 1, duration: 0.35 }, 0.5)
 
-    // Scroll-driven: chips fly INWARD from outside to land on vendor slots
-    // Start positions: spread far outside the phone
-    const startOffsets = [
-      { x: -120, y: -80 },  // cashapp starts top-left outside
-      { x: 120, y: -60 },   // venmo starts top-right outside
-      { x: -100, y: 80 },   // zelle starts bottom-left outside
-      { x: 100, y: 60 },    // applepay starts bottom-right outside
-    ]
-
-    railNodes.forEach((rail, i) => {
-      const start = startOffsets[i]
-      gsapCore.set(rail, { opacity: 0, scale: 0.6, x: start.x, y: start.y })
-    })
-
-    const scrollTl = gsapCore.timeline({
-      scrollTrigger: {
-        trigger: root,
-        start: 'top top',
-        end: '+=250',
-        scrub: 0.3,
-      },
-    })
-
-    // Chips fly inward to x:0, y:0 (their natural position on the vendor slots)
-    railNodes.forEach((rail, i) => {
-      scrollTl.to(rail, {
-        opacity: 1, scale: 1, x: 0, y: 0,
-        duration: 0.8,
-        ease: 'power2.inOut',
-      }, i * 0.08)
-    })
-
-    return () => {
-      intro.kill()
-      scrollTl.scrollTrigger?.kill()
-      scrollTl.kill()
-    }
+    return () => { intro.kill() }
   }, [isMobile])
 
   // DESKTOP: GSAP scroll timeline with pin/scrub
@@ -509,40 +472,22 @@ export default function HeroBridge() {
               className="lg:col-span-5 order-2 lg:order-2 flex items-center justify-center relative"
               style={{ perspective: '1400px' }}
             >
-              {/* Chips — start outside, animate inward to land on vendor slots */}
-              {isMobile && RAILS.map((rail) => (
-                <div
-                  key={rail.id}
-                  data-rail
-                  className="absolute z-10"
-                  style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
-                >
-                  <div
-                    className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg"
-                    style={{
-                      backgroundColor: `${rail.color}20`,
-                      border: `1px solid ${rail.color}50`,
-                    }}
-                  >
-                    <div
-                      className="w-6 h-6 rounded-md flex items-center justify-center text-[9px] font-black"
-                      style={{
-                        background: `linear-gradient(135deg, ${rail.color}, color-mix(in srgb, ${rail.color} 70%, black))`,
-                        color: rail.id === 'applepay' ? '#000' : '#fff',
-                      }}
-                    >
-                      {rail.short}
-                    </div>
-                    <span className="text-[11px] font-bold" style={{ color: theme.textPrimary }}>
-                      {rail.label}
-                    </span>
-                  </div>
-                </div>
-              ))}
               <div data-phone-shell style={{ transformStyle: 'preserve-3d' }}>
                 <PhoneFrame width={isMobile ? 220 : 300} height={isMobile ? 450 : 620} tilt>
                   <HeroPhoneScreen />
                 </PhoneFrame>
+                {/* Subtle tilt animation on mobile since pointer-tracking doesn't work on touch */}
+                {isMobile && (
+                  <style>{`
+                    @keyframes gentle-tilt {
+                      0%, 100% { transform: perspective(800px) rotateY(-2deg) rotateX(1deg); }
+                      50% { transform: perspective(800px) rotateY(2deg) rotateX(-1deg); }
+                    }
+                    [data-phone-shell] {
+                      animation: gentle-tilt 6s ease-in-out infinite;
+                    }
+                  `}</style>
+                )}
               </div>
             </div>
           </div>
