@@ -20,10 +20,10 @@ import { useLenis } from '@/lib/lenis'
 import { gsap as gsapCore, ScrollTrigger, prefersReducedMotion } from '@/lib/gsap'
 
 const RAILS = [
-  { id: 'zelle', label: 'Zelle', short: 'ZL', color: '#6D1ED4', position: { top: '14%', left: '6%' } },
-  { id: 'cashapp', label: 'Cash App', short: '$', color: '#00D54B', position: { top: '64%', left: '8%' } },
-  { id: 'momo', label: 'MoMo', short: 'MO', color: '#FFCC08', position: { top: '20%', right: '8%' } },
-  { id: 'bank', label: 'Bank', short: 'BK', color: '#3B82F6', position: { top: '70%', right: '6%' } },
+  { id: 'cashapp', label: 'Cash App', short: '$', color: '#00D54B' },
+  { id: 'venmo', label: 'Venmo', short: 'V', color: '#008CFF' },
+  { id: 'zelle', label: 'Zelle', short: 'ZL', color: '#6D1ED4' },
+  { id: 'applepay', label: 'Apple Pay', short: 'AP', color: '#FFFFFF' },
 ]
 
 const VENDOR_GRID = [
@@ -50,7 +50,7 @@ export default function HeroBridge() {
   const yBg = useTransform(scrollYProgress, [0, 1], ['0%', '40%'])
   const yMid = useTransform(scrollYProgress, [0, 1], ['0%', '20%'])
 
-  // MOBILE: useEffect for intro + scroll-driven rail movement
+  // MOBILE: useEffect for intro + scroll-driven chips flying INTO the phone
   useEffect(() => {
     if (!isMobile) return
     if (prefersReducedMotion()) return
@@ -65,41 +65,48 @@ export default function HeroBridge() {
     const railNodes = root.querySelectorAll<HTMLElement>('[data-phone] [data-rail]')
 
     // Intro: phone and text fade in
-    gsapCore.set(phone, { y: 50, opacity: 0 })
-    gsapCore.set(headlineWords, { y: 30, opacity: 0 })
-    gsapCore.set([subline, ctas, trust], { y: 20, opacity: 0 })
+    gsapCore.set(phone, { y: 40, opacity: 0 })
+    gsapCore.set(headlineWords, { y: 20, opacity: 0 })
+    gsapCore.set([subline, ctas, trust], { y: 16, opacity: 0 })
 
-    const intro = gsapCore.timeline({ delay: 0.15, defaults: { ease: 'power3.out' } })
+    const intro = gsapCore.timeline({ delay: 0.1, defaults: { ease: 'power3.out' } })
     intro
-      .to(phone, { y: 0, opacity: 1, duration: 0.7 }, 0)
-      .to(headlineWords, { y: 0, opacity: 1, duration: 0.5, stagger: 0.04 }, 0.1)
-      .to(subline, { y: 0, opacity: 1, duration: 0.4 }, 0.4)
-      .to(ctas, { y: 0, opacity: 1, duration: 0.4 }, 0.5)
-      .to(trust, { y: 0, opacity: 1, duration: 0.4 }, 0.6)
+      .to(phone, { y: 0, opacity: 1, duration: 0.6 }, 0)
+      .to(headlineWords, { y: 0, opacity: 1, duration: 0.4, stagger: 0.04 }, 0.05)
+      .to(subline, { y: 0, opacity: 1, duration: 0.35 }, 0.3)
+      .to(ctas, { y: 0, opacity: 1, duration: 0.35 }, 0.4)
+      .to(trust, { y: 0, opacity: 1, duration: 0.35 }, 0.5)
 
-    // Scroll-driven: chips fly outward from phone as user scrolls
+    // Scroll-driven: chips fly INWARD from outside to land on vendor slots
+    // Start positions: spread far outside the phone
+    const startOffsets = [
+      { x: -120, y: -80 },  // cashapp starts top-left outside
+      { x: 120, y: -60 },   // venmo starts top-right outside
+      { x: -100, y: 80 },   // zelle starts bottom-left outside
+      { x: 100, y: 60 },    // applepay starts bottom-right outside
+    ]
+
+    railNodes.forEach((rail, i) => {
+      const start = startOffsets[i]
+      gsapCore.set(rail, { opacity: 0, scale: 0.6, x: start.x, y: start.y })
+    })
+
     const scrollTl = gsapCore.timeline({
       scrollTrigger: {
         trigger: root,
         start: 'top top',
-        end: '+=300',
+        end: '+=250',
         scrub: 0.3,
       },
     })
 
-    // Each rail starts at center (0,0) and moves outward as you scroll
-    const flyDistances = [
-      { x: -80, y: -50 },  // zelle → flies top-left
-      { x: -70, y: 60 },   // cashapp → flies bottom-left
-      { x: 80, y: -40 },   // momo → flies top-right
-      { x: 70, y: 50 },    // bank → flies bottom-right
-    ]
+    // Chips fly inward to x:0, y:0 (their natural position on the vendor slots)
     railNodes.forEach((rail, i) => {
-      gsapCore.set(rail, { opacity: 0, scale: 0.5 })
-      const fly = flyDistances[i] || { x: 0, y: 0 }
-      scrollTl
-        .to(rail, { opacity: 1, scale: 1, duration: 0.3 }, i * 0.05)
-        .to(rail, { x: fly.x, y: fly.y, duration: 0.7, ease: 'power2.out' }, 0.1 + i * 0.05)
+      scrollTl.to(rail, {
+        opacity: 1, scale: 1, x: 0, y: 0,
+        duration: 0.8,
+        ease: 'power2.inOut',
+      }, i * 0.08)
     })
 
     return () => {
@@ -276,12 +283,19 @@ export default function HeroBridge() {
 
         {/* Rails layer — desktop only (absolute positioned across full screen) */}
         <div className="absolute inset-0 z-[2] pointer-events-none hidden lg:block">
-          {RAILS.map((rail) => (
+          {RAILS.map((rail, i) => {
+            const positions = [
+              { top: '14%', left: '6%' },
+              { top: '20%', right: '8%' },
+              { top: '64%', left: '8%' },
+              { top: '70%', right: '6%' },
+            ]
+            return (
             <div
               key={rail.id}
               data-rail
               className="absolute"
-              style={rail.position as React.CSSProperties}
+              style={positions[i] as React.CSSProperties}
             >
               <Glass radius="lg" padding="sm" surfaceOpacity={50} mouseGlow={false}>
                 <div className="flex items-center gap-2 px-1">
@@ -309,7 +323,8 @@ export default function HeroBridge() {
                 </div>
               </Glass>
             </div>
-          ))}
+            )
+          })}
         </div>
 
         {/* Hidden marketplace grid — revealed in Act 3 */}
@@ -360,10 +375,10 @@ export default function HeroBridge() {
         </div>
 
         {/* Foreground content */}
-        <div className="relative z-[3] min-h-full w-full flex items-start lg:items-center pt-24 lg:pt-0 pb-10 lg:pb-0">
+        <div className="relative z-[3] min-h-full w-full flex items-start lg:items-center pt-14 lg:pt-0 pb-10 lg:pb-0">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-6 w-full max-w-[1280px] mx-auto px-5 lg:px-12 items-center">
-            {/* Left — copy */}
-            <div className="lg:col-span-7 order-2 lg:order-1 text-center lg:text-left">
+            {/* Headline — on mobile shows FIRST (above phone) */}
+            <div className="lg:col-span-7 order-1 lg:order-1 text-center lg:text-left">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -488,51 +503,44 @@ export default function HeroBridge() {
               </div>
             </div>
 
-            {/* Right — phone with mobile rail chips around it */}
+            {/* Phone with vendor ad slots — chips fly INTO these on scroll */}
             <div
               data-phone
-              className="lg:col-span-5 order-1 lg:order-2 flex items-center justify-center relative"
+              className="lg:col-span-5 order-2 lg:order-2 flex items-center justify-center relative"
               style={{ perspective: '1400px' }}
             >
-              {/* Mobile rail chips — positioned around the phone, will be moved by scroll */}
-              {isMobile && RAILS.map((rail, i) => {
-                // Start centered on the phone — scroll animation moves them outward
-                const positions = [
-                  { top: '20%', left: '10%' },
-                  { bottom: '20%', left: '5%' },
-                  { top: '15%', right: '10%' },
-                  { bottom: '25%', right: '5%' },
-                ]
-                return (
+              {/* Chips — start outside, animate inward to land on vendor slots */}
+              {isMobile && RAILS.map((rail) => (
+                <div
+                  key={rail.id}
+                  data-rail
+                  className="absolute z-10"
+                  style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+                >
                   <div
-                    key={rail.id}
-                    data-rail
-                    className="absolute z-10"
-                    style={positions[i] as React.CSSProperties}
+                    className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg"
+                    style={{
+                      backgroundColor: `${rail.color}20`,
+                      border: `1px solid ${rail.color}50`,
+                    }}
                   >
-                    <Glass radius="lg" padding="sm" surfaceOpacity={50} mouseGlow={false}>
-                      <div className="flex items-center gap-1.5 px-0.5">
-                        <div
-                          className="w-7 h-7 rounded-md flex items-center justify-center text-[10px] font-black"
-                          style={{
-                            background: `linear-gradient(135deg, ${rail.color}, color-mix(in srgb, ${rail.color} 70%, black))`,
-                            color: '#fff',
-                            boxShadow: `0 0 14px ${rail.color}80`,
-                          }}
-                        >
-                          {rail.short}
-                        </div>
-                        <span className="text-xs font-bold pr-1" style={{ color: theme.textPrimary }}>
-                          {rail.label}
-                        </span>
-                      </div>
-                    </Glass>
+                    <div
+                      className="w-6 h-6 rounded-md flex items-center justify-center text-[9px] font-black"
+                      style={{
+                        background: `linear-gradient(135deg, ${rail.color}, color-mix(in srgb, ${rail.color} 70%, black))`,
+                        color: rail.id === 'applepay' ? '#000' : '#fff',
+                      }}
+                    >
+                      {rail.short}
+                    </div>
+                    <span className="text-[11px] font-bold" style={{ color: theme.textPrimary }}>
+                      {rail.label}
+                    </span>
                   </div>
-                )
-              })}
-              {/* Phone — smaller on mobile so text/content is proportional */}
+                </div>
+              ))}
               <div data-phone-shell style={{ transformStyle: 'preserve-3d' }}>
-                <PhoneFrame width={isMobile ? 174 : 300} height={isMobile ? 360 : 620} tilt>
+                <PhoneFrame width={isMobile ? 220 : 300} height={isMobile ? 450 : 620} tilt>
                   <HeroPhoneScreen />
                 </PhoneFrame>
               </div>
@@ -566,6 +574,14 @@ export default function HeroBridge() {
 function HeroPhoneScreen() {
   const { theme } = useTheme()
   const isMobilePhone = typeof window !== 'undefined' && window.innerWidth < 1024
+  
+  const vendors = [
+    { name: 'Cash App', method: '$cashtag', rate: '11.44', color: '#00D54B' },
+    { name: 'Venmo', method: '@handle', rate: '11.48', color: '#008CFF' },
+    { name: 'Zelle', method: 'email/phone', rate: '11.52', color: '#6D1ED4' },
+    { name: 'Apple Pay', method: 'instant', rate: '11.46', color: '#FFFFFF' },
+  ]
+
   return (
     <div
       className="w-full h-full overflow-hidden"
@@ -573,18 +589,17 @@ function HeroPhoneScreen() {
         background: `radial-gradient(120% 60% at 50% 0%, ${theme.glow}18, transparent 60%), linear-gradient(180deg, ${theme.surface}, ${theme.background})`,
       }}
     >
-      {/* Scale content to fit smaller phone on mobile */}
       <div
-        className="flex flex-col p-4"
+        className="flex flex-col p-3 h-full"
         style={isMobilePhone ? {
-          transform: 'scale(0.58)',
+          transform: 'scale(0.68)',
           transformOrigin: 'top left',
-          width: '172%',  /* 1/0.58 = 1.72 — expand so content fills before scaling */
-          height: '172%',
+          width: '147%',
+          height: '147%',
         } : { width: '100%', height: '100%' }}
       >
       {/* status bar */}
-      <div className="flex justify-between text-[9px] mt-2 mb-3" style={{ color: theme.textMuted }}>
+      <div className="flex justify-between text-[9px] mt-2 mb-2" style={{ color: theme.textMuted }}>
         <span>9:41</span>
         <span style={{ color: theme.accent }}>● LIVE</span>
         <span>4G  100%</span>
@@ -608,10 +623,9 @@ function HeroPhoneScreen() {
 
       {/* hologram balance card */}
       <div
-        className="relative rounded-2xl p-4 overflow-hidden"
+        className="relative rounded-2xl p-3 overflow-hidden mb-3"
         style={{
-          background:
-            'linear-gradient(135deg, #161618 0%, #0A0A0C 50%, #0B0E12 100%)',
+          background: 'linear-gradient(135deg, #161618 0%, #0A0A0C 50%, #0B0E12 100%)',
           border: '1px solid rgba(255,255,255,0.05)',
         }}
       >
@@ -624,13 +638,13 @@ function HeroPhoneScreen() {
           transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
         />
         <div className="relative z-10">
-          <div className="text-[10px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
+          <div className="text-[9px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
             Total Balance
           </div>
-          <div className="text-2xl font-black mt-1" style={{ fontFamily: 'Space Grotesk', color: '#fff' }}>
+          <div className="text-xl font-black mt-0.5" style={{ fontFamily: 'Space Grotesk', color: '#fff' }}>
             GH₵ 12,450.00
           </div>
-          <div className="flex items-center gap-2 text-[10px] mt-1">
+          <div className="flex items-center gap-2 text-[9px] mt-0.5">
             <span data-usdc-chip style={{ color: theme.accent }}>
               ◎ 1,088.65 USDC
             </span>
@@ -640,65 +654,48 @@ function HeroPhoneScreen() {
         </div>
       </div>
 
-      {/* quick actions */}
-      <div className="flex justify-between mt-4 px-1">
-        {['Deposit', 'Withdraw', 'Transfer', 'Trade'].map((action) => (
-          <div key={action} className="flex flex-col items-center gap-1.5">
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{
-                backgroundColor: `${theme.accent}12`,
-                border: `1px solid ${theme.accent}25`,
-              }}
-            >
-              <span className="text-[11px] font-bold" style={{ color: theme.accent }}>
-                {action[0]}
-              </span>
-            </div>
-            <span className="text-[8px]" style={{ color: theme.textMuted }}>
-              {action}
-            </span>
-          </div>
-        ))}
+      {/* Cashout vendors — each has a badge slot where the chip lands */}
+      <div className="text-[9px] uppercase tracking-[0.18em] px-1 mb-2" style={{ color: theme.textMuted }}>
+        Instant Cashout
       </div>
-
-      {/* market preview */}
-      <div className="mt-4 flex-1 flex flex-col gap-1.5">
-        <div
-          className="text-[9px] uppercase tracking-[0.18em] px-1"
-          style={{ color: theme.textMuted }}
-        >
-          Best Vendors
-        </div>
-        {[
-          { name: 'KwameGold', rate: '11.44', method: 'Bank' },
-          { name: 'AkosuaSwap', rate: '11.52', method: 'MoMo' },
-          { name: 'KofiBarter', rate: '11.60', method: 'CashApp' },
-        ].map((v) => (
+      <div className="flex-1 flex flex-col gap-2">
+        {vendors.map((v) => (
           <div
             key={v.name}
-            className="flex items-center gap-2 p-2 rounded-xl"
+            data-vendor-slot
+            className="flex items-center gap-2.5 p-2.5 rounded-xl relative"
             style={{
-              backgroundColor: `${theme.surface}80`,
+              backgroundColor: `${theme.surface}90`,
               border: `1px solid ${theme.border}`,
             }}
           >
             <div
-              className="w-6 h-6 rounded-md flex items-center justify-center text-[9px] font-bold"
-              style={{ backgroundColor: `${theme.accent}15`, color: theme.accent }}
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-black flex-shrink-0"
+              style={{
+                background: `linear-gradient(135deg, ${v.color}40, ${v.color}15)`,
+                border: `1px solid ${v.color}40`,
+                color: v.color === '#FFFFFF' ? '#fff' : v.color,
+              }}
             >
               {v.name[0]}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-[10px] font-semibold truncate" style={{ color: theme.textPrimary }}>
+              <div className="text-[11px] font-semibold" style={{ color: theme.textPrimary }}>
                 {v.name}
               </div>
               <div className="text-[8px]" style={{ color: theme.textMuted }}>
                 {v.method}
               </div>
             </div>
-            <div className="text-[10px] font-bold" style={{ color: theme.accent }}>
-              GH₵ {v.rate}
+            <div className="text-right">
+              <div className="text-[10px] font-bold" style={{ color: theme.accent }}>
+                GH₵ {v.rate}
+              </div>
+              {/* Badge landing slot */}
+              <div
+                className="mt-0.5 w-10 h-3 rounded-sm opacity-40"
+                style={{ backgroundColor: `${v.color}20`, border: `1px dashed ${v.color}30` }}
+              />
             </div>
           </div>
         ))}
@@ -712,9 +709,7 @@ function HeroPhoneScreen() {
             key={i}
             data-panel
             className="border border-white/[0.04]"
-            style={{
-              background: 'transparent',
-            }}
+            style={{ background: 'transparent' }}
           />
         ))}
       </div>
