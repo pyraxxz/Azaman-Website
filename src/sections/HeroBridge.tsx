@@ -74,7 +74,6 @@ export default function HeroBridge() {
     gsap.set(phone, { y: isMobile ? 40 : 80, rotateX: isMobile ? 10 : 18, opacity: 0 })
     gsap.set(headlineWords, { y: isMobile ? 30 : 50, opacity: 0, filter: 'blur(8px)' })
     gsap.set([subline, ctas, trust], { y: 16, opacity: 0 })
-    gsap.set(railNodes, { opacity: 0, scale: 0.6 })
     gsap.set(phonePanels, { x: 0, y: 0, rotation: 0, opacity: 1 })
     gsap.set(grid, { opacity: 0, y: 30 })
 
@@ -87,10 +86,27 @@ export default function HeroBridge() {
       .to(subline, { y: 0, opacity: 1, duration: 0.5 * speed }, 0.5 * speed)
       .to(ctas, { y: 0, opacity: 1, duration: 0.5 * speed }, 0.6 * speed)
       .to(trust, { y: 0, opacity: 1, duration: 0.5 * speed }, 0.7 * speed)
-      .to(railNodes, { opacity: 1, scale: 1, duration: 0.6 * speed, stagger: 0.08 }, 0.3 * speed)
 
-    // On mobile, skip the pin/scrub/explode — just the intro is enough
+    // Rails: set initial hidden state
+    gsap.set(railNodes, { opacity: 0, scale: 0.4 })
+
     if (isMobile) {
+      // On mobile: rails fly outward from center with bounce
+      const railOffsets = [
+        { x: 60, y: 40 },   // zelle (top-left → starts pushed right/down)
+        { x: 60, y: -40 },  // cashapp (bottom-left → starts pushed right/up)
+        { x: -60, y: 40 },  // momo (top-right → starts pushed left/down)
+        { x: -60, y: -40 }, // bank (bottom-right → starts pushed left/up)
+      ]
+      railNodes.forEach((rail, i) => {
+        const offset = railOffsets[i] || { x: 0, y: 0 }
+        gsap.set(rail, { x: offset.x, y: offset.y })
+        intro.to(rail, {
+          opacity: 1, scale: 1, x: 0, y: 0,
+          duration: 0.7,
+          ease: 'back.out(1.4)',
+        }, 0.35 + i * 0.1)
+      })
       return () => { intro.kill() }
     }
 
@@ -311,7 +327,7 @@ export default function HeroBridge() {
         </div>
 
         {/* Foreground content */}
-        <div className="relative z-[3] h-full w-full flex items-center lg:items-center pt-20 lg:pt-0">
+        <div className="relative z-[3] h-full w-full flex items-center lg:items-center overflow-y-auto lg:overflow-visible pt-16 pb-20 lg:pt-0 lg:pb-0">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 w-full max-w-[1280px] mx-auto px-5 lg:px-12 items-center">
             {/* Left — copy */}
             <div className="lg:col-span-7 order-2 lg:order-1 text-center lg:text-left">
@@ -445,8 +461,8 @@ export default function HeroBridge() {
               className="lg:col-span-5 order-1 lg:order-2 flex items-center justify-center"
               style={{ perspective: '1400px' }}
             >
-              {/* Scale down on mobile so the full phone is visible in viewport */}
-              <div data-phone-shell className="scale-[0.62] sm:scale-[0.75] lg:scale-100 origin-center" style={{ transformStyle: 'preserve-3d' }}>
+              {/* Smaller on mobile so the full phone is visible without scrolling */}
+              <div data-phone-shell className="scale-[0.55] sm:scale-[0.7] lg:scale-100 origin-center -my-16 sm:-my-12 lg:my-0" style={{ transformStyle: 'preserve-3d' }}>
                 <PhoneFrame width={300} height={620} tilt>
                   <HeroPhoneScreen />
                 </PhoneFrame>
