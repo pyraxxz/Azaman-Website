@@ -8,7 +8,7 @@
 // =============================================================================
 
 import type React from 'react'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowRight, ShieldCheck, Zap, Globe, Sparkles, TrendingUp } from 'lucide-react'
 import ParticleCanvas from '@/components/ParticleCanvas'
@@ -17,7 +17,7 @@ import Glass from '@/components/Glass'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useScrollAnim } from '@/hooks/use-scroll-anim'
 import { useLenis } from '@/lib/lenis'
-import { ScrollTrigger, prefersReducedMotion } from '@/lib/gsap'
+import { gsap as gsapCore, ScrollTrigger, prefersReducedMotion } from '@/lib/gsap'
 
 const RAILS = [
   { id: 'zelle', label: 'Zelle', short: 'ZL', color: '#6D1ED4', position: { top: '14%', left: '6%' } },
@@ -38,6 +38,13 @@ const VENDOR_GRID = [
 export default function HeroBridge() {
   const { theme } = useTheme()
   const { scrollTo } = useLenis()
+  const [isMobile, setIsMobile] = useState(false)
+  const mobileRef = useRef<HTMLDivElement>(null)
+
+  // Detect mobile once on mount
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 1024)
+  }, [])
 
   // Outer parallax for orbs (Framer-driven, separate from the GSAP timeline)
   const outerRef = useRef<HTMLElement>(null)
@@ -48,16 +55,56 @@ export default function HeroBridge() {
   const yBg = useTransform(scrollYProgress, [0, 1], ['0%', '40%'])
   const yMid = useTransform(scrollYProgress, [0, 1], ['0%', '20%'])
 
-  // GSAP scroll timeline scoped to the inner section
+  // MOBILE: plain useEffect animation (bypasses useGSAP which may not fire on touch)
+  useEffect(() => {
+    if (!isMobile) return
+    if (prefersReducedMotion()) return
+    const root = mobileRef.current
+    if (!root) return
+
+    const phone = root.querySelector('[data-phone]') as HTMLElement | null
+    const headlineWords = root.querySelectorAll<HTMLElement>('[data-word]')
+    const subline = root.querySelector('[data-subline]') as HTMLElement | null
+    const ctas = root.querySelector('[data-ctas]') as HTMLElement | null
+    const trust = root.querySelector('[data-trust]') as HTMLElement | null
+    const railNodes = root.querySelectorAll<HTMLElement>('[data-rail]')
+
+    // Set initial states
+    gsapCore.set(phone, { y: 50, opacity: 0 })
+    gsapCore.set(headlineWords, { y: 30, opacity: 0 })
+    gsapCore.set([subline, ctas, trust], { y: 20, opacity: 0 })
+    gsapCore.set(railNodes, { opacity: 0, scale: 0.3, x: (_, el) => {
+      const pos = (el as HTMLElement).style
+      return pos.left ? 80 : -80
+    }, y: (_, el) => {
+      const pos = (el as HTMLElement).style
+      return pos.top && parseInt(pos.top) > 50 ? -50 : 50
+    }})
+
+    // Animate in
+    const tl = gsapCore.timeline({ delay: 0.2, defaults: { ease: 'power3.out' } })
+    tl.to(phone, { y: 0, opacity: 1, duration: 0.6 }, 0)
+      .to(headlineWords, { y: 0, opacity: 1, duration: 0.5, stagger: 0.04 }, 0.1)
+      .to(subline, { y: 0, opacity: 1, duration: 0.4 }, 0.35)
+      .to(ctas, { y: 0, opacity: 1, duration: 0.4 }, 0.45)
+      .to(trust, { y: 0, opacity: 1, duration: 0.4 }, 0.55)
+      .to(railNodes, {
+        opacity: 1, scale: 1, x: 0, y: 0,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: 'back.out(1.7)',
+      }, 0.3)
+
+    return () => { tl.kill() }
+  }, [isMobile])
+
+  // DESKTOP: GSAP scroll timeline with pin/scrub
   const sceneRef = useScrollAnim<HTMLDivElement>(({ ref, gsap }) => {
     if (prefersReducedMotion()) return
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) return // skip on mobile
 
     const root = ref.current
     if (!root) return
-
-    // On mobile/tablet, skip the pinned scrub entirely — it causes scroll jank
-    // and the exploding phone panels don't read well on small screens.
-    const isMobile = window.innerWidth < 1024
 
     const phone = root.querySelector('[data-phone]') as HTMLElement | null
     const phoneShell = root.querySelector('[data-phone-shell]') as HTMLElement | null
@@ -70,47 +117,24 @@ export default function HeroBridge() {
     const phonePanels = root.querySelectorAll<HTMLElement>('[data-panel]')
     const grid = root.querySelector('[data-grid]') as HTMLElement | null
 
-    // Initial states — smaller offset on mobile for snappier feel
-    gsap.set(phone, { y: isMobile ? 40 : 80, rotateX: isMobile ? 10 : 18, opacity: 0 })
-    gsap.set(headlineWords, { y: isMobile ? 30 : 50, opacity: 0, filter: 'blur(8px)' })
-    gsap.set([subline, ctas, trust], { y: 16, opacity: 0 })
+    // Initial states
+    gsap.set(phone, { y: 80, rotateX: 18, opacity: 0 })
+    gsap.set(headlineWords, { y: 50, opacity: 0, filter: 'blur(8px)' })
+    gsap.set([subline, ctas, trust], { y: 24, opacity: 0 })
+    gsap.set(railNodes, { opacity: 0, scale: 0.6 })
     gsap.set(phonePanels, { x: 0, y: 0, rotation: 0, opacity: 1 })
     gsap.set(grid, { opacity: 0, y: 30 })
 
-    // Intro — plays on mount once (faster on mobile)
-    const speed = isMobile ? 0.6 : 1
-    const intro = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.1 })
+    // Intro plays on mount
+    const intro = gsap.timeline({ defaults: { ease: 'power3.out' } })
     intro
-      .to(phone, { y: 0, rotateX: 0, opacity: 1, duration: 0.8 * speed }, 0)
-      .to(headlineWords, { y: 0, opacity: 1, filter: 'blur(0px)', duration: 0.6 * speed, stagger: 0.06 }, 0.15 * speed)
-      .to(subline, { y: 0, opacity: 1, duration: 0.5 * speed }, 0.5 * speed)
-      .to(ctas, { y: 0, opacity: 1, duration: 0.5 * speed }, 0.6 * speed)
-      .to(trust, { y: 0, opacity: 1, duration: 0.5 * speed }, 0.7 * speed)
+      .to(phone, { y: 0, rotateX: 0, opacity: 1, duration: 1.1 }, 0)
+      .to(headlineWords, { y: 0, opacity: 1, filter: 'blur(0px)', duration: 0.7, stagger: 0.08 }, 0.2)
+      .to(subline, { y: 0, opacity: 1, duration: 0.6 }, 0.7)
+      .to(ctas, { y: 0, opacity: 1, duration: 0.6 }, 0.8)
+      .to(trust, { y: 0, opacity: 1, duration: 0.6 }, 0.95)
 
-    // Rails: set initial hidden state
-    gsap.set(railNodes, { opacity: 0, scale: 0.4 })
-
-    if (isMobile) {
-      // On mobile: rails fly outward from center with bounce
-      const railOffsets = [
-        { x: 60, y: 40 },   // zelle (top-left → starts pushed right/down)
-        { x: 60, y: -40 },  // cashapp (bottom-left → starts pushed right/up)
-        { x: -60, y: 40 },  // momo (top-right → starts pushed left/down)
-        { x: -60, y: -40 }, // bank (bottom-right → starts pushed left/up)
-      ]
-      railNodes.forEach((rail, i) => {
-        const offset = railOffsets[i] || { x: 0, y: 0 }
-        gsap.set(rail, { x: offset.x, y: offset.y })
-        intro.to(rail, {
-          opacity: 1, scale: 1, x: 0, y: 0,
-          duration: 0.7,
-          ease: 'back.out(1.4)',
-        }, 0.35 + i * 0.1)
-      })
-      return () => { intro.kill() }
-    }
-
-    // Desktop: Scroll timeline — pin and scrub the journey (Acts 2 + 3)
+    // Scroll timeline — pin and scrub
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: root,
@@ -123,18 +147,16 @@ export default function HeroBridge() {
       defaults: { ease: 'power2.inOut' },
     })
 
-    // Phase 1 (0 -> 0.4): rails fade in, USDC chip detaches and shoots to all rails
     tl.to(railNodes, { opacity: 1, scale: 1, duration: 0.5, stagger: 0.05 }, 0)
     if (usdcChip) {
       tl.to(usdcChip, { y: -40, scale: 1.05, duration: 0.4 }, 0.05)
       tl.to(usdcChip, { x: -180, opacity: 0.3, duration: 0.5 }, 0.4)
-      tl.to(usdcChip, { x: 0, opacity: 1, duration: 0.001 }, 0.9) // reset for cleanliness
+      tl.to(usdcChip, { x: 0, opacity: 1, duration: 0.001 }, 0.9)
     }
     if (phoneShell) {
       tl.to(phoneShell, { rotateY: -8, scale: 1.02, duration: 0.6 }, 0.2)
     }
 
-    // Phase 2 (0.5 -> 1): phone explodes into 6 panels, grid reveals behind
     const explodes = [
       { x: -260, y: -120, rotation: -22 },
       { x: 270, y: -110, rotation: 18 },
@@ -242,7 +264,7 @@ export default function HeroBridge() {
         </motion.div>
 
         {/* Rails layer — currency network chips that animate in */}
-        <div className="absolute inset-0 z-[2] pointer-events-none scale-[0.7] sm:scale-[0.85] lg:scale-100 origin-center">
+        <div className="absolute inset-0 z-[2] pointer-events-none">
           {RAILS.map((rail) => (
             <div
               key={rail.id}
@@ -327,8 +349,8 @@ export default function HeroBridge() {
         </div>
 
         {/* Foreground content */}
-        <div className="relative z-[3] h-full w-full flex items-center lg:items-center overflow-y-auto lg:overflow-visible pt-16 pb-20 lg:pt-0 lg:pb-0">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 w-full max-w-[1280px] mx-auto px-5 lg:px-12 items-center">
+        <div ref={mobileRef} className="relative z-[3] h-full w-full flex items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-6 w-full max-w-[1280px] mx-auto px-5 lg:px-12 items-center">
             {/* Left — copy */}
             <div className="lg:col-span-7 order-2 lg:order-1 text-center lg:text-left">
               <motion.div
@@ -461,9 +483,9 @@ export default function HeroBridge() {
               className="lg:col-span-5 order-1 lg:order-2 flex items-center justify-center"
               style={{ perspective: '1400px' }}
             >
-              {/* Smaller on mobile so the full phone is visible without scrolling */}
-              <div data-phone-shell className="scale-[0.55] sm:scale-[0.7] lg:scale-100 origin-center -my-16 sm:-my-12 lg:my-0" style={{ transformStyle: 'preserve-3d' }}>
-                <PhoneFrame width={300} height={620} tilt>
+              <div data-phone-shell style={{ transformStyle: 'preserve-3d' }}>
+                {/* Actual smaller phone on mobile — not CSS scale which doesn't reduce layout box */}
+                <PhoneFrame width={isMobile ? 200 : 300} height={isMobile ? 400 : 620} tilt>
                   <HeroPhoneScreen />
                 </PhoneFrame>
               </div>
