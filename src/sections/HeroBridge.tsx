@@ -70,22 +70,24 @@ export default function HeroBridge() {
     const phonePanels = root.querySelectorAll<HTMLElement>('[data-panel]')
     const grid = root.querySelector('[data-grid]') as HTMLElement | null
 
-    // Initial states
-    gsap.set(phone, { y: 80, rotateX: 18, opacity: 0 })
-    gsap.set(headlineWords, { y: 50, opacity: 0, filter: 'blur(8px)' })
-    gsap.set([subline, ctas, trust], { y: 24, opacity: 0 })
+    // Initial states — smaller offset on mobile for snappier feel
+    gsap.set(phone, { y: isMobile ? 40 : 80, rotateX: isMobile ? 10 : 18, opacity: 0 })
+    gsap.set(headlineWords, { y: isMobile ? 30 : 50, opacity: 0, filter: 'blur(8px)' })
+    gsap.set([subline, ctas, trust], { y: 16, opacity: 0 })
     gsap.set(railNodes, { opacity: 0, scale: 0.6 })
     gsap.set(phonePanels, { x: 0, y: 0, rotation: 0, opacity: 1 })
     gsap.set(grid, { opacity: 0, y: 30 })
 
     // Intro (not scrubbed — plays on mount once)
+    // Faster on mobile so the user sees the full phone quickly
+    const speed = isMobile ? 0.65 : 1
     const intro = gsap.timeline({ defaults: { ease: 'power3.out' } })
     intro
-      .to(phone, { y: 0, rotateX: 0, opacity: 1, duration: 1.1 }, 0)
-      .to(headlineWords, { y: 0, opacity: 1, filter: 'blur(0px)', duration: 0.7, stagger: 0.08 }, 0.2)
-      .to(subline, { y: 0, opacity: 1, duration: 0.6 }, 0.7)
-      .to(ctas, { y: 0, opacity: 1, duration: 0.6 }, 0.8)
-      .to(trust, { y: 0, opacity: 1, duration: 0.6 }, 0.95)
+      .to(phone, { y: 0, rotateX: 0, opacity: 1, duration: 0.7 * speed }, 0)
+      .to(headlineWords, { y: 0, opacity: 1, filter: 'blur(0px)', duration: 0.5 * speed, stagger: 0.05 }, 0.1 * speed)
+      .to(subline, { y: 0, opacity: 1, duration: 0.4 * speed }, 0.4 * speed)
+      .to(ctas, { y: 0, opacity: 1, duration: 0.4 * speed }, 0.5 * speed)
+      .to(trust, { y: 0, opacity: 1, duration: 0.4 * speed }, 0.6 * speed)
 
     // On mobile, just fade in the rails and skip the pin/scrub/explode
     if (isMobile) {
@@ -98,9 +100,9 @@ export default function HeroBridge() {
       scrollTrigger: {
         trigger: root,
         start: 'top top',
-        end: '+=180%',
+        end: '+=120%',
         pin: true,
-        scrub: 1,
+        scrub: 0.8,
         anticipatePin: 1,
       },
       defaults: { ease: 'power2.inOut' },
@@ -311,7 +313,7 @@ export default function HeroBridge() {
 
         {/* Foreground content */}
         <div className="relative z-[3] h-full w-full flex items-center">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 w-full max-w-[1280px] mx-auto px-5 lg:px-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-6 w-full max-w-[1280px] mx-auto px-5 lg:px-12 items-center">
             {/* Left — copy */}
             <div className="lg:col-span-7 order-2 lg:order-1 text-center lg:text-left">
               <motion.div
@@ -445,7 +447,11 @@ export default function HeroBridge() {
               style={{ perspective: '1400px' }}
             >
               <div data-phone-shell style={{ transformStyle: 'preserve-3d' }}>
-                <PhoneFrame width={300} height={620} tilt>
+                <PhoneFrame width={300} height={620} tilt className="hidden sm:block">
+                  <HeroPhoneScreen />
+                </PhoneFrame>
+                {/* Smaller phone for mobile so it fits fully in viewport */}
+                <PhoneFrame width={220} height={440} tilt className="block sm:hidden">
                   <HeroPhoneScreen />
                 </PhoneFrame>
               </div>
