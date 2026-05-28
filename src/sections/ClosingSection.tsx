@@ -1,6 +1,7 @@
 import type React from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Sparkles, Apple, PlayCircle } from 'lucide-react'
+import { ArrowRight, Sparkles, Apple, PlayCircle, Crown } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useTheme } from '@/contexts/ThemeContext'
 
 export default function ClosingSection() {
@@ -75,7 +76,7 @@ export default function ClosingSection() {
             or an investor seeking the next frontier, Azaman is built for you.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
             <motion.button
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
@@ -110,6 +111,16 @@ export default function ClosingSection() {
               Read the Whitepaper
             </motion.a>
           </div>
+
+          {/* Become a vendor — surfaced as a third path */}
+          <Link
+            to="/vendors"
+            className="inline-flex items-center gap-2 mb-10 text-sm font-semibold transition-colors"
+            style={{ color: theme.accent }}
+          >
+            <Crown size={14} />
+            <span className="border-b border-current pb-0.5">Become a vendor instead →</span>
+          </Link>
 
           {/* App store badges */}
           <div className="flex items-center justify-center gap-3 flex-wrap mb-10">
