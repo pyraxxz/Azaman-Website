@@ -86,8 +86,6 @@ export default function SusuEngineSection() {
         start: 'top 60%',
         end: 'bottom 40%',
         scrub: 1,
-        pin: window.innerWidth < 1024,
-        anticipatePin: 1,
       },
     })
 

@@ -50,7 +50,7 @@ export default function HeroBridge() {
   const yBg = useTransform(scrollYProgress, [0, 1], ['0%', '40%'])
   const yMid = useTransform(scrollYProgress, [0, 1], ['0%', '20%'])
 
-  // MOBILE: intro animation + scroll-driven phone tilt
+  // MOBILE: useEffect for intro + scroll-driven chips flying INTO the phone
   useEffect(() => {
     if (!isMobile) return
     if (prefersReducedMotion()) return
@@ -58,7 +58,6 @@ export default function HeroBridge() {
     if (!root) return
 
     const phone = root.querySelector('[data-phone]') as HTMLElement | null
-    const phoneShell = root.querySelector('[data-phone-shell]') as HTMLElement | null
     const headlineWords = root.querySelectorAll<HTMLElement>('[data-word]')
     const subline = root.querySelector('[data-subline]') as HTMLElement | null
     const ctas = root.querySelector('[data-ctas]') as HTMLElement | null
@@ -77,24 +76,7 @@ export default function HeroBridge() {
       .to(ctas, { y: 0, opacity: 1, duration: 0.35 }, 0.4)
       .to(trust, { y: 0, opacity: 1, duration: 0.35 }, 0.5)
 
-    // Scroll-driven tilt: phone rotates as user scrolls (more scroll = more tilt)
-    if (phoneShell) {
-      gsapCore.set(phoneShell, { transformPerspective: 800 })
-      const tiltTl = gsapCore.timeline({
-        scrollTrigger: {
-          trigger: root,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 0.2,
-        },
-      })
-      tiltTl.fromTo(phoneShell,
-        { rotateY: -3, rotateX: 2 },
-        { rotateY: 8, rotateX: -4, duration: 1 }
-      )
-    }
-
-    return () => { intro.kill(); ScrollTrigger.getAll().forEach(st => { if (st.trigger === root) st.kill() }) }
+    return () => { intro.kill() }
   }, [isMobile])
 
   // DESKTOP: GSAP scroll timeline with pin/scrub
@@ -494,6 +476,18 @@ export default function HeroBridge() {
                 <PhoneFrame width={isMobile ? 220 : 300} height={isMobile ? 450 : 620} tilt>
                   <HeroPhoneScreen />
                 </PhoneFrame>
+                {/* Subtle tilt animation on mobile since pointer-tracking doesn't work on touch */}
+                {isMobile && (
+                  <style>{`
+                    @keyframes gentle-tilt {
+                      0%, 100% { transform: perspective(800px) rotateY(-2deg) rotateX(1deg); }
+                      50% { transform: perspective(800px) rotateY(2deg) rotateX(-1deg); }
+                    }
+                    [data-phone-shell] {
+                      animation: gentle-tilt 6s ease-in-out infinite;
+                    }
+                  `}</style>
+                )}
               </div>
             </div>
           </div>
