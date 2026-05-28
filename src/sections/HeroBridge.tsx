@@ -258,8 +258,8 @@ export default function HeroBridge() {
           />
         </motion.div>
 
-        {/* Rails layer — currency network chips that animate in */}
-        <div className="absolute inset-0 z-[2] pointer-events-none">
+        {/* Rails layer — desktop only (absolute positioned across full screen) */}
+        <div className="absolute inset-0 z-[2] pointer-events-none hidden lg:block">
           {RAILS.map((rail) => (
             <div
               key={rail.id}
@@ -472,14 +472,50 @@ export default function HeroBridge() {
               </div>
             </div>
 
-            {/* Right — phone */}
+            {/* Right — phone with mobile rail chips around it */}
             <div
               data-phone
-              className="lg:col-span-5 order-1 lg:order-2 flex items-center justify-center"
+              className="lg:col-span-5 order-1 lg:order-2 flex items-center justify-center relative"
               style={{ perspective: '1400px' }}
             >
+              {/* Mobile rail chips — positioned around the phone */}
+              {isMobile && RAILS.map((rail, i) => {
+                // Position chips around the phone: top-left, bottom-left, top-right, bottom-right
+                const positions = [
+                  { top: '-8px', left: '-12px' },
+                  { bottom: '40px', left: '-16px' },
+                  { top: '10px', right: '-12px' },
+                  { bottom: '60px', right: '-16px' },
+                ]
+                return (
+                  <div
+                    key={rail.id}
+                    data-rail
+                    className="absolute z-10"
+                    style={positions[i] as React.CSSProperties}
+                  >
+                    <Glass radius="lg" padding="sm" surfaceOpacity={50} mouseGlow={false}>
+                      <div className="flex items-center gap-1.5 px-0.5">
+                        <div
+                          className="w-7 h-7 rounded-md flex items-center justify-center text-[10px] font-black"
+                          style={{
+                            background: `linear-gradient(135deg, ${rail.color}, color-mix(in srgb, ${rail.color} 70%, black))`,
+                            color: '#fff',
+                            boxShadow: `0 0 14px ${rail.color}80`,
+                          }}
+                        >
+                          {rail.short}
+                        </div>
+                        <span className="text-xs font-bold pr-1" style={{ color: theme.textPrimary }}>
+                          {rail.label}
+                        </span>
+                      </div>
+                    </Glass>
+                  </div>
+                )
+              })}
               <div data-phone-shell style={{ transformStyle: 'preserve-3d' }}>
-                <PhoneFrame width={300} height={620} tilt>
+                <PhoneFrame width={isMobile ? 220 : 300} height={isMobile ? 450 : 620} tilt>
                   <HeroPhoneScreen />
                 </PhoneFrame>
               </div>
