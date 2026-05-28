@@ -78,24 +78,23 @@ export default function HeroBridge() {
     gsap.set(phonePanels, { x: 0, y: 0, rotation: 0, opacity: 1 })
     gsap.set(grid, { opacity: 0, y: 30 })
 
-    // Intro (not scrubbed — plays on mount once)
-    // Faster on mobile so the user sees the full phone quickly
-    const speed = isMobile ? 0.65 : 1
-    const intro = gsap.timeline({ defaults: { ease: 'power3.out' } })
+    // Intro — plays on mount once (faster on mobile)
+    const speed = isMobile ? 0.6 : 1
+    const intro = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.1 })
     intro
-      .to(phone, { y: 0, rotateX: 0, opacity: 1, duration: 0.7 * speed }, 0)
-      .to(headlineWords, { y: 0, opacity: 1, filter: 'blur(0px)', duration: 0.5 * speed, stagger: 0.05 }, 0.1 * speed)
-      .to(subline, { y: 0, opacity: 1, duration: 0.4 * speed }, 0.4 * speed)
-      .to(ctas, { y: 0, opacity: 1, duration: 0.4 * speed }, 0.5 * speed)
-      .to(trust, { y: 0, opacity: 1, duration: 0.4 * speed }, 0.6 * speed)
+      .to(phone, { y: 0, rotateX: 0, opacity: 1, duration: 0.8 * speed }, 0)
+      .to(headlineWords, { y: 0, opacity: 1, filter: 'blur(0px)', duration: 0.6 * speed, stagger: 0.06 }, 0.15 * speed)
+      .to(subline, { y: 0, opacity: 1, duration: 0.5 * speed }, 0.5 * speed)
+      .to(ctas, { y: 0, opacity: 1, duration: 0.5 * speed }, 0.6 * speed)
+      .to(trust, { y: 0, opacity: 1, duration: 0.5 * speed }, 0.7 * speed)
+      .to(railNodes, { opacity: 1, scale: 1, duration: 0.6 * speed, stagger: 0.08 }, 0.3 * speed)
 
-    // On mobile, just fade in the rails and skip the pin/scrub/explode
+    // On mobile, skip the pin/scrub/explode — just the intro is enough
     if (isMobile) {
-      intro.to(railNodes, { opacity: 1, scale: 1, duration: 0.6, stagger: 0.06 }, 0.6)
       return () => { intro.kill() }
     }
 
-    // Scroll timeline — pin and scrub the journey (Acts 2 + 3)
+    // Desktop: Scroll timeline — pin and scrub the journey (Acts 2 + 3)
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: root,
