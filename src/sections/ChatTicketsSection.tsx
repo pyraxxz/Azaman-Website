@@ -51,9 +51,11 @@ export default function ChatTicketsSection() {
         tl = gsap.timeline({
           scrollTrigger: {
             trigger: stage,
-            start: 'top 90%',
+            start: 'top 70%',
             end: 'center center',
             scrub: 0.5,
+            pin: true,
+            anticipatePin: 1,
           },
           defaults: { ease: 'power3.out' },
         })
