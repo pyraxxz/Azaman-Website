@@ -226,8 +226,8 @@ export default function HeroBridge() {
           />
         </motion.div>
 
-        {/* Rails layer — currency network chips that react during scrub */}
-        <div className="absolute inset-0 z-[2] pointer-events-none hidden lg:block">
+        {/* Rails layer — currency network chips that animate in */}
+        <div className="absolute inset-0 z-[2] pointer-events-none scale-[0.7] sm:scale-[0.85] lg:scale-100 origin-center">
           {RAILS.map((rail) => (
             <div
               key={rail.id}
@@ -312,8 +312,8 @@ export default function HeroBridge() {
         </div>
 
         {/* Foreground content */}
-        <div className="relative z-[3] h-full w-full flex items-center">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-6 w-full max-w-[1280px] mx-auto px-5 lg:px-12 items-center">
+        <div className="relative z-[3] h-full w-full flex items-center lg:items-center pt-20 lg:pt-0">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 w-full max-w-[1280px] mx-auto px-5 lg:px-12 items-center">
             {/* Left — copy */}
             <div className="lg:col-span-7 order-2 lg:order-1 text-center lg:text-left">
               <motion.div
@@ -447,7 +447,7 @@ export default function HeroBridge() {
               style={{ perspective: '1400px' }}
             >
               {/* Scale down on mobile so the full phone is visible in viewport */}
-              <div data-phone-shell className="scale-[0.72] sm:scale-100 origin-center" style={{ transformStyle: 'preserve-3d' }}>
+              <div data-phone-shell className="scale-[0.62] sm:scale-[0.75] lg:scale-100 origin-center" style={{ transformStyle: 'preserve-3d' }}>
                 <PhoneFrame width={300} height={620} tilt>
                   <HeroPhoneScreen />
                 </PhoneFrame>
