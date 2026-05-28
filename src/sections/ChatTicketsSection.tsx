@@ -29,6 +29,7 @@ export default function ChatTicketsSection() {
   const { theme } = useTheme()
   const sectionRef = useRef<HTMLElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024
 
   useEffect(() => {
     const stage = stageRef.current
@@ -37,7 +38,7 @@ export default function ChatTicketsSection() {
 
     let tl: gsap.core.Timeline | null = null
 
-    const startLoop = () => {
+    const setup = () => {
       // Reset
       gsap.set(stage.querySelectorAll('[data-msg]'), { opacity: 0, y: 16 })
       gsap.set(stage.querySelector('[data-typing]'), { opacity: 0 })
@@ -45,18 +46,30 @@ export default function ChatTicketsSection() {
       gsap.set(stage.querySelector('[data-progress]'), { width: '0%' })
       gsap.set(stage.querySelector('[data-ticket]'), { opacity: 0, scale: 0.85, y: 12 })
 
-      tl = gsap.timeline({ defaults: { ease: 'power3.out' }, repeat: -1, repeatDelay: 1.6 })
+      if (isMobile) {
+        // MOBILE: scroll-driven so user sees it as they scroll through
+        tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: stage,
+            start: 'top 85%',
+            end: 'bottom 30%',
+            scrub: 0.5,
+          },
+          defaults: { ease: 'power3.out' },
+        })
+      } else {
+        // DESKTOP: time-based loop
+        tl = gsap.timeline({ defaults: { ease: 'power3.out' }, repeat: -1, repeatDelay: 1.6 })
+      }
 
-      // 1) Trade header / system line
+      // 1) Trade header
       tl.to(stage.querySelector('[data-msg="0"]'), { opacity: 1, y: 0, duration: 0.5 })
-
-      // 2) Vendor: typing then bubble
-      tl.to(stage.querySelector('[data-typing]'), { opacity: 1, duration: 0.3 }, '+=0.4')
-      tl.to(stage.querySelector('[data-msg="1"]'), { opacity: 1, y: 0, duration: 0.5 }, '+=1')
+      // 2) Vendor typing then bubble
+      tl.to(stage.querySelector('[data-typing]'), { opacity: 1, duration: 0.3 }, '+=0.2')
+      tl.to(stage.querySelector('[data-msg="1"]'), { opacity: 1, y: 0, duration: 0.5 }, '+=0.3')
       tl.to(stage.querySelector('[data-typing]'), { opacity: 0, duration: 0.2 }, '<')
-
-      // 3) User: audio waveform message
-      tl.to(stage.querySelector('[data-msg="2"]'), { opacity: 1, y: 0, duration: 0.5 }, '+=0.6')
+      // 3) Audio waveform
+      tl.to(stage.querySelector('[data-msg="2"]'), { opacity: 1, y: 0, duration: 0.5 }, '+=0.2')
       const bars = stage.querySelectorAll('[data-bar]')
       tl.to(bars, {
         scaleY: () => 0.3 + Math.random() * 1.3,
@@ -64,47 +77,42 @@ export default function ChatTicketsSection() {
         stagger: { each: 0.04, repeat: 3, yoyo: true },
         ease: 'sine.inOut',
       }, '<')
-      tl.to(stage.querySelector('[data-progress]'), { width: '100%', duration: 2.2, ease: 'none' }, '<')
-
-      // 4) Ticket materializes
+      tl.to(stage.querySelector('[data-progress]'), { width: '100%', duration: 1.5, ease: 'none' }, '<')
+      // 4) Ticket
       tl.to(stage.querySelector('[data-ticket]'), {
-        opacity: 1,
-        scale: 1,
-        y: 0,
-        duration: 0.6,
-        ease: 'back.out(1.4)',
-      }, '+=0.4')
-
-      // 5) Reply with payment proof
-      tl.to(stage.querySelector('[data-msg="3"]'), { opacity: 1, y: 0, duration: 0.5 }, '+=0.6')
-      tl.to(stage.querySelector('[data-msg="4"]'), { opacity: 1, y: 0, duration: 0.5 }, '+=0.4')
-
-      // 6) Read receipts pop
+        opacity: 1, scale: 1, y: 0, duration: 0.6, ease: 'back.out(1.4)',
+      }, '+=0.2')
+      // 5) Reply
+      tl.to(stage.querySelector('[data-msg="3"]'), { opacity: 1, y: 0, duration: 0.5 }, '+=0.2')
+      tl.to(stage.querySelector('[data-msg="4"]'), { opacity: 1, y: 0, duration: 0.5 }, '+=0.2')
+      // 6) Read receipts
       tl.fromTo(
         stage.querySelectorAll('[data-receipt]'),
         { scale: 0, opacity: 0 },
         { scale: 1, opacity: 1, stagger: 0.1, duration: 0.3 },
-        '+=0.3'
+        '+=0.2'
       )
     }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          if (tl) tl.resume()
-          else startLoop()
-        } else {
-          tl?.pause()
-        }
-      },
-      { threshold: 0.3 }
-    )
-    observer.observe(stage)
-
-    return () => {
-      observer.disconnect()
-      tl?.kill()
+    if (isMobile) {
+      setup()
+    } else {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            if (tl) tl.resume()
+            else setup()
+          } else {
+            tl?.pause()
+          }
+        },
+        { threshold: 0.3 }
+      )
+      observer.observe(stage)
+      return () => { observer.disconnect(); tl?.kill() }
     }
+
+    return () => { tl?.scrollTrigger?.kill(); tl?.kill() }
   }, [])
 
   return (
@@ -208,7 +216,7 @@ export default function ChatTicketsSection() {
         {/* Phone with chat stage */}
         <div className="lg:col-span-7 order-1 lg:order-2 flex items-center justify-center">
           <div ref={stageRef} style={{ perspective: '1400px' }}>
-            <PhoneFrame width={320} height={660} tilt>
+            <PhoneFrame width={isMobile ? 240 : 320} height={isMobile ? 500 : 660} tilt>
               <ChatStage />
             </PhoneFrame>
           </div>
