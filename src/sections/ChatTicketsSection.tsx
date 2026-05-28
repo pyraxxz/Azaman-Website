@@ -51,8 +51,8 @@ export default function ChatTicketsSection() {
         tl = gsap.timeline({
           scrollTrigger: {
             trigger: stage,
-            start: 'top 85%',
-            end: 'bottom 30%',
+            start: 'top 90%',
+            end: 'center center',
             scrub: 0.5,
           },
           defaults: { ease: 'power3.out' },
@@ -232,14 +232,24 @@ export default function ChatTicketsSection() {
 
 function ChatStage() {
   const { theme } = useTheme()
+  const isMobileChat = typeof window !== 'undefined' && window.innerWidth < 1024
 
   return (
     <div
-      className="w-full h-full flex flex-col"
+      className="w-full h-full overflow-hidden"
       style={{
         background: `linear-gradient(180deg, ${theme.surface}, ${theme.background})`,
       }}
     >
+      <div
+        className="flex flex-col"
+        style={isMobileChat ? {
+          transform: 'scale(0.75)',
+          transformOrigin: 'top left',
+          width: '133.3%',
+          height: '133.3%',
+        } : { width: '100%', height: '100%' }}
+      >
       {/* Header */}
       <div
         className="flex items-center gap-3 px-4 pt-8 pb-3 border-b"
@@ -463,6 +473,7 @@ function ChatStage() {
         >
           <Send size={14} style={{ color: theme.isDark ? '#000' : '#fff' }} />
         </div>
+      </div>
       </div>
     </div>
   )

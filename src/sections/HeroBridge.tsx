@@ -62,7 +62,7 @@ export default function HeroBridge() {
     const subline = root.querySelector('[data-subline]') as HTMLElement | null
     const ctas = root.querySelector('[data-ctas]') as HTMLElement | null
     const trust = root.querySelector('[data-trust]') as HTMLElement | null
-    const railNodes = root.querySelectorAll<HTMLElement>('[data-rail]')
+    const railNodes = root.querySelectorAll<HTMLElement>('[data-phone] [data-rail]')
 
     // Intro: phone and text fade in
     gsapCore.set(phone, { y: 50, opacity: 0 })
@@ -81,8 +81,8 @@ export default function HeroBridge() {
     const scrollTl = gsapCore.timeline({
       scrollTrigger: {
         trigger: root,
-        start: 'top 95%',
-        end: 'center top',
+        start: 'top top',
+        end: '+=300',
         scrub: 0.3,
       },
     })
@@ -205,7 +205,7 @@ export default function HeroBridge() {
       className="relative w-full"
       style={{ backgroundColor: theme.background }}
     >
-      <div ref={(el) => { heroRef.current = el; (sceneRef as unknown as React.MutableRefObject<HTMLDivElement | null>).current = el }} className="relative w-full min-h-[100dvh] lg:h-[100dvh] lg:overflow-hidden">
+      <div ref={(el: HTMLDivElement | null) => { heroRef.current = el; if (el) (sceneRef as { current: HTMLDivElement | null }).current = el }} className="relative w-full min-h-[100dvh] lg:h-[100dvh] lg:overflow-hidden">
         <ParticleCanvas />
 
         {/* Layer A — slowest parallax, ambient orbs */}
