@@ -55,6 +55,10 @@ export default function HeroBridge() {
     const root = ref.current
     if (!root) return
 
+    // On mobile/tablet, skip the pinned scrub entirely — it causes scroll jank
+    // and the exploding phone panels don't read well on small screens.
+    const isMobile = window.innerWidth < 1024
+
     const phone = root.querySelector('[data-phone]') as HTMLElement | null
     const phoneShell = root.querySelector('[data-phone-shell]') as HTMLElement | null
     const headlineWords = root.querySelectorAll<HTMLElement>('[data-word]')
@@ -82,6 +86,12 @@ export default function HeroBridge() {
       .to(subline, { y: 0, opacity: 1, duration: 0.6 }, 0.7)
       .to(ctas, { y: 0, opacity: 1, duration: 0.6 }, 0.8)
       .to(trust, { y: 0, opacity: 1, duration: 0.6 }, 0.95)
+
+    // On mobile, just fade in the rails and skip the pin/scrub/explode
+    if (isMobile) {
+      intro.to(railNodes, { opacity: 1, scale: 1, duration: 0.6, stagger: 0.06 }, 0.6)
+      return () => { intro.kill() }
+    }
 
     // Scroll timeline — pin and scrub the journey (Acts 2 + 3)
     const tl = gsap.timeline({
@@ -215,7 +225,7 @@ export default function HeroBridge() {
         </motion.div>
 
         {/* Rails layer — currency network chips that react during scrub */}
-        <div className="absolute inset-0 z-[2] pointer-events-none">
+        <div className="absolute inset-0 z-[2] pointer-events-none hidden lg:block">
           {RAILS.map((rail) => (
             <div
               key={rail.id}
@@ -255,7 +265,7 @@ export default function HeroBridge() {
         {/* Hidden marketplace grid — revealed in Act 3 */}
         <div
           data-grid
-          className="absolute inset-0 z-[1] pointer-events-none flex items-center justify-center"
+          className="absolute inset-0 z-[1] pointer-events-none hidden lg:flex items-center justify-center"
         >
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-3xl px-6 mx-auto">
             {VENDOR_GRID.map((v) => (

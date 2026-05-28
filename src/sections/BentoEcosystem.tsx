@@ -18,6 +18,7 @@ import NodeGraph from '@/components/NodeGraph'
 import ProgressRing from '@/components/ProgressRing'
 import { useTheme } from '@/contexts/ThemeContext'
 import { gsap, prefersReducedMotion } from '@/lib/gsap'
+import { useInViewport } from '@/hooks/use-in-viewport'
 
 export default function BentoEcosystem() {
   const { theme } = useTheme()
@@ -523,10 +524,12 @@ function SecurityCell() {
 // -----------------------------------------------------------------------------
 function OracleCell() {
   const { theme } = useTheme()
+  const [cellRef, isVisible] = useInViewport<HTMLDivElement>(0.2)
   const [points, setPoints] = useState<number[]>(() =>
     Array.from({ length: 40 }, () => 11.4 + Math.random() * 0.4)
   )
   useEffect(() => {
+    if (!isVisible) return
     const id = setInterval(() => {
       setPoints((prev) => {
         const next = prev.slice(1)
@@ -535,9 +538,9 @@ function OracleCell() {
         next.push(Math.max(11.2, Math.min(11.8, last + drift)))
         return next
       })
-    }, 1000)
+    }, 1500)
     return () => clearInterval(id)
-  }, [])
+  }, [isVisible])
 
   const min = Math.min(...points)
   const max = Math.max(...points)
@@ -555,6 +558,7 @@ function OracleCell() {
   const change = (((points[points.length - 1] - points[0]) / points[0]) * 100).toFixed(2)
 
   return (
+    <div ref={cellRef}>
     <Glass tilt tiltMax={5} radius="2xl" padding="lg" className="h-full">
       <div className="grid grid-cols-1 sm:grid-cols-5 gap-5 items-center h-full">
         <div className="sm:col-span-3">
@@ -611,6 +615,7 @@ function OracleCell() {
         </div>
       </div>
     </Glass>
+    </div>
   )
 }
 

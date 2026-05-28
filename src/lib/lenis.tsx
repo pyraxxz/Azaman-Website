@@ -38,14 +38,20 @@ export function LenisProvider({ children }: { children: ReactNode }) {
       return
     }
 
+    // On touch devices, native scroll is faster and more reliable than Lenis.
+    // Lenis smooth-scroll fights iOS momentum and causes jank on Android.
+    const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches
+    if (isTouch) {
+      ScrollTrigger.defaults({ scroller: window })
+      return
+    }
+
     const instance = new Lenis({
-      lerp: 0.1,
-      duration: 1.2,
+      lerp: 0.09,
+      duration: 1.1,
       smoothWheel: true,
-      // Lenis v1 disables touch smoothing by default — keeps native iOS momentum.
-      // We respect that for accessibility.
       wheelMultiplier: 1,
-      touchMultiplier: 1.5,
+      touchMultiplier: 1,
     })
     lenisRef.current = instance
 
