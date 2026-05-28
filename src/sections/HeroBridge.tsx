@@ -81,9 +81,9 @@ export default function HeroBridge() {
     const scrollTl = gsapCore.timeline({
       scrollTrigger: {
         trigger: root,
-        start: 'top top',
-        end: 'bottom top',
-        scrub: 0.5,
+        start: 'top 95%',
+        end: 'center top',
+        scrub: 0.3,
       },
     })
 
@@ -565,13 +565,24 @@ export default function HeroBridge() {
 
 function HeroPhoneScreen() {
   const { theme } = useTheme()
+  const isMobilePhone = typeof window !== 'undefined' && window.innerWidth < 1024
   return (
     <div
-      className="w-full h-full flex flex-col p-4"
+      className="w-full h-full overflow-hidden"
       style={{
         background: `radial-gradient(120% 60% at 50% 0%, ${theme.glow}18, transparent 60%), linear-gradient(180deg, ${theme.surface}, ${theme.background})`,
       }}
     >
+      {/* Scale content to fit smaller phone on mobile */}
+      <div
+        className="flex flex-col p-4"
+        style={isMobilePhone ? {
+          transform: 'scale(0.58)',
+          transformOrigin: 'top left',
+          width: '172%',  /* 1/0.58 = 1.72 — expand so content fills before scaling */
+          height: '172%',
+        } : { width: '100%', height: '100%' }}
+      >
       {/* status bar */}
       <div className="flex justify-between text-[9px] mt-2 mb-3" style={{ color: theme.textMuted }}>
         <span>9:41</span>
@@ -691,6 +702,7 @@ function HeroPhoneScreen() {
             </div>
           </div>
         ))}
+      </div>
       </div>
 
       {/* explosion panels — invisible 6-cell overlay scaled to phone screen */}
