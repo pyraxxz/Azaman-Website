@@ -446,12 +446,9 @@ export default function HeroBridge() {
               className="lg:col-span-5 order-1 lg:order-2 flex items-center justify-center"
               style={{ perspective: '1400px' }}
             >
-              <div data-phone-shell style={{ transformStyle: 'preserve-3d' }}>
-                <PhoneFrame width={300} height={620} tilt className="hidden sm:block">
-                  <HeroPhoneScreen />
-                </PhoneFrame>
-                {/* Smaller phone for mobile so it fits fully in viewport */}
-                <PhoneFrame width={220} height={440} tilt className="block sm:hidden">
+              {/* Scale down on mobile so the full phone is visible in viewport */}
+              <div data-phone-shell className="scale-[0.72] sm:scale-100 origin-center" style={{ transformStyle: 'preserve-3d' }}>
+                <PhoneFrame width={300} height={620} tilt>
                   <HeroPhoneScreen />
                 </PhoneFrame>
               </div>
