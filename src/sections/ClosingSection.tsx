@@ -1,161 +1,171 @@
-import type React from 'react'
+// =============================================================================
+// ClosingSection — "Africa's money moves here."
+// 3 coded blobs, gradient headline, email capture, app store badges, trust pills
+// =============================================================================
+
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Sparkles, Apple, PlayCircle, Crown } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { ArrowRight, Apple, Play } from 'lucide-react'
+import Glass from '@/components/Glass'
 import { useTheme } from '@/contexts/ThemeContext'
 
 export default function ClosingSection() {
   const { theme } = useTheme()
-  const handleScrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  const [email, setEmail] = useState('')
+  const [submitted, setSubmitted] = useState(false)
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email.trim()) return
+    console.log('Email captured:', email)
+    setSubmitted(true)
+    setEmail('')
+    setTimeout(() => setSubmitted(false), 4000)
   }
+
   return (
     <section
       id="download"
       className="relative py-24 lg:py-40 overflow-hidden"
       style={{ backgroundColor: theme.background }}
     >
-      {/* Animated aurora background */}
-      <div
-        className="absolute inset-0 opacity-[0.08] pointer-events-none bg-aurora-shift"
-      />
-      {/* Floating particles */}
-      {[
-        { top: '20%', left: '10%', size: 4, delay: 0, color: theme.accent },
-        { top: '40%', right: '15%', size: 3, delay: 1, color: theme.accentSecondary },
-        { bottom: '25%', left: '20%', size: 5, delay: 0.5, color: theme.accent },
-        { bottom: '15%', right: '10%', size: 3, delay: 2, color: theme.success },
-        { top: '60%', left: '8%', size: 2, delay: 1.5, color: theme.accent },
-        { top: '15%', right: '30%', size: 4, delay: 2.5, color: theme.accentSecondary },
-      ].map((p, i) => (
-        <motion.div
-          key={i}
-          className="absolute pointer-events-none rounded-full"
+      {/* 3 Coded blobs */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <div
+          className="absolute rounded-full animate-float-blob"
           style={{
-            ...p,
-            width: p.size,
-            height: p.size,
-            backgroundColor: p.color,
-            boxShadow: `0 0 ${p.size * 4}px ${p.color}`,
+            width: '60vw', height: '60vw', top: '-20%', left: '-10%',
+            background: `radial-gradient(circle, ${theme.accent}20, transparent 70%)`,
+            filter: 'blur(80px)',
           }}
-          animate={{ y: [0, -20, 0], opacity: [0.6, 1, 0.6] }}
-          transition={{ duration: 4 + i, delay: p.delay, repeat: Infinity, ease: 'easeInOut' }}
         />
-      ))}
+        <div
+          className="absolute rounded-full animate-float-blob-reverse"
+          style={{
+            width: '50vw', height: '50vw', top: '10%', right: '-15%',
+            background: `radial-gradient(circle, ${theme.glow}15, transparent 70%)`,
+            filter: 'blur(100px)',
+          }}
+        />
+        <div
+          className="absolute rounded-full animate-float-blob-delayed"
+          style={{
+            width: '40vw', height: '40vw', bottom: '-10%', left: '30%',
+            background: `radial-gradient(circle, ${theme.success}12, transparent 70%)`,
+            filter: 'blur(90px)',
+          }}
+        />
+      </div>
 
       <div className="relative max-w-[800px] mx-auto px-5 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
-          <div
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 text-xs font-semibold uppercase tracking-[0.2em]"
-            style={{
-              backgroundColor: `${theme.accent}10`,
-              border: `1px solid ${theme.accent}30`,
-              color: theme.accent,
-            }}
-          >
-            <Sparkles size={12} />
-            Get Started
-          </div>
+        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
+          {/* Gradient headline */}
           <h2
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
-            style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}
+            style={{
+              fontFamily: 'Space Grotesk',
+              background: `linear-gradient(135deg, ${theme.textPrimary} 40%, ${theme.accent} 100%)`,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
           >
-            Ready to join the future of{' '}
-            <span style={{ color: theme.accent }}>finance?</span>
+            Africa's money moves here.
           </h2>
-          <p
-            className="text-lg mb-10 max-w-xl mx-auto leading-relaxed"
-            style={{ color: theme.textSecondary }}
-          >
-            Whether you're a trader looking for the best rates, a vendor building your business,
-            or an investor seeking the next frontier, Azaman is built for you.
+          <p className="text-lg mb-10 max-w-xl mx-auto leading-relaxed" style={{ color: theme.textSecondary }}>
+            Whether you're trading, saving, or building — Azaman is the platform that moves with you.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
-            <motion.button
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => handleScrollTo('investors')}
-              className="group flex items-center gap-3 px-10 py-4 rounded-2xl font-semibold w-full sm:w-auto justify-center"
-              style={{
-                backgroundColor: theme.accent,
-                color: theme.isDark ? '#000' : '#fff',
-                boxShadow: `0 0 32px ${theme.accent}50, 0 0 64px ${theme.accent}20`,
-              }}
-            >
-              Get Started Free
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-            </motion.button>
-
-            <motion.a
-              href="#investors"
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
-                e.preventDefault()
-                handleScrollTo('investors')
-              }}
-              className="flex items-center gap-3 px-10 py-4 rounded-2xl font-semibold cursor-pointer w-full sm:w-auto justify-center"
-              style={{
-                color: theme.textPrimary,
-                backgroundColor: `${theme.surface}80`,
-                border: `1px solid ${theme.border}`,
-                backdropFilter: 'blur(8px)',
-              }}
-            >
-              Read the Whitepaper
-            </motion.a>
-          </div>
-
-          {/* Become a vendor — surfaced as a third path */}
-          <Link
-            to="/vendors"
-            className="inline-flex items-center gap-2 mb-10 text-sm font-semibold transition-colors"
-            style={{ color: theme.accent }}
-          >
-            <Crown size={14} />
-            <span className="border-b border-current pb-0.5">Become a vendor instead →</span>
-          </Link>
+          {/* Email capture */}
+          <form onSubmit={handleSubmit} className="max-w-md mx-auto mb-4">
+            <Glass radius="xl" padding="none">
+              <div className="flex items-center gap-2 p-2">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="flex-1 bg-transparent px-4 py-3 text-sm outline-none"
+                  style={{ color: theme.textPrimary }}
+                  data-cursor="hidden"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform hover:scale-105"
+                  style={{ backgroundColor: theme.accent, color: theme.isDark ? '#000' : '#fff' }}
+                  data-cursor="hover"
+                >
+                  <ArrowRight size={18} />
+                </button>
+              </div>
+            </Glass>
+          </form>
+          {submitted && (
+            <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-sm mb-4" style={{ color: theme.success }}>
+              You're on the list. We'll reach out.
+            </motion.p>
+          )}
+          <p className="text-xs mb-10" style={{ color: theme.textMuted }}>
+            Join 1,200+ people already on the waitlist
+          </p>
 
           {/* App store badges */}
           <div className="flex items-center justify-center gap-3 flex-wrap mb-10">
-            {[
-              { icon: Apple, name: 'App Store', sub: 'Download on the' },
-              { icon: PlayCircle, name: 'Google Play', sub: 'Get it on' },
-            ].map(({ icon: Icon, name, sub }) => (
-              <motion.button
-                key={name}
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl"
-                style={{
-                  backgroundColor: theme.surface,
-                  border: `1px solid ${theme.border}`,
-                }}
-              >
-                <Icon size={22} style={{ color: theme.textPrimary }} />
-                <div className="text-left">
-                  <div className="text-[9px] uppercase tracking-wider" style={{ color: theme.textMuted }}>
-                    {sub}
-                  </div>
-                  <div className="text-sm font-bold" style={{ color: theme.textPrimary }}>
-                    {name}
-                  </div>
-                </div>
-              </motion.button>
-            ))}
+            <motion.a
+              href="#"
+              whileHover={{ filter: 'brightness(1.1)' }}
+              className="flex items-center gap-3 px-5 py-3 rounded-xl"
+              style={{ backgroundColor: '#000', border: `1px solid ${theme.border}` }}
+              data-cursor="hover"
+            >
+              <Apple size={22} className="text-white" />
+              <div className="text-left">
+                <div className="text-[9px] text-white/60 uppercase tracking-wider">Download on the</div>
+                <div className="text-sm font-bold text-white">App Store</div>
+              </div>
+            </motion.a>
+            <motion.a
+              href="#"
+              whileHover={{ filter: 'brightness(1.1)' }}
+              className="flex items-center gap-3 px-5 py-3 rounded-xl"
+              style={{ backgroundColor: '#000', border: `1px solid ${theme.border}` }}
+              data-cursor="hover"
+            >
+              <Play size={22} className="text-white" fill="white" />
+              <div className="text-left">
+                <div className="text-[9px] text-white/60 uppercase tracking-wider">Get it on</div>
+                <div className="text-sm font-bold text-white">Google Play</div>
+              </div>
+            </motion.a>
           </div>
 
-          <p className="text-xs uppercase tracking-wider" style={{ color: theme.textMuted }}>
-            Licensed under Act 1154 (2025) · Bank of Ghana Compliant · USDC-backed
-          </p>
+          {/* Trust badges */}
+          <div className="flex flex-wrap justify-center gap-2">
+            {[
+              '🏛️ Licensed VASP',
+              '🔒 Biometric Auth',
+              '⛓️ USDC-Backed',
+              '🤝 Escrow Protected',
+              '🇬🇭 Made in Ghana',
+            ].map((badge) => (
+              <Glass key={badge} radius="lg" padding="none">
+                <div className="px-3 py-2 text-[11px] font-medium" style={{ color: theme.textMuted }}>
+                  {badge}
+                </div>
+              </Glass>
+            ))}
+          </div>
         </motion.div>
       </div>
+
+      <style>{`
+        @keyframes float-blob { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(2%,3%) scale(1.04)} }
+        @keyframes float-blob-r { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-2%,-3%) scale(1.04)} }
+        .animate-float-blob { animation: float-blob 8s ease-in-out infinite; }
+        .animate-float-blob-reverse { animation: float-blob-r 12s ease-in-out infinite; }
+        .animate-float-blob-delayed { animation: float-blob 10s ease-in-out infinite 2s; }
+      `}</style>
     </section>
   )
 }

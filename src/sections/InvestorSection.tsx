@@ -159,6 +159,43 @@ export default function InvestorSection() {
             Detailed financials, projections, and team bios available on request.
           </p>
         </motion.div>
+
+        {/* Traction Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mt-16"
+        >
+          <h3 className="text-xl font-bold mb-6 text-center" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
+            Traction
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              { title: 'Beta Complete', desc: 'Beta users onboarded. First trades completed.' },
+              { title: 'Public Launch', desc: 'Public launch Ghana. Vendor program open. Nigeria waitlist live.' },
+              { title: 'Raising $500K', desc: 'Raising $500K for infrastructure and Nigeria expansion.' },
+            ].map((item, i) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: i * 0.1 }}
+                className="p-5 rounded-xl"
+                style={{
+                  backgroundColor: theme.surface,
+                  border: `1px solid ${theme.border}`,
+                  borderLeft: `3px solid ${theme.accent}`,
+                }}
+              >
+                <h4 className="font-bold text-sm mb-1" style={{ color: theme.textPrimary }}>{item.title}</h4>
+                <p className="text-xs leading-relaxed" style={{ color: theme.textMuted }}>{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   )

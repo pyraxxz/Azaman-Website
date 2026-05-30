@@ -28,6 +28,30 @@ export default function ParticleCanvas({ reactToScroll = true, density }: Props)
   const accentRef = useRef(theme.accent)
   const [viewportRef, isVisible] = useInViewport<HTMLCanvasElement>(0.05)
 
+  // Render 0 particles if prefers-reduced-motion
+  const prefersReducedMotion = typeof window !== 'undefined'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false
+  if (prefersReducedMotion) {
+    return (
+      <canvas
+        ref={(el) => {
+          canvasRef.current = el
+          ;(viewportRef as React.MutableRefObject<HTMLCanvasElement | null>).current = el
+        }}
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 0,
+        }}
+      />
+    )
+  }
+
   // Keep accent ref updated so the running animation picks up theme changes
   useEffect(() => {
     accentRef.current = theme.accent
@@ -219,6 +243,7 @@ export default function ParticleCanvas({ reactToScroll = true, density }: Props)
         // Also assign to viewport observer ref
         ;(viewportRef as React.MutableRefObject<HTMLCanvasElement | null>).current = el
       }}
+      aria-hidden="true"
       style={{
         position: 'absolute',
         top: 0,

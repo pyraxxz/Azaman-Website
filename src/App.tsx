@@ -1,6 +1,9 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Navigation from '@/components/Navigation'
 import ScrollProgress from '@/components/ScrollProgress'
+import CustomCursor from '@/components/CustomCursor'
+import PageTransition from '@/components/PageTransition'
+import SkipToContent from '@/components/SkipToContent'
 import FooterSection from '@/sections/FooterSection'
 import Home from '@/pages/Home'
 import Vendors from '@/pages/Vendors'
@@ -17,13 +20,19 @@ export default function App() {
           color: theme.textPrimary,
         }}
       >
+        <SkipToContent />
+        <CustomCursor />
         <ScrollProgress />
         <Navigation />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/vendors" element={<Vendors />} />
-          <Route path="*" element={<Home />} />
-        </Routes>
+        <main id="main-content">
+          <PageTransition>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/vendors" element={<Vendors />} />
+              <Route path="*" element={<Home />} />
+            </Routes>
+          </PageTransition>
+        </main>
         <FooterSection />
       </div>
     </BrowserRouter>

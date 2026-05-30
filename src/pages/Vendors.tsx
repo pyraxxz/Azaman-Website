@@ -30,7 +30,7 @@ import {
   Wallet,
   Wrench,
 } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Glass from '@/components/Glass'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -59,6 +59,7 @@ export default function VendorsPage() {
       <VendorHero />
       <VendorPullTabExplainer />
       <VendorEarnings />
+      <VendorEarningsCalculator />
       <VendorApplicationSteps />
       <VendorRequirements />
       <VendorFAQ />
@@ -610,6 +611,102 @@ function VendorEarnings() {
             )
           })}
         </div>
+      </div>
+    </section>
+  )
+}
+
+// =============================================================================
+// EARNINGS CALCULATOR — real-time estimate based on trades/day and avg size
+// =============================================================================
+function VendorEarningsCalculator() {
+  const { theme } = useTheme()
+  const [tradesPerDay, setTradesPerDay] = useState(10)
+  const [avgTradeSize, setAvgTradeSize] = useState(500)
+
+  // Formula: daily_trades × avg_usdc × 0.012 × 0.45 × 30
+  const monthlyEarnings = tradesPerDay * avgTradeSize * 0.012 * 0.45 * 30
+
+  return (
+    <section className="relative py-20 lg:py-28" style={{ backgroundColor: theme.background }}>
+      <div className="max-w-[700px] mx-auto px-5 lg:px-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-8"
+        >
+          <h2 className="text-3xl sm:text-4xl font-bold mb-3" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
+            How much could you <span style={{ color: theme.accent }}>earn?</span>
+          </h2>
+          <p className="text-base" style={{ color: theme.textMuted }}>
+            Adjust the sliders to estimate your monthly vendor earnings.
+          </p>
+        </motion.div>
+
+        <Glass radius="2xl" padding="lg" tilt tiltMax={4} elevated>
+          <div className="space-y-8">
+            {/* Trades per day slider */}
+            <div>
+              <div className="flex justify-between mb-2">
+                <span className="text-sm font-medium" style={{ color: theme.textPrimary }}>Trades per day</span>
+                <span className="text-sm font-bold" style={{ color: theme.accent, fontFamily: 'JetBrains Mono' }}>{tradesPerDay}</span>
+              </div>
+              <input
+                type="range"
+                min={1}
+                max={50}
+                value={tradesPerDay}
+                onChange={(e) => setTradesPerDay(Number(e.target.value))}
+                className="w-full h-2 rounded-full appearance-none cursor-pointer"
+                style={{ background: `linear-gradient(to right, ${theme.accent} ${(tradesPerDay / 50) * 100}%, ${theme.border} ${(tradesPerDay / 50) * 100}%)` }}
+                data-cursor="hover"
+              />
+              <div className="flex justify-between text-[10px] mt-1" style={{ color: theme.textMuted }}>
+                <span>1</span><span>50</span>
+              </div>
+            </div>
+
+            {/* Average trade size slider */}
+            <div>
+              <div className="flex justify-between mb-2">
+                <span className="text-sm font-medium" style={{ color: theme.textPrimary }}>Average trade size (USDC)</span>
+                <span className="text-sm font-bold" style={{ color: theme.accent, fontFamily: 'JetBrains Mono' }}>${avgTradeSize}</span>
+              </div>
+              <input
+                type="range"
+                min={50}
+                max={5000}
+                step={50}
+                value={avgTradeSize}
+                onChange={(e) => setAvgTradeSize(Number(e.target.value))}
+                className="w-full h-2 rounded-full appearance-none cursor-pointer"
+                style={{ background: `linear-gradient(to right, ${theme.accent} ${((avgTradeSize - 50) / 4950) * 100}%, ${theme.border} ${((avgTradeSize - 50) / 4950) * 100}%)` }}
+                data-cursor="hover"
+              />
+              <div className="flex justify-between text-[10px] mt-1" style={{ color: theme.textMuted }}>
+                <span>$50</span><span>$5,000</span>
+              </div>
+            </div>
+
+            {/* Result */}
+            <div className="text-center pt-4" style={{ borderTop: `1px solid ${theme.border}` }}>
+              <div className="text-xs uppercase tracking-[0.2em] mb-2" style={{ color: theme.textMuted }}>
+                Est. monthly earnings
+              </div>
+              <div
+                className="text-4xl sm:text-5xl font-black"
+                style={{ color: theme.accent, fontFamily: 'Space Grotesk', textShadow: `0 0 24px ${theme.accent}40` }}
+              >
+                ${monthlyEarnings.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+              </div>
+              <div className="text-xs mt-2" style={{ color: theme.textMuted }}>
+                Based on 1.2% spread × 45% vendor share × 30 days
+              </div>
+            </div>
+          </div>
+        </Glass>
       </div>
     </section>
   )

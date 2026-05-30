@@ -166,7 +166,10 @@ export default function AzmAuctionSection() {
           </Glass>
         </motion.div>
 
-        {/* Leaderboard */}
+        {/* Main content: Leaderboard + Burn Stats */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Leaderboard — 2/3 width */}
+        <div className="lg:col-span-2">
         <Glass radius="2xl" padding="md" elevated mouseGlow>
           <div ref={listRef} className="space-y-2.5">
             {vendors.map((v, i) => {
@@ -181,10 +184,12 @@ export default function AzmAuctionSection() {
                   style={{
                     padding: 1.5,
                     background: isLeader
-                      ? `linear-gradient(120deg, ${theme.heroGradient[0]}, ${theme.heroGradient[1]}, ${theme.heroGradient[2]})`
+                      ? `linear-gradient(135deg, ${theme.accent}18, ${theme.glow}08)`
                       : 'transparent',
-                    backgroundSize: '300% 300%',
-                    animation: isLeader ? 'aurora-flow 8s ease infinite' : undefined,
+                    boxShadow: isLeader
+                      ? `0 0 40px ${theme.accent}20, 0 0 80px ${theme.accent}08`
+                      : 'none',
+                    animation: isLeader ? 'border-spin 3s linear infinite' : undefined,
                   }}
                 >
                   <div
@@ -303,6 +308,57 @@ export default function AzmAuctionSection() {
             })}
           </div>
         </Glass>
+        </div>
+
+        {/* Right column: Burn Stats (desktop only) */}
+        <div className="hidden lg:flex flex-col gap-4">
+          <Glass radius="2xl" padding="md" tilt tiltMax={4}>
+            <div className="flex items-center gap-2 mb-3">
+              <Flame size={16} style={{ color: '#FF7A1A' }} />
+              <span className="text-xs uppercase tracking-[0.2em] font-bold" style={{ color: theme.textMuted }}>Burn Stats</span>
+            </div>
+            <div className="text-2xl font-black mb-1" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
+              {burnedToday.toLocaleString()} AZM
+            </div>
+            <div className="text-xs mb-4" style={{ color: theme.textMuted }}>burned today</div>
+
+            {/* 7-day bar chart */}
+            <div className="flex items-end gap-1.5 h-20 mb-3">
+              {[65, 42, 78, 55, 90, 72, 85].map((h, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ height: 0 }}
+                  whileInView={{ height: `${h}%` }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: i * 0.05 }}
+                  className="flex-1 rounded-t-sm"
+                  style={{ backgroundColor: `${theme.accent}${i === 6 ? '' : '60'}` }}
+                />
+              ))}
+            </div>
+            <div className="flex justify-between text-[9px]" style={{ color: theme.textMuted }}>
+              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+            </div>
+
+            <p className="text-xs mt-4 leading-relaxed" style={{ color: theme.textMuted }}>
+              Burning AZM is deflationary. Less supply. More value.
+            </p>
+          </Glass>
+
+          {/* Become a Vendor card */}
+          <Link to="/vendors" className="block">
+            <Glass radius="xl" padding="md" tilt tiltMax={4}>
+              <div className="flex items-center justify-between" style={{ borderImage: `linear-gradient(135deg, ${theme.accent}, ${theme.glow}) 1` }}>
+                <div>
+                  <div className="text-sm font-bold" style={{ color: theme.textPrimary }}>Become a Vendor</div>
+                  <div className="text-xs" style={{ color: theme.textMuted }}>Earn 40-50% of every spread</div>
+                </div>
+                <span className="text-lg" style={{ color: theme.accent }}>→</span>
+              </div>
+            </Glass>
+          </Link>
+        </div>
+        </div>
 
         {/* CTA */}
         <motion.div

@@ -193,6 +193,20 @@ html, body {
   background: var(--theme-accent);
 }
 
+/* Custom cursor — hide native cursor on desktop when active */
+html.custom-cursor-active { cursor: none !important; }
+html.custom-cursor-active * { cursor: none !important; }
+
+/* Page transition keyframes */
+@keyframes pageTransitionCover {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+@keyframes pageTransitionReveal {
+  from { transform: scaleY(1); }
+  to { transform: scaleY(0); }
+}
+
 /* Reduce motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
