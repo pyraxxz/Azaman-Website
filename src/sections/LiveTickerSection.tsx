@@ -7,7 +7,6 @@
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Activity } from 'lucide-react'
 import Glass from '@/components/Glass'
 import { useTheme } from '@/contexts/ThemeContext'
 

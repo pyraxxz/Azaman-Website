@@ -10,7 +10,7 @@ import { Menu, X, Palette, Check } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useLenis } from '@/lib/lenis'
-import { gsap, ScrollTrigger, prefersReducedMotion } from '@/lib/gsap'
+import { gsap, prefersReducedMotion } from '@/lib/gsap'
 
 const NAV_LINKS = [
   { label: 'Features', href: '#features' },
