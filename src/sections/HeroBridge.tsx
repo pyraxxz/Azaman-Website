@@ -5,7 +5,7 @@
 // =============================================================================
 
 import type React from 'react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowDown, ShieldCheck, Zap, Globe } from 'lucide-react'
 import ParticleCanvas from '@/components/ParticleCanvas'
@@ -37,7 +37,15 @@ export default function HeroBridge() {
   const { theme } = useTheme()
   const { scrollTo } = useLenis()
   const sectionRef = useRef<HTMLDivElement>(null)
-  const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024
+
+  // BUG 1 FIX: Reactive isDesktop
+  const [isDesktop, setIsDesktop] = useState(false)
+  useEffect(() => {
+    const check = () => setIsDesktop(window.innerWidth >= 1024)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   // ─── DESKTOP: GSAP 3-act scroll timeline ─────────────────────────────────────
   useEffect(() => {
@@ -45,176 +53,132 @@ export default function HeroBridge() {
     const root = sectionRef.current
     if (!root) return
 
-    const phone = root.querySelector('[data-phone]') as HTMLElement
-    const headlineWords = root.querySelectorAll<HTMLElement>('[data-word]')
-    const subline = root.querySelector('[data-subline]') as HTMLElement
-    const ctas = root.querySelector('[data-ctas]') as HTMLElement
-    const trust = root.querySelector('[data-trust]') as HTMLElement
-    const railNodes = root.querySelectorAll<HTMLElement>('[data-rail]')
-    const usdcChip = root.querySelector('[data-usdc-chip]') as HTMLElement
-    const phonePanels = root.querySelectorAll<HTMLElement>('[data-panel]')
-    const grid = root.querySelector('[data-grid]') as HTMLElement
-    const balanceEl = root.querySelector('[data-balance]') as HTMLElement
+    // BUG 2 FIX: setTimeout + null guards
+    const timer = setTimeout(() => {
+      const phone = root.querySelector('[data-phone]') as HTMLElement
+      if (!phone) return
+      const headlineWords = root.querySelectorAll<HTMLElement>('[data-word]')
+      const subline = root.querySelector('[data-subline]') as HTMLElement
+      const ctas = root.querySelector('[data-ctas]') as HTMLElement
+      const trust = root.querySelector('[data-trust]') as HTMLElement
+      if (!subline || !ctas || !trust) return
+      const railNodes = root.querySelectorAll<HTMLElement>('[data-rail]')
+      const usdcChip = root.querySelector('[data-usdc-chip]') as HTMLElement
+      const phonePanels = root.querySelectorAll<HTMLElement>('[data-panel]')
+      const grid = root.querySelector('[data-grid]') as HTMLElement
+      const balanceEl = root.querySelector('[data-balance]') as HTMLElement
 
-    // Initial states
-    gsap.set(phone, { y: 120, rotateX: 25, opacity: 0 })
-    gsap.set(headlineWords, { y: 80, opacity: 0, filter: 'blur(12px)' })
-    gsap.set(subline, { y: 24, opacity: 0 })
-    gsap.set(ctas, { y: 24, opacity: 0 })
-    gsap.set(trust, { y: 24, opacity: 0 })
-    gsap.set(railNodes, { scale: 0, opacity: 0 })
-    gsap.set(phonePanels, { x: 0, y: 0, rotation: 0, opacity: 1 })
-    gsap.set(grid, { opacity: 0, y: 30 })
+      // Initial states
+      gsap.set(phone, { y: 120, rotateX: 25, opacity: 0 })
+      gsap.set(headlineWords, { y: 80, opacity: 0, filter: 'blur(12px)' })
+      gsap.set(subline, { y: 24, opacity: 0 })
+      gsap.set(ctas, { y: 24, opacity: 0 })
+      gsap.set(trust, { y: 24, opacity: 0 })
+      gsap.set(railNodes, { scale: 0, opacity: 0 })
+      gsap.set(phonePanels, { x: 0, y: 0, rotation: 0, opacity: 1 })
+      if (grid) gsap.set(grid, { opacity: 0, y: 30 })
 
-    // ACT 1: Intro (not pinned, plays on enter)
-    const intro = gsap.timeline({ defaults: { ease: 'power3.out' } })
-    intro
-      .to(headlineWords, { y: 0, opacity: 1, filter: 'blur(0px)', duration: 0.7, stagger: 0.07 }, 0)
-      .to(subline, { y: 0, opacity: 1, duration: 0.6 }, 0.6)
-      .to(ctas, { y: 0, opacity: 1, duration: 0.6 }, 0.75)
-      .to(trust, { y: 0, opacity: 1, duration: 0.6 }, 0.9)
-      .to(phone, { y: 0, rotateX: 0, opacity: 1, duration: 1.2 }, 0.1)
+      // ACT 1: Intro
+      const intro = gsap.timeline({ defaults: { ease: 'power3.out' } })
+      intro
+        .to(headlineWords, { y: 0, opacity: 1, filter: 'blur(0px)', duration: 0.7, stagger: 0.07 }, 0)
+        .to(subline, { y: 0, opacity: 1, duration: 0.6 }, 0.6)
+        .to(ctas, { y: 0, opacity: 1, duration: 0.6 }, 0.75)
+        .to(trust, { y: 0, opacity: 1, duration: 0.6 }, 0.9)
+        .to(phone, { y: 0, rotateX: 0, opacity: 1, duration: 1.2 }, 0.1)
 
-    // CountUp balance
-    if (balanceEl) {
-      gsap.fromTo(balanceEl, { innerText: '0' }, {
-        innerText: '1240',
-        duration: 2,
-        delay: 0.8,
-        snap: { innerText: 1 },
-        ease: 'power2.out',
-        onUpdate() {
-          const val = parseFloat(balanceEl.innerText || '0')
-          balanceEl.innerText = val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-        },
-      })
-    }
-
-    // Trust badges slide up below phone
-    const badges = root.querySelectorAll<HTMLElement>('[data-badge]')
-    gsap.set(badges, { y: 30, opacity: 0 })
-    intro.to(badges, { y: 0, opacity: 1, duration: 0.5, stagger: 0.08 }, 1.0)
-
-    // ACT 2 + ACT 3: Scroll-scrubbed pinned timeline
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: root,
-        start: 'top top',
-        end: '+=250%',
-        pin: true,
-        scrub: 0.8,
-        anticipatePin: 1,
-      },
-      defaults: { ease: 'power2.inOut' },
-    })
-
-    // ACT 2 (progress 0.0–0.5): USDC chip flies to rail nodes via motion paths
-    // Chip detaches
-    if (usdcChip) {
-      tl.to(usdcChip, { scale: 1.3, y: -20, duration: 0.1 }, 0)
-    }
-
-    // Rail nodes pop in with spring-like scale
-    railNodes.forEach((node, i) => {
-      tl.to(node, {
-        scale: 1,
-        opacity: 1,
-        duration: 0.15,
-        ease: 'back.out(1.7)',
-      }, 0.05 + i * 0.08)
-    })
-
-    // Animate chip along bezier paths to each rail node
-    const chipPaths = [
-      { x: -200, y: -150 },
-      { x: 200, y: -120 },
-      { x: -180, y: 80 },
-      { x: 200, y: 100 },
-    ]
-    if (usdcChip) {
-      chipPaths.forEach((target, i) => {
-        const startTime = 0.08 + i * 0.1
-        tl.to(usdcChip, {
-          motionPath: {
-            path: [
-              { x: 0, y: 0 },
-              { x: target.x * 0.3, y: target.y - 60 },
-              { x: target.x, y: target.y },
-            ],
-            curviness: 1.5,
+      // CountUp balance
+      if (balanceEl) {
+        gsap.fromTo(balanceEl, { innerText: '0' }, {
+          innerText: '1240',
+          duration: 2,
+          delay: 0.8,
+          snap: { innerText: 1 },
+          ease: 'power2.out',
+          onUpdate() {
+            const val = parseFloat(balanceEl.innerText || '0')
+            balanceEl.innerText = val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
           },
-          duration: 0.1,
-          ease: 'power1.inOut',
-        }, startTime)
-        tl.to(usdcChip, { x: 0, y: -20, duration: 0.02 }, startTime + 0.1)
+        })
+      }
+
+      // Trust badges
+      const badges = root.querySelectorAll<HTMLElement>('[data-badge]')
+      gsap.set(badges, { y: 30, opacity: 0 })
+      intro.to(badges, { y: 0, opacity: 1, duration: 0.5, stagger: 0.08 }, 1.0)
+
+      // ACT 2 + ACT 3: Scroll-scrubbed pinned timeline
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: root,
+          start: 'top top',
+          end: '+=250%',
+          pin: true,
+          scrub: 0.8,
+          anticipatePin: 1,
+        },
+        defaults: { ease: 'power2.inOut' },
       })
-    }
 
-    // ACT 3 (progress 0.5–1.0): Phone shatters, vendor grid reveals
-    const explodes = [
-      { x: -80, y: -60, rotation: -12 },
-      { x: 80, y: -60, rotation: 12 },
-      { x: -80, y: 0, rotation: -8 },
-      { x: 80, y: 0, rotation: 8 },
-      { x: -80, y: 60, rotation: 14 },
-      { x: 80, y: 60, rotation: -14 },
-    ]
-    phonePanels.forEach((panel, i) => {
-      tl.to(panel, {
-        x: explodes[i].x,
-        y: explodes[i].y,
-        rotation: explodes[i].rotation,
-        opacity: 0,
-        duration: 0.3,
-      }, 0.5 + i * 0.04)
-    })
-
-    // Fade out phone container
-    tl.to(phone, { opacity: 0, scale: 0.9, duration: 0.3 }, 0.55)
-
-    // Reveal vendor grid
-    tl.to(grid, { opacity: 1, y: 0, duration: 0.4 }, 0.6)
-
-    // Stagger vendor cards
-    const vendorCards = root.querySelectorAll<HTMLElement>('[data-vendor-card]')
-    gsap.set(vendorCards, { y: 20, opacity: 0 })
-    vendorCards.forEach((card, i) => {
-      tl.to(card, { y: 0, opacity: 1, duration: 0.2 }, 0.65 + i * 0.06)
-    })
+      if (usdcChip) tl.to(usdcChip, { scale: 1.3, y: -20, duration: 0.1 }, 0)
+      railNodes.forEach((node, i) => {
+        tl.to(node, { scale: 1, opacity: 1, duration: 0.15, ease: 'back.out(1.7)' }, 0.05 + i * 0.08)
+      })
+      const chipPaths = [{ x: -200, y: -150 }, { x: 200, y: -120 }, { x: -180, y: 80 }, { x: 200, y: 100 }]
+      if (usdcChip) {
+        chipPaths.forEach((target, i) => {
+          const startTime = 0.08 + i * 0.1
+          tl.to(usdcChip, { motionPath: { path: [{ x: 0, y: 0 }, { x: target.x * 0.3, y: target.y - 60 }, { x: target.x, y: target.y }], curviness: 1.5 }, duration: 0.1, ease: 'power1.inOut' }, startTime)
+          tl.to(usdcChip, { x: 0, y: -20, duration: 0.02 }, startTime + 0.1)
+        })
+      }
+      const explodes = [{ x: -80, y: -60, rotation: -12 }, { x: 80, y: -60, rotation: 12 }, { x: -80, y: 0, rotation: -8 }, { x: 80, y: 0, rotation: 8 }, { x: -80, y: 60, rotation: 14 }, { x: 80, y: 60, rotation: -14 }]
+      phonePanels.forEach((panel, i) => {
+        tl.to(panel, { x: explodes[i].x, y: explodes[i].y, rotation: explodes[i].rotation, opacity: 0, duration: 0.3 }, 0.5 + i * 0.04)
+      })
+      tl.to(phone, { opacity: 0, scale: 0.9, duration: 0.3 }, 0.55)
+      if (grid) tl.to(grid, { opacity: 1, y: 0, duration: 0.4 }, 0.6)
+      const vendorCards = root.querySelectorAll<HTMLElement>('[data-vendor-card]')
+      gsap.set(vendorCards, { y: 20, opacity: 0 })
+      vendorCards.forEach((card, i) => { tl.to(card, { y: 0, opacity: 1, duration: 0.2 }, 0.65 + i * 0.06) })
+    }, 100)
 
     return () => {
-      intro.kill()
-      tl.scrollTrigger?.kill()
-      tl.kill()
-      ScrollTrigger.refresh()
+      clearTimeout(timer)
+      ScrollTrigger.getAll().forEach(st => { if (st.trigger === sectionRef.current) st.kill() })
     }
   }, [isDesktop, theme])
 
-  // ─── MOBILE: Framer Motion intro (no pin) ────────────────────────────────────
+  // ─── MOBILE: GSAP intro (no pin) ────────────────────────────────────────────
   useEffect(() => {
     if (isDesktop || prefersReducedMotion()) return
     const root = sectionRef.current
     if (!root) return
 
-    const phone = root.querySelector('[data-phone]') as HTMLElement
-    const headlineWords = root.querySelectorAll<HTMLElement>('[data-word]')
-    const subline = root.querySelector('[data-subline]') as HTMLElement
-    const ctas = root.querySelector('[data-ctas]') as HTMLElement
-    const trust = root.querySelector('[data-trust]') as HTMLElement
+    // BUG 2 FIX: setTimeout + null guards
+    const timer = setTimeout(() => {
+      const phone = root.querySelector('[data-phone]') as HTMLElement
+      if (!phone) return
+      const headlineWords = root.querySelectorAll<HTMLElement>('[data-word]')
+      const subline = root.querySelector('[data-subline]') as HTMLElement
+      const ctas = root.querySelector('[data-ctas]') as HTMLElement
+      const trust = root.querySelector('[data-trust]') as HTMLElement
+      if (!subline || !ctas || !trust) return
 
-    gsap.set(phone, { y: 60, opacity: 0 })
-    gsap.set(headlineWords, { y: 20, opacity: 0 })
-    gsap.set([subline, ctas, trust], { y: 16, opacity: 0 })
+      gsap.set(phone, { y: 60, opacity: 0 })
+      gsap.set(headlineWords, { y: 20, opacity: 0 })
+      gsap.set([subline, ctas, trust], { y: 16, opacity: 0 })
 
-    const intro = gsap.timeline({ delay: 0.1, defaults: { ease: 'power3.out' } })
-    intro
-      .to(phone, { y: 0, opacity: 1, duration: 0.6 }, 0)
-      .to(headlineWords, { y: 0, opacity: 1, duration: 0.4, stagger: 0.04 }, 0.05)
-      .to(subline, { y: 0, opacity: 1, duration: 0.35 }, 0.3)
-      .to(ctas, { y: 0, opacity: 1, duration: 0.35 }, 0.4)
-      .to(trust, { y: 0, opacity: 1, duration: 0.35 }, 0.5)
+      const intro = gsap.timeline({ delay: 0.1, defaults: { ease: 'power3.out' } })
+      intro
+        .to(phone, { y: 0, opacity: 1, duration: 0.6 }, 0)
+        .to(headlineWords, { y: 0, opacity: 1, duration: 0.4, stagger: 0.04 }, 0.05)
+        .to(subline, { y: 0, opacity: 1, duration: 0.35 }, 0.3)
+        .to(ctas, { y: 0, opacity: 1, duration: 0.35 }, 0.4)
+        .to(trust, { y: 0, opacity: 1, duration: 0.35 }, 0.5)
+    }, 100)
 
-    return () => { intro.kill() }
+    return () => { clearTimeout(timer) }
   }, [isDesktop])
 
   const handleCta = (e: React.MouseEvent<HTMLAnchorElement>, target: string) => {
@@ -351,11 +315,16 @@ export default function HeroBridge() {
               className="lg:col-span-5 flex items-center justify-center relative"
               style={{ perspective: '1400px' }}
             >
-              <div style={{ transformStyle: 'preserve-3d' }}>
+              <motion.div
+                style={{ transformStyle: 'preserve-3d' }}
+                whileInView={{ rotateY: [0, 2, -2, 0], rotateX: [0, -1, 1, 0] }}
+                viewport={{ once: false }}
+                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+              >
                 <PhoneFrame width={isDesktop ? 280 : 220} height={isDesktop ? 580 : 450} tilt>
                   <HeroPhoneScreen />
                 </PhoneFrame>
-              </div>
+              </motion.div>
 
               {/* Trust badges below phone — desktop */}
               <div className="hidden lg:flex absolute -bottom-16 left-1/2 -translate-x-1/2 gap-3">
@@ -535,7 +504,7 @@ function HeroPhoneScreen() {
         background: `radial-gradient(120% 60% at 50% 0%, ${theme.glow}18, transparent 60%), linear-gradient(180deg, ${theme.surface}, ${theme.background})`,
       }}
     >
-      <div className="flex flex-col p-3 h-full relative z-10">
+      <div className="flex flex-col p-3 h-full relative z-10" style={{ opacity: 1 }}>
         {/* Status bar */}
         <div className="flex justify-between text-[9px] mt-2 mb-2" style={{ color: theme.textMuted }}>
           <span>9:41</span>
@@ -599,36 +568,45 @@ function HeroPhoneScreen() {
 
         {/* Quick actions */}
         <div className="text-[9px] uppercase tracking-[0.18em] px-1 mb-2" style={{ color: theme.textMuted }}>
-          Quick Actions
+          Instant Cashout
         </div>
-        <div className="grid grid-cols-2 gap-2 flex-1">
+        <div className="flex flex-col gap-1.5 flex-1">
           {[
-            { label: 'Buy USDC', sub: 'MoMo / Bank' },
-            { label: 'Sell USDC', sub: 'Instant' },
-            { label: 'Send', sub: 'P2P' },
-            { label: 'Susu', sub: 'Save' },
-          ].map((action) => (
+            { name: 'CashApp', short: '$', color: '#00D54B', rate: '11.44' },
+            { name: 'Zelle', short: 'ZL', color: '#6D1ED4', rate: '11.48' },
+            { name: 'MoMo', short: 'MM', color: '#FFCB05', rate: '11.52' },
+            { name: 'Bank Transfer', short: 'BK', color: '#0088FF', rate: '11.46' },
+          ].map((v) => (
             <div
-              key={action.label}
-              className="rounded-xl p-2.5 flex flex-col justify-center"
+              key={v.name}
+              className="flex items-center gap-2 p-2 rounded-xl"
               style={{
                 backgroundColor: `${theme.surface}90`,
                 border: `1px solid ${theme.border}`,
               }}
             >
-              <div className="text-[11px] font-semibold" style={{ color: theme.textPrimary }}>
-                {action.label}
+              <div
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-[9px] font-black flex-shrink-0"
+                style={{
+                  background: `${v.color}30`,
+                  border: `1px solid ${v.color}40`,
+                  color: v.color,
+                }}
+              >
+                {v.short}
               </div>
-              <div className="text-[8px]" style={{ color: theme.textMuted }}>
-                {action.sub}
+              <div className="flex-1">
+                <div className="text-[10px] font-semibold" style={{ color: theme.textPrimary }}>{v.name}</div>
               </div>
+              <div className="text-[9px] font-bold" style={{ color: theme.accent }}>GH₵ {v.rate}</div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Explosion panels — 6-cell overlay for Act 3 shatter */}
-      <div className="pointer-events-none absolute inset-0 grid grid-cols-2 grid-rows-3 z-20">
+      {/* Explosion panels — 6-cell overlay for Act 3 shatter (DESKTOP ONLY) */}
+      {/* Start transparent — GSAP will set opacity:1 when ready */}
+      <div className="pointer-events-none absolute inset-0 grid grid-cols-2 grid-rows-3 z-20 hidden lg:grid">
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
@@ -637,6 +615,7 @@ function HeroPhoneScreen() {
             style={{
               background: theme.background,
               clipPath: 'inset(0)',
+              opacity: 0,
             }}
           />
         ))}
