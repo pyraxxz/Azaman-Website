@@ -101,19 +101,19 @@ export default function LiveTickerSection() {
             return (
               <div key={`${rate.symbol}-${i}`} className="flex-shrink-0">
                 <Glass radius="md" padding="none" mouseGlow={false}>
-                  <div className="flex items-center gap-3 px-4 py-3">
+                  <div className="flex items-center gap-3 px-3 py-2">
                     <div
-                      className="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xs"
+                      className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-[9px]"
                       style={{ backgroundColor: `${theme.accent}15`, color: theme.accent }}
                     >
                       {rate.symbol.substring(0, 2)}
                     </div>
                     <div>
-                      <div className="text-[11px] font-medium" style={{ color: theme.textMuted }}>
+                      <div className="text-[10px] font-medium" style={{ color: theme.textMuted }}>
                         {rate.pair}
                       </div>
                       <div
-                        className="text-base font-bold"
+                        className="text-sm font-bold"
                         style={{ color: theme.textPrimary, fontFamily: 'JetBrains Mono' }}
                       >
                         {formatPrice(rate.price)}
@@ -145,7 +145,7 @@ export default function LiveTickerSection() {
             return (
               <div
                 key={i}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl flex-shrink-0 text-xs"
+                className="flex items-center gap-2 px-3 py-2 rounded-xl flex-shrink-0 text-[10px]"
                 style={{
                   backgroundColor: isSold ? `${theme.danger}08` : `${theme.success}08`,
                   border: `1px solid ${isSold ? theme.danger : theme.success}20`,

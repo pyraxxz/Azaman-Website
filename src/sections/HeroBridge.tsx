@@ -90,13 +90,13 @@ export default function HeroBridge() {
       // CountUp balance
       if (balanceEl) {
         gsap.fromTo(balanceEl, { innerText: '0' }, {
-          innerText: '1240',
+          innerText: '12450',
           duration: 2,
           delay: 0.8,
           snap: { innerText: 1 },
           ease: 'power2.out',
           onUpdate() {
-            const val = parseFloat(balanceEl.innerText || '0')
+            const val = parseFloat(balanceEl.innerText.replace(/,/g, '') || '0')
             balanceEl.innerText = val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
           },
         })
@@ -155,27 +155,37 @@ export default function HeroBridge() {
     const root = sectionRef.current
     if (!root) return
 
-    // BUG 2 FIX: setTimeout + null guards
+    // BUG 2 FIX: setTimeout + null guards + fallback
     const timer = setTimeout(() => {
-      const phone = root.querySelector('[data-phone]') as HTMLElement
-      if (!phone) return
-      const headlineWords = root.querySelectorAll<HTMLElement>('[data-word]')
-      const subline = root.querySelector('[data-subline]') as HTMLElement
-      const ctas = root.querySelector('[data-ctas]') as HTMLElement
-      const trust = root.querySelector('[data-trust]') as HTMLElement
-      if (!subline || !ctas || !trust) return
+      try {
+        const phone = root.querySelector('[data-phone]') as HTMLElement
+        if (!phone) return
+        const headlineWords = root.querySelectorAll<HTMLElement>('[data-word]')
+        const subline = root.querySelector('[data-subline]') as HTMLElement
+        const ctas = root.querySelector('[data-ctas]') as HTMLElement
+        const trust = root.querySelector('[data-trust]') as HTMLElement
+        if (!subline || !ctas || !trust) return
 
-      gsap.set(phone, { y: 60, opacity: 0 })
-      gsap.set(headlineWords, { y: 20, opacity: 0 })
-      gsap.set([subline, ctas, trust], { y: 16, opacity: 0 })
+        gsap.set(phone, { y: 60, opacity: 0 })
+        gsap.set(headlineWords, { y: 20, opacity: 0 })
+        gsap.set([subline, ctas, trust], { y: 16, opacity: 0 })
 
-      const intro = gsap.timeline({ delay: 0.1, defaults: { ease: 'power3.out' } })
-      intro
-        .to(phone, { y: 0, opacity: 1, duration: 0.6 }, 0)
-        .to(headlineWords, { y: 0, opacity: 1, duration: 0.4, stagger: 0.04 }, 0.05)
-        .to(subline, { y: 0, opacity: 1, duration: 0.35 }, 0.3)
-        .to(ctas, { y: 0, opacity: 1, duration: 0.35 }, 0.4)
-        .to(trust, { y: 0, opacity: 1, duration: 0.35 }, 0.5)
+        const intro = gsap.timeline({ delay: 0.1, defaults: { ease: 'power3.out' } })
+        intro
+          .to(phone, { y: 0, opacity: 1, duration: 0.6 }, 0)
+          .to(headlineWords, { y: 0, opacity: 1, duration: 0.4, stagger: 0.04 }, 0.05)
+          .to(subline, { y: 0, opacity: 1, duration: 0.35 }, 0.3)
+          .to(ctas, { y: 0, opacity: 1, duration: 0.35 }, 0.4)
+          .to(trust, { y: 0, opacity: 1, duration: 0.35 }, 0.5)
+
+        intro.eventCallback('onInterrupt', () => {
+          gsap.set(phone, { opacity: 1, y: 0 })
+        })
+      } catch {
+        // Fallback: ensure phone is always visible if GSAP fails
+        const phone = root.querySelector('[data-phone]') as HTMLElement
+        if (phone) gsap.set(phone, { opacity: 1, y: 0 })
+      }
     }, 100)
 
     return () => { clearTimeout(timer) }
@@ -501,9 +511,16 @@ function HeroPhoneScreen() {
     <div
       className="w-full h-full overflow-hidden relative"
       style={{
-        background: `radial-gradient(120% 60% at 50% 0%, ${theme.glow}18, transparent 60%), linear-gradient(180deg, ${theme.surface}, ${theme.background})`,
+        background: theme.surface || '#0d0e12',
       }}
     >
+      {/* Radial glow overlay */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(120% 60% at 50% 0%, ${theme.glow || '#7c3aed'}18, transparent 60%)`,
+        }}
+      />
       <div className="flex flex-col p-3 h-full relative z-10" style={{ opacity: 1 }}>
         {/* Status bar */}
         <div className="flex justify-between text-[9px] mt-2 mb-2" style={{ color: theme.textMuted }}>
@@ -545,10 +562,10 @@ function HeroPhoneScreen() {
           />
           <div className="relative z-10">
             <div className="text-[9px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
-              USDC Balance
+              Total Balance
             </div>
             <div className="flex items-baseline gap-1 mt-0.5">
-              <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.6)' }}>$</span>
+              <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.6)' }}>GH₵</span>
               <span
                 data-balance
                 className="text-xl font-black"
@@ -559,7 +576,7 @@ function HeroPhoneScreen() {
             </div>
             <div className="flex items-center gap-2 text-[9px] mt-1">
               <span data-usdc-chip style={{ color: theme.accent }}>
-                ◎ USDC
+                ◎ 1,088.65 USDC
               </span>
               <span style={{ color: theme.success }}>+2.41%</span>
             </div>
@@ -568,14 +585,14 @@ function HeroPhoneScreen() {
 
         {/* Quick actions */}
         <div className="text-[9px] uppercase tracking-[0.18em] px-1 mb-2" style={{ color: theme.textMuted }}>
-          Instant Cashout
+          INSTANT CASHOUT
         </div>
         <div className="flex flex-col gap-1.5 flex-1">
           {[
-            { name: 'CashApp', short: '$', color: '#00D54B', rate: '11.44' },
-            { name: 'Zelle', short: 'ZL', color: '#6D1ED4', rate: '11.48' },
-            { name: 'MoMo', short: 'MM', color: '#FFCB05', rate: '11.52' },
-            { name: 'Bank Transfer', short: 'BK', color: '#0088FF', rate: '11.46' },
+            { name: 'Cash App', short: '$', color: '#00D54B', sub: '$cashtag', rate: '11.44' },
+            { name: 'Venmo', short: 'V', color: '#3D95CE', sub: '@handle', rate: '11.48' },
+            { name: 'Zelle', short: 'ZL', color: '#6D1ED4', sub: 'email/phone', rate: '11.52' },
+            { name: 'Apple Pay', short: '⌘', color: '#A0A0A0', sub: 'instant', rate: '11.46' },
           ].map((v) => (
             <div
               key={v.name}
@@ -597,6 +614,7 @@ function HeroPhoneScreen() {
               </div>
               <div className="flex-1">
                 <div className="text-[10px] font-semibold" style={{ color: theme.textPrimary }}>{v.name}</div>
+                <div className="text-[8px]" style={{ color: theme.textMuted }}>{v.sub}</div>
               </div>
               <div className="text-[9px] font-bold" style={{ color: theme.accent }}>GH₵ {v.rate}</div>
             </div>
