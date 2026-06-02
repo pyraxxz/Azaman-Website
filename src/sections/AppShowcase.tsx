@@ -163,12 +163,18 @@ export default function AppShowcase() {
             </div>
           </div>
         ) : (
-          /* Mobile: 5 stacked Glass cards with mini phone mockups — BUG 5 FIX */
-          <div className="flex flex-col gap-4">
+          /* Mobile: 5 stacked Glass cards with mini phone mockups */
+          <div className="flex flex-col gap-6">
             {SCREENS.map((screen, i) => {
               const Icon = screen.icon
               return (
-                <motion.div key={screen.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.1 }}>
+                <motion.div 
+                  key={screen.id} 
+                  initial={{ opacity: 0, y: 40 }} 
+                  whileInView={{ opacity: 1, y: 0 }} 
+                  viewport={{ once: false, amount: 0.3 }} 
+                  transition={{ duration: 0.6, ease: 'easeOut' }}
+                >
                   <Glass radius="xl" padding="md" tilt tiltMax={4}>
                     <div className="flex items-center gap-4">
                       {/* Mini phone mockup */}
@@ -198,7 +204,11 @@ export default function AppShowcase() {
 // =============================================================================
 // Full-size Phone Screen Components (desktop)
 // =============================================================================
-type ScreenProps = { accent: string; theme: { surface: string; background: string; textPrimary: string; textMuted: string; success: string; warning: string; accent: string; border: string } }
+type ScreenProps = { 
+  accent: string; 
+  theme: { surface: string; background: string; textPrimary: string; textMuted: string; success: string; warning: string; accent: string; border: string }
+  isMini?: boolean;
+}
 
 function ScreenHome({ accent, theme }: ScreenProps) {
   return (
@@ -291,18 +301,43 @@ function ScreenMarketplace({ accent, theme }: ScreenProps) {
   )
 }
 
-function ScreenTrade({ accent, theme }: ScreenProps) {
+function ScreenTrade({ accent, theme, isMini }: ScreenProps) {
+  // Use much smaller sizes for mini (mobile) view
+  const sizes = isMini ? {
+    container: 'p-1.5 gap-1',
+    title: 'text-[7px]',
+    timerContainer: 'px-1.5 py-0.5',
+    timerText: 'text-[7px]',
+    messagePadding: 'px-1.5 py-1',
+    messageText: 'text-[6px]',
+    messageRadius: 'rounded-md',
+    buttonPadding: 'px-2 py-1.5',
+    buttonText: 'text-[7px]',
+    buttonRadius: 'rounded-md',
+  } : {
+    container: 'p-4 gap-3',
+    title: 'text-xs',
+    timerContainer: 'px-4 py-2',
+    timerText: 'text-sm',
+    messagePadding: 'px-3 py-2',
+    messageText: 'text-[10px]',
+    messageRadius: 'rounded-xl',
+    buttonPadding: 'px-4 py-3',
+    buttonText: 'text-sm',
+    buttonRadius: 'rounded-xl',
+  };
+
   return (
-    <div className="w-full h-full p-2 flex flex-col gap-1.5" style={{ background: `linear-gradient(180deg, ${theme.surface}, ${theme.background})` }}>
-      <div className="text-[8px] font-bold mb-0.5" style={{ color: theme.textPrimary }}>Active Trade</div>
-      <div className="self-center px-2 py-1 rounded-full" style={{ backgroundColor: `${accent}15`, border: `1px solid ${accent}40` }}>
-        <span className="text-[9px] font-mono font-bold" style={{ color: accent }}>⏱ 14:32</span>
+    <div className={`w-full h-full flex flex-col ${sizes.container}`} style={{ background: `linear-gradient(180deg, ${theme.surface}, ${theme.background})` }}>
+      <div className={`${sizes.title} font-bold ${isMini ? 'mb-0' : ''}`} style={{ color: theme.textPrimary }}>Active Trade</div>
+      <div className={`self-center ${sizes.timerContainer} rounded-full`} style={{ backgroundColor: `${accent}15`, border: `1px solid ${accent}40` }}>
+        <span className={`${sizes.timerText} font-mono font-bold`} style={{ color: accent }}>⏱ 14:32</span>
       </div>
-      <div className="flex-1 flex flex-col gap-1.5">
-        <div className="self-start px-2 py-1.5 rounded-lg text-[7px]" style={{ backgroundColor: theme.surface, border: `1px solid ${theme.border}`, color: theme.textPrimary }}>Send to MoMo: 024-xxx-1234</div>
-        <div className="self-end px-2 py-1.5 rounded-lg text-[7px]" style={{ backgroundColor: `${accent}25`, color: theme.textPrimary }}>Payment sent!</div>
+      <div className={`flex-1 flex flex-col ${isMini ? 'gap-1' : 'gap-2'}`}>
+        <div className={`self-start ${sizes.messagePadding} ${sizes.messageRadius} ${sizes.messageText}`} style={{ backgroundColor: theme.surface, border: `1px solid ${theme.border}`, color: theme.textPrimary }}>Send to MoMo: 024-xxx-1234</div>
+        <div className={`self-end ${sizes.messagePadding} ${sizes.messageRadius} ${sizes.messageText}`} style={{ backgroundColor: `${accent}25`, color: theme.textPrimary }}>Payment sent!</div>
       </div>
-      <div className="px-3 py-2 rounded-lg text-center text-[9px] font-bold" style={{ backgroundColor: theme.success, color: '#000' }}>Confirm Payment</div>
+      <div className={`${sizes.buttonPadding} ${sizes.buttonRadius} text-center ${sizes.buttonText} font-bold`} style={{ backgroundColor: theme.success, color: '#000' }}>Confirm Payment</div>
     </div>
   )
 }
@@ -337,29 +372,20 @@ function ScreenVault({ accent, theme }: ScreenProps) {
 }
 
 // =============================================================================
-// Mini Screen Components (mobile cards — use full screens scaled to fit 100×180)
+// Mini Screen Components (mobile cards)
 // =============================================================================
 function MiniScreen({ idx, accent, theme }: { idx: number; accent: string; theme: ScreenProps['theme'] }) {
   const screens = [
-    <ScreenHome key="h" accent={accent} theme={theme} />,
-    <ScreenMarketplace key="m" accent={accent} theme={theme} />,
-    <ScreenTrade key="t" accent={accent} theme={theme} />,
-    <ScreenSusu key="s" accent={accent} theme={theme} />,
-    <ScreenVault key="v" accent={accent} theme={theme} />,
+    <ScreenHome key="h" accent={accent} theme={theme} isMini={true} />,
+    <ScreenMarketplace key="m" accent={accent} theme={theme} isMini={true} />,
+    <ScreenTrade key="t" accent={accent} theme={theme} isMini={true} />,
+    <ScreenSusu key="s" accent={accent} theme={theme} isMini={true} />,
+    <ScreenVault key="v" accent={accent} theme={theme} isMini={true} />,
   ]
 
   return (
-    <div className="w-full h-full overflow-hidden relative">
-      <div
-        style={{
-          transform: 'scale(0.72)',
-          transformOrigin: 'top left',
-          width: '139%',
-          height: '139%',
-        }}
-      >
-        {screens[idx]}
-      </div>
+    <div className="w-full h-full overflow-hidden">
+      {screens[idx]}
     </div>
   )
 }
