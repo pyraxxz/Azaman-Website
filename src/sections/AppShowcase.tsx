@@ -210,44 +210,82 @@ type ScreenProps = {
   isMini?: boolean;
 }
 
-function ScreenHome({ accent, theme }: ScreenProps) {
+function ScreenHome({ accent, theme, isMini }: ScreenProps) {
+  const s = isMini ? {
+    container: 'p-1.5',
+    statusText: 'text-[6px] mb-1',
+    brandText: 'text-[8px] mb-1',
+    balanceCard: 'rounded-lg p-1.5 mb-1',
+    balanceLabel: 'text-[6px]',
+    balanceAmount: 'text-sm',
+    balanceSub: 'text-[6px] mt-0',
+    portfolioGap: 'gap-1 mb-1',
+    portfolioPadding: 'p-1',
+    portfolioLabel: 'text-[5px]',
+    portfolioValue: 'text-[6px]',
+    sectionLabel: 'text-[6px] mb-1',
+    cashoutGap: 'gap-1',
+    cashoutPadding: 'p-1',
+    iconSize: 'w-4 h-4 text-[5px]',
+    cashoutName: 'text-[7px]',
+    cashoutRate: 'text-[6px]',
+  } : {
+    container: 'p-3',
+    statusText: 'text-[8px] mb-2',
+    brandText: 'text-[11px] mb-2',
+    balanceCard: 'rounded-xl p-2.5 mb-2',
+    balanceLabel: 'text-[8px]',
+    balanceAmount: 'text-lg',
+    balanceSub: 'text-[8px] mt-0.5',
+    portfolioGap: 'gap-1.5 mb-2',
+    portfolioPadding: 'p-1.5',
+    portfolioLabel: 'text-[6px]',
+    portfolioValue: 'text-[8px]',
+    sectionLabel: 'text-[8px] mb-1.5',
+    cashoutGap: 'gap-1.5',
+    cashoutPadding: 'p-1.5',
+    iconSize: 'w-6 h-6 text-[7px]',
+    cashoutName: 'text-[9px]',
+    cashoutRate: 'text-[8px]',
+  };
+
   return (
-    <div className="w-full h-full p-3 flex flex-col" style={{ background: `linear-gradient(180deg, ${theme.surface}, ${theme.background})` }}>
-      <div className="flex justify-between text-[8px] mb-2" style={{ color: theme.textMuted }}>
+    <div className={`w-full h-full ${s.container} flex flex-col`} style={{ background: `linear-gradient(180deg, ${theme.surface}, ${theme.background})` }}>
+      <div className={`flex justify-between ${s.statusText}`} style={{ color: theme.textMuted }}>
         <span>9:41</span>
         <span style={{ color: accent }}>● LIVE</span>
         <span>4G 100%</span>
       </div>
-      <div className="text-[11px] font-black mb-2" style={{ fontFamily: 'Space Grotesk', color: accent }}>AZAMAN</div>
-      <div className="rounded-xl p-2.5 mb-2" style={{ background: 'linear-gradient(135deg, #161618, #0A0A0C)', border: '1px solid rgba(255,255,255,0.05)' }}>
-        <div className="text-[8px]" style={{ color: 'rgba(255,255,255,0.5)' }}>Total Balance</div>
-        <div className="text-lg font-black mt-0.5" style={{ fontFamily: 'Space Grotesk', color: '#fff' }}>GHS 14,280.00</div>
-        <div className="text-[8px] mt-0.5" style={{ color: accent }}>≈ $1,240 USDC · +2.41%</div>
+      <div className={`${s.brandText} font-black`} style={{ fontFamily: 'Space Grotesk', color: accent }}>AZAMAN</div>
+      <div className={s.balanceCard} style={{ background: 'linear-gradient(135deg, #161618, #0A0A0C)', border: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className={s.balanceLabel} style={{ color: 'rgba(255,255,255,0.5)' }}>Total Balance</div>
+        <div className={`${s.balanceAmount} font-black mt-0.5`} style={{ fontFamily: 'Space Grotesk', color: '#fff' }}>GHS 14,280.00</div>
+        <div className={s.balanceSub} style={{ color: accent }}>≈ $1,240 USDC · +2.41%</div>
       </div>
-      <div className="flex gap-1.5 mb-2">
+      <div className={`flex ${s.portfolioGap}`}>
         {[{ l: 'Available', v: '$890', c: theme.success }, { l: 'Vendor', v: '$200', c: accent }, { l: 'Escrow', v: '$148', c: theme.warning }, { l: 'Dispute', v: '$2', c: '#F6465D' }].map((p) => (
-          <div key={p.l} className="flex-1 p-1.5 rounded-md text-center" style={{ backgroundColor: `${p.c}10`, border: `1px solid ${p.c}20` }}>
-            <div className="text-[6px]" style={{ color: 'rgba(255,255,255,0.5)' }}>{p.l}</div>
-            <div className="text-[8px] font-bold" style={{ color: p.c }}>{p.v}</div>
+          <div key={p.l} className={`flex-1 ${s.portfolioPadding} rounded-md text-center`} style={{ backgroundColor: `${p.c}10`, border: `1px solid ${p.c}20` }}>
+            <div className={s.portfolioLabel} style={{ color: 'rgba(255,255,255,0.5)' }}>{p.l}</div>
+            <div className={`${s.portfolioValue} font-bold`} style={{ color: p.c }}>{p.v}</div>
           </div>
         ))}
       </div>
-      <div className="text-[8px] uppercase tracking-[0.15em] mb-1.5" style={{ color: theme.textMuted }}>Instant Cashout</div>
-      <div className="flex flex-col gap-1.5 flex-1">
+      <div className={`${s.sectionLabel} uppercase tracking-[0.15em]`} style={{ color: theme.textMuted }}>Instant Cashout</div>
+      <div className={`flex flex-col ${s.cashoutGap} flex-1`}>
         {[
           { name: 'CashApp', short: '$', color: '#00D54B', rate: '11.44' },
           { name: 'Zelle', short: 'ZL', color: '#6D1ED4', rate: '11.48' },
           { name: 'MoMo', short: 'MM', color: '#FFCB05', rate: '11.52' },
           { name: 'Bank Transfer', short: 'BK', color: '#0088FF', rate: '11.46' },
         ].map((v) => (
-          <div key={v.name} className="flex items-center gap-2 p-1.5 rounded-lg" style={{ backgroundColor: `${theme.surface}90`, border: `1px solid ${theme.border}` }}>
-            <div className="w-6 h-6 rounded-md flex items-center justify-center text-[7px] font-black" style={{ background: `${v.color}30`, color: v.color }}>
+          <div key={v.name} className={`flex items-center gap-1.5 ${s.cashoutPadding} rounded-lg`} style={{ backgroundColor: `${theme.surface}90`, border: `1px solid ${theme.border}` }}>
+            <div className={`${s.iconSize} rounded-md flex items-center justify-center font-black`} style={{ background: `${v.color}30`, color: v.color }}>
               {v.short}
             </div>
-            <div className="flex-1">
-              <div className="text-[9px] font-semibold" style={{ color: theme.textPrimary }}>{v.name}</div>
+            <div className="flex-1 min-w-0">
+              <div className={`${s.cashoutName} font-semibold truncate`} style={{ color: theme.textPrimary }}>{v.name}</div>
             </div>
-            <div className="text-[8px] font-bold" style={{ color: accent }}>GH₵ {v.rate}</div>
+            <div className={`${s.cashoutRate} font-bold`} style={{ color: accent }}>GH₵ {v.rate}</div>
           </div>
         ))}
       </div>
@@ -255,21 +293,53 @@ function ScreenHome({ accent, theme }: ScreenProps) {
   )
 }
 
-function ScreenMarketplace({ accent, theme }: ScreenProps) {
+function ScreenMarketplace({ accent, theme, isMini }: ScreenProps) {
+  const s = isMini ? {
+    container: 'p-1.5 gap-1',
+    statusText: 'text-[6px] mb-0.5',
+    filterPadding: 'p-1',
+    filterText: 'text-[5px]',
+    toggleSize: 'w-5 h-2.5',
+    toggleDot: 'w-1.5 h-1.5',
+    cardPadding: 'p-1',
+    avatarSize: 'w-3.5 h-3.5 text-[5px]',
+    vendorName: 'text-[6px]',
+    vendorMethod: 'text-[5px]',
+    riskBadge: 'text-[5px] px-0.5 py-0',
+    rateText: 'text-[7px]',
+    pctText: 'text-[5px]',
+    tradeBtn: 'text-[5px] px-1 py-0',
+  } : {
+    container: 'p-3 gap-2',
+    statusText: 'text-[8px] mb-1',
+    filterPadding: 'p-2',
+    filterText: 'text-[7px]',
+    toggleSize: 'w-7 h-3.5',
+    toggleDot: 'w-2.5 h-2.5',
+    cardPadding: 'p-2',
+    avatarSize: 'w-5 h-5 text-[7px]',
+    vendorName: 'text-[8px]',
+    vendorMethod: 'text-[6px]',
+    riskBadge: 'text-[6px] px-1 py-0.5',
+    rateText: 'text-[9px]',
+    pctText: 'text-[6px]',
+    tradeBtn: 'text-[7px] px-1.5 py-0.5',
+  };
+
   return (
-    <div className="w-full h-full p-3 flex flex-col gap-2" style={{ background: `linear-gradient(180deg, ${theme.surface}, ${theme.background})` }}>
-      <div className="flex justify-between text-[8px] mb-1" style={{ color: theme.textMuted }}>
+    <div className={`w-full h-full ${s.container} flex flex-col`} style={{ background: `linear-gradient(180deg, ${theme.surface}, ${theme.background})` }}>
+      <div className={`flex justify-between ${s.statusText}`} style={{ color: theme.textMuted }}>
         <span>9:41</span>
         <span className="font-medium" style={{ color: theme.textPrimary }}>P2P Market</span>
         <span>●●●</span>
       </div>
-      <div className="flex items-center justify-between p-2 rounded-lg" style={{ backgroundColor: `${theme.surface}90`, border: `1px solid ${theme.border}` }}>
-        <span className="text-[7px] flex items-center gap-1" style={{ color: theme.textMuted }}>
-          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: theme.success }} />
+      <div className={`flex items-center justify-between ${s.filterPadding} rounded-lg`} style={{ backgroundColor: `${theme.surface}90`, border: `1px solid ${theme.border}` }}>
+        <span className={`${s.filterText} flex items-center gap-1`} style={{ color: theme.textMuted }}>
+          <span className="w-1 h-1 rounded-full" style={{ backgroundColor: theme.success }} />
           AI Smart Filter
         </span>
-        <div className="w-7 h-3.5 rounded-full flex items-center justify-end px-0.5" style={{ background: `linear-gradient(90deg, ${accent}80, ${accent})` }}>
-          <div className="w-2.5 h-2.5 rounded-full bg-white" />
+        <div className={`${s.toggleSize} rounded-full flex items-center justify-end px-0.5`} style={{ background: `linear-gradient(90deg, ${accent}80, ${accent})` }}>
+          <div className={`${s.toggleDot} rounded-full bg-white`} />
         </div>
       </div>
       {[
@@ -277,22 +347,22 @@ function ScreenMarketplace({ accent, theme }: ScreenProps) {
         { name: 'AkosuaSwap', rate: '11.52', method: 'MoMo', pct: '95%', risk: 'Low', riskColor: theme.success },
         { name: 'KofiBarter', rate: '11.60', method: 'CashApp', pct: '82%', risk: 'Med', riskColor: theme.warning },
       ].map((v) => (
-        <div key={v.name} className="p-2 rounded-lg" style={{ backgroundColor: `${theme.surface}60`, border: `1px solid ${theme.border}` }}>
-          <div className="flex justify-between items-start mb-1.5">
-            <div className="flex items-center gap-1.5">
-              <div className="w-5 h-5 rounded-md flex items-center justify-center text-[7px] font-bold" style={{ backgroundColor: `${accent}15`, color: accent }}>{v.name[0]}</div>
+        <div key={v.name} className={`${s.cardPadding} rounded-lg`} style={{ backgroundColor: `${theme.surface}60`, border: `1px solid ${theme.border}` }}>
+          <div className={`flex justify-between items-start ${isMini ? 'mb-1' : 'mb-1.5'}`}>
+            <div className="flex items-center gap-1">
+              <div className={`${s.avatarSize} rounded-md flex items-center justify-center font-bold`} style={{ backgroundColor: `${accent}15`, color: accent }}>{v.name[0]}</div>
               <div>
-                <div className="text-[8px] font-semibold" style={{ color: theme.textPrimary }}>{v.name}</div>
-                <div className="text-[6px]" style={{ color: theme.textMuted }}>{v.method}</div>
+                <div className={`${s.vendorName} font-semibold`} style={{ color: theme.textPrimary }}>{v.name}</div>
+                <div className={s.vendorMethod} style={{ color: theme.textMuted }}>{v.method}</div>
               </div>
             </div>
-            <span className="text-[6px] px-1 py-0.5 rounded-full" style={{ color: v.riskColor, backgroundColor: `${v.riskColor}15`, border: `1px solid ${v.riskColor}30` }}>{v.risk}</span>
+            <span className={`${s.riskBadge} rounded-full`} style={{ color: v.riskColor, backgroundColor: `${v.riskColor}15`, border: `1px solid ${v.riskColor}30` }}>{v.risk}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[9px] font-bold" style={{ color: theme.textPrimary }}>GH₵ {v.rate}/USDC</span>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[6px]" style={{ color: theme.textMuted }}>{v.pct}</span>
-              <span className="text-[7px] px-1.5 py-0.5 rounded-md font-bold" style={{ backgroundColor: accent, color: '#000' }}>Trade</span>
+            <span className={`${s.rateText} font-bold`} style={{ color: theme.textPrimary }}>GH₵ {v.rate}/USDC</span>
+            <div className="flex items-center gap-1">
+              <span className={s.pctText} style={{ color: theme.textMuted }}>{v.pct}</span>
+              <span className={`${s.tradeBtn} rounded-md font-bold`} style={{ backgroundColor: accent, color: '#000' }}>Trade</span>
             </div>
           </div>
         </div>
@@ -342,31 +412,65 @@ function ScreenTrade({ accent, theme, isMini }: ScreenProps) {
   )
 }
 
-function ScreenSusu({ accent, theme }: ScreenProps) {
+function ScreenSusu({ accent, theme, isMini }: ScreenProps) {
+  const s = isMini ? {
+    container: 'p-2 gap-1.5',
+    title: 'text-[9px]',
+    svgSize: 60,
+    cardPadding: 'p-2',
+    progressText: 'text-[8px]',
+    barHeight: 'h-1.5',
+  } : {
+    container: 'p-4 gap-3',
+    title: 'text-xs',
+    svgSize: 90,
+    cardPadding: 'p-3',
+    progressText: 'text-[10px]',
+    barHeight: 'h-2',
+  };
+
   return (
-    <div className="w-full h-full p-4 flex flex-col gap-3" style={{ background: `linear-gradient(180deg, ${theme.surface}, ${theme.background})` }}>
-      <div className="text-xs font-bold" style={{ color: theme.textPrimary }}>Susu Dashboard</div>
+    <div className={`w-full h-full ${s.container} flex flex-col`} style={{ background: `linear-gradient(180deg, ${theme.surface}, ${theme.background})` }}>
+      <div className={`${s.title} font-bold`} style={{ color: theme.textPrimary }}>Susu Dashboard</div>
       <div className="flex-1 flex items-center justify-center">
-        <svg width="90" height="90" viewBox="0 0 100 100">
+        <svg width={s.svgSize} height={s.svgSize} viewBox="0 0 100 100">
           <circle cx="50" cy="50" r="35" fill="none" stroke={`${accent}30`} strokeWidth="1" />
           {[0,1,2,3,4].map((i) => { const a=(i/5)*Math.PI*2-Math.PI/2; return <circle key={i} cx={50+Math.cos(a)*35} cy={50+Math.sin(a)*35} r="5" fill={`${accent}30`} stroke={accent} strokeWidth="0.5" /> })}
           <circle cx="50" cy="50" r="8" fill={`${accent}40`} />
         </svg>
       </div>
-      <div className="rounded-xl p-3" style={{ backgroundColor: `${theme.surface}90`, border: `1px solid ${theme.border}` }}>
-        <div className="flex justify-between text-[10px] mb-1"><span style={{ color: theme.textMuted }}>Next payout: Jun 15</span><span style={{ color: accent }}>65%</span></div>
-        <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: theme.border }}><div className="h-full w-[65%] rounded-full" style={{ backgroundColor: accent }} /></div>
+      <div className={`rounded-xl ${s.cardPadding}`} style={{ backgroundColor: `${theme.surface}90`, border: `1px solid ${theme.border}` }}>
+        <div className={`flex justify-between ${s.progressText} mb-1`}><span style={{ color: theme.textMuted }}>Next payout: Jun 15</span><span style={{ color: accent }}>65%</span></div>
+        <div className={`${s.barHeight} rounded-full overflow-hidden`} style={{ backgroundColor: theme.border }}><div className="h-full w-[65%] rounded-full" style={{ backgroundColor: accent }} /></div>
       </div>
     </div>
   )
 }
 
-function ScreenVault({ accent, theme }: ScreenProps) {
+function ScreenVault({ accent, theme, isMini }: ScreenProps) {
+  const s = isMini ? {
+    container: 'p-2 gap-2',
+    iconSize: 'w-12 h-12 rounded-xl',
+    iconEmoji: 'text-lg',
+    amountText: 'text-base',
+    unlockText: 'text-[8px] mt-0.5',
+    streakPadding: 'px-2 py-1',
+    streakText: 'text-[8px]',
+  } : {
+    container: 'p-4 gap-4',
+    iconSize: 'w-16 h-16 rounded-2xl',
+    iconEmoji: 'text-2xl',
+    amountText: 'text-xl',
+    unlockText: 'text-[10px] mt-1',
+    streakPadding: 'px-3 py-1.5',
+    streakText: 'text-[10px]',
+  };
+
   return (
-    <div className="w-full h-full p-4 flex flex-col items-center justify-center gap-4" style={{ background: `linear-gradient(180deg, ${theme.surface}, ${theme.background})` }}>
-      <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ backgroundColor: `${accent}15`, border: `1px solid ${accent}30` }}><span className="text-2xl">🔐</span></div>
-      <div className="text-center"><div className="text-xl font-black" style={{ fontFamily: 'Space Grotesk', color: theme.textPrimary }}>GHS 5,000</div><div className="text-[10px] mt-1" style={{ color: theme.textMuted }}>Unlocks in 18 days</div></div>
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ backgroundColor: `${theme.success}15`, border: `1px solid ${theme.success}30` }}><span className="text-[10px] font-bold" style={{ color: theme.success }}>🔥 14 day streak</span></div>
+    <div className={`w-full h-full ${s.container} flex flex-col items-center justify-center`} style={{ background: `linear-gradient(180deg, ${theme.surface}, ${theme.background})` }}>
+      <div className={`${s.iconSize} flex items-center justify-center`} style={{ backgroundColor: `${accent}15`, border: `1px solid ${accent}30` }}><span className={s.iconEmoji}>🔐</span></div>
+      <div className="text-center"><div className={`${s.amountText} font-black`} style={{ fontFamily: 'Space Grotesk', color: theme.textPrimary }}>GHS 5,000</div><div className={s.unlockText} style={{ color: theme.textMuted }}>Unlocks in 18 days</div></div>
+      <div className={`flex items-center gap-2 ${s.streakPadding} rounded-full`} style={{ backgroundColor: `${theme.success}15`, border: `1px solid ${theme.success}30` }}><span className={`${s.streakText} font-bold`} style={{ color: theme.success }}>🔥 14 day streak</span></div>
     </div>
   )
 }
