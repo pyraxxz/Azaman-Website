@@ -121,7 +121,7 @@ export default function AppShowcase() {
           <div className="flex items-center justify-center gap-12 min-h-[60vh]">
             {/* Left: Feature labels */}
             <div className="flex-1 max-w-xs relative" style={{ minHeight: 200 }}>
-              {SCREENS.map((s) => {
+              {SCREENS.map((s, i) => {
                 const Icon = s.icon
                 return (
                   <div key={s.id} data-label className="absolute inset-0 flex flex-col justify-center" style={{ opacity: i === 0 ? 1 : 0 }}>
