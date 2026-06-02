@@ -124,7 +124,7 @@ export default function ChatTicketsSection() {
         <div className="flex items-center justify-center">
           <div ref={stageRef} style={{ perspective: '1400px' }}>
             <PhoneFrame width={isMobile ? 240 : 300} height={isMobile ? 500 : 620} tilt>
-              <ChatStage />
+              <ChatStage isMobile={isMobile} />
             </PhoneFrame>
           </div>
         </div>
@@ -201,8 +201,73 @@ export default function ChatTicketsSection() {
 // ChatStage — scripted chat view inside the phone
 // =============================================================================
 
-function ChatStage() {
+function ChatStage({ isMobile }: { isMobile: boolean }) {
   const { theme } = useTheme()
+
+  // Responsive sizes - dramatically smaller for mobile
+  const s = isMobile ? {
+    headerPx: 'px-2.5 pt-6 pb-2',
+    avatarSize: 'w-7 h-7 text-xs',
+    nameText: 'text-xs',
+    statusText: 'text-[8px]',
+    timerPx: 'px-1.5 py-0.5',
+    timerText: 'text-[8px]',
+    msgPadding: 'p-2 gap-2',
+    systemText: 'text-[7px] px-2 py-0.5',
+    bubbleText: 'text-[9px] px-2.5 py-1.5',
+    audioSize: 'w-5 h-5',
+    audioPlaySize: 9,
+    audioBarGap: 'gap-[1px]',
+    audioTime: 'text-[8px]',
+    ticketPx: 'px-2 py-1.5',
+    ticketHeaderPx: 'px-2 py-1.5',
+    ticketIcon: 10,
+    ticketTitle: 'text-[8px]',
+    ticketTx: 'text-[7px]',
+    ticketLabel: 'text-[7px]',
+    ticketValue: 'text-[9px]',
+    proofPx: 'px-2 py-1.5',
+    proofIcon: 9,
+    proofText: 'text-[8px]',
+    proofDesc: 'text-[7px] px-2 pb-1.5',
+    composerPx: 'px-2 py-2',
+    composerIcon: 14,
+    composerHeight: 'h-7',
+    composerText: 'text-[9px] px-3',
+    composerBtnSize: 'w-7 h-7',
+    composerBtnIcon: 12,
+  } : {
+    headerPx: 'px-4 pt-8 pb-3',
+    avatarSize: 'w-9 h-9 text-sm',
+    nameText: 'text-sm',
+    statusText: 'text-[10px]',
+    timerPx: 'px-2 py-1',
+    timerText: 'text-[10px]',
+    msgPadding: 'p-3 gap-2.5',
+    systemText: 'text-[9px] px-3 py-1',
+    bubbleText: 'text-[11px] px-3.5 py-2',
+    audioSize: 'w-7 h-7',
+    audioPlaySize: 11,
+    audioBarGap: 'gap-[2px]',
+    audioTime: 'text-[10px]',
+    ticketPx: 'px-3 py-2.5',
+    ticketHeaderPx: 'px-3 py-2',
+    ticketIcon: 12,
+    ticketTitle: 'text-[10px]',
+    ticketTx: 'text-[9px]',
+    ticketLabel: 'text-[8px]',
+    ticketValue: 'text-[11px]',
+    proofPx: 'px-3 py-2',
+    proofIcon: 11,
+    proofText: 'text-[10px]',
+    proofDesc: 'text-[9px] px-3 pb-2',
+    composerPx: 'px-3 py-3',
+    composerIcon: 16,
+    composerHeight: 'h-9',
+    composerText: 'text-[11px] px-4',
+    composerBtnSize: 'w-9 h-9',
+    composerBtnIcon: 14,
+  };
 
   return (
     <div
@@ -214,70 +279,70 @@ function ChatStage() {
     >
       <div className="flex flex-col w-full h-full">
         {/* Header */}
-        <div className="flex items-center gap-3 px-4 pt-8 pb-3 border-b" style={{ borderColor: theme.border }}>
+        <div className={`flex items-center gap-2.5 ${s.headerPx} border-b`} style={{ borderColor: theme.border }}>
           <div
-            className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm"
+            className={`${s.avatarSize} rounded-full flex items-center justify-center font-bold`}
             style={{ backgroundColor: `${theme.accent}20`, color: theme.accent, border: `1px solid ${theme.accent}` }}
           >
             KG
           </div>
-          <div className="flex-1">
-            <div className="text-sm font-bold" style={{ color: theme.textPrimary }}>KwameGold</div>
-            <div className="text-[10px] flex items-center gap-1" style={{ color: theme.success }}>
+          <div className="flex-1 min-w-0">
+            <div className={`${s.nameText} font-bold truncate`} style={{ color: theme.textPrimary }}>KwameGold</div>
+            <div className={`${s.statusText} flex items-center gap-1`} style={{ color: theme.success }}>
               <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: theme.success }} />
               Trade #1024 · Active
             </div>
           </div>
           <motion.div
-            className="px-2 py-1 rounded-full"
+            className={`${s.timerPx} rounded-full`}
             style={{ backgroundColor: `${theme.accent}15`, border: `1px solid ${theme.accent}30` }}
             animate={{ scale: [1, 1.04, 1] }}
             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <span className="text-[10px] font-mono font-bold" style={{ color: theme.accent }}>⏱ 12:45</span>
+            <span className={`${s.timerText} font-mono font-bold`} style={{ color: theme.accent }}>⏱ 12:45</span>
           </motion.div>
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-hidden p-3 flex flex-col gap-2.5 relative">
-          <div data-msg="0" className="self-center px-3 py-1 rounded-full text-[9px]" style={{ backgroundColor: `${theme.surface}b0`, color: theme.textMuted }}>
+        <div className={`flex-1 overflow-hidden ${s.msgPadding} flex flex-col relative`}>
+          <div data-msg="0" className={`self-center ${s.systemText} rounded-full`} style={{ backgroundColor: `${theme.surface}b0`, color: theme.textMuted }}>
             Trade started · 100 USDC for GH₵ 1,144
           </div>
 
           {/* Vendor bubble */}
-          <div data-msg="1" className="self-start max-w-[78%] px-3.5 py-2 rounded-2xl rounded-bl-md text-[11px] leading-relaxed" style={{ backgroundColor: theme.card, color: theme.textPrimary, border: `1px solid ${theme.border}` }}>
+          <div data-msg="1" className={`self-start max-w-[78%] ${s.bubbleText} rounded-2xl rounded-bl-md leading-relaxed`} style={{ backgroundColor: theme.card, color: theme.textPrimary, border: `1px solid ${theme.border}` }}>
             Hey 👋 Send to MTN MoMo: <strong>024-xxx-1234</strong>. Name: Kwame A.
           </div>
 
           {/* Typing */}
-          <div data-typing className="self-start flex items-center gap-1 px-3 py-2 rounded-2xl" style={{ backgroundColor: theme.card, border: `1px solid ${theme.border}` }}>
+          <div data-typing className={`self-start flex items-center gap-1 ${isMobile ? 'px-2 py-1.5' : 'px-3 py-2'} rounded-2xl`} style={{ backgroundColor: theme.card, border: `1px solid ${theme.border}` }}>
             {[0, 1, 2].map((i) => (
               <motion.span key={i} className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: theme.textMuted }} animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.1, repeat: Infinity, delay: i * 0.18 }} />
             ))}
           </div>
 
           {/* Audio waveform */}
-          <div data-msg="2" className="self-end max-w-[80%] px-3 py-2.5 rounded-2xl rounded-br-md flex items-center gap-2" style={{ backgroundColor: `${theme.accent}25`, border: `1px solid ${theme.accent}40` }}>
-            <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: theme.accent }}>
-              <Play size={11} className="text-black" fill="currentColor" />
+          <div data-msg="2" className={`self-end max-w-[80%] ${isMobile ? 'px-2 py-2' : 'px-3 py-2.5'} rounded-2xl rounded-br-md flex items-center gap-2`} style={{ backgroundColor: `${theme.accent}25`, border: `1px solid ${theme.accent}40` }}>
+            <div className={`${s.audioSize} rounded-full flex items-center justify-center flex-shrink-0`} style={{ backgroundColor: theme.accent }}>
+              <Play size={s.audioPlaySize} className="text-black" fill="currentColor" />
             </div>
-            <div className="flex-1 flex items-center gap-[2px] h-7">
-              {Array.from({ length: 28 }).map((_, i) => (
+            <div className={`flex-1 flex items-center ${s.audioBarGap} ${s.audioSize}`}>
+              {Array.from({ length: isMobile ? 20 : 28 }).map((_, i) => (
                 <div key={i} data-bar className="flex-1 rounded-full" style={{ backgroundColor: theme.accent, height: '70%', transformOrigin: 'center' }} />
               ))}
             </div>
-            <span className="text-[10px] font-mono flex-shrink-0" style={{ color: theme.accent }}>0:08</span>
+            <span className={`${s.audioTime} font-mono flex-shrink-0`} style={{ color: theme.accent }}>0:08</span>
           </div>
 
           {/* Progress */}
-          <div className="self-end -mt-2 h-[2px] rounded-full overflow-hidden" style={{ width: '70%', backgroundColor: `${theme.accent}20` }}>
+          <div className="self-end -mt-1 h-[2px] rounded-full overflow-hidden" style={{ width: '70%', backgroundColor: `${theme.accent}20` }}>
             <div data-progress className="h-full" style={{ backgroundColor: theme.accent, width: 0 }} />
           </div>
 
           {/* Ticket card */}
           <div
             data-ticket
-            className="self-center w-[90%] mt-1 rounded-2xl overflow-hidden"
+            className={`self-center ${isMobile ? 'w-[95%] mt-0.5' : 'w-[90%] mt-1'} rounded-2xl overflow-hidden`}
             style={{
               background: `linear-gradient(135deg, ${theme.accent}25, ${theme.accent}08)`,
               border: `1px solid ${theme.accent}50`,
@@ -286,30 +351,30 @@ function ChatStage() {
               boxShadow: `0 0 24px ${theme.accent}30`,
             }}
           >
-            <div className="flex items-center gap-2 px-3 py-2 border-b" style={{ borderColor: `${theme.accent}30` }}>
-              <Receipt size={12} style={{ color: theme.accent }} />
-              <span className="text-[10px] font-bold tracking-[0.18em] uppercase" style={{ color: theme.accent }}>
+            <div className={`flex items-center gap-2 ${s.ticketHeaderPx} border-b`} style={{ borderColor: `${theme.accent}30` }}>
+              <Receipt size={s.ticketIcon} style={{ color: theme.accent }} />
+              <span className={`${s.ticketTitle} font-bold tracking-[0.18em] uppercase`} style={{ color: theme.accent }}>
                 TRADE #4721
               </span>
-              <span className="ml-auto text-[9px]" style={{ color: theme.textMuted }}>#TX-88421</span>
+              <span className={`ml-auto ${s.ticketTx}`} style={{ color: theme.textMuted }}>#TX-88421</span>
             </div>
-            <div className="px-3 py-2.5 grid grid-cols-3 gap-2">
+            <div className={`${s.ticketPx} grid grid-cols-3 gap-2`}>
               <div>
-                <div className="text-[8px]" style={{ color: theme.textMuted }}>Amount</div>
-                <div className="text-[11px] font-bold" style={{ color: theme.textPrimary }}>100 USDC</div>
+                <div className={s.ticketLabel} style={{ color: theme.textMuted }}>Amount</div>
+                <div className={`${s.ticketValue} font-bold`} style={{ color: theme.textPrimary }}>100 USDC</div>
               </div>
               <div>
-                <div className="text-[8px]" style={{ color: theme.textMuted }}>Rate</div>
-                <div className="text-[11px] font-bold" style={{ color: theme.accent }}>GH₵ 11.44</div>
+                <div className={s.ticketLabel} style={{ color: theme.textMuted }}>Rate</div>
+                <div className={`${s.ticketValue} font-bold`} style={{ color: theme.accent }}>GH₵ 11.44</div>
               </div>
               <div>
-                <div className="text-[8px]" style={{ color: theme.textMuted }}>Status</div>
-                <div className="text-[11px] font-bold" style={{ color: theme.success }}>Open</div>
+                <div className={s.ticketLabel} style={{ color: theme.textMuted }}>Status</div>
+                <div className={`${s.ticketValue} font-bold`} style={{ color: theme.success }}>Open</div>
               </div>
             </div>
             {/* SVG barcode pattern */}
-            <div className="px-3 pb-2">
-              <svg width="100%" height="12" viewBox="0 0 200 12" preserveAspectRatio="none">
+            <div className={isMobile ? 'px-2 pb-1.5' : 'px-3 pb-2'}>
+              <svg width="100%" height={isMobile ? '10' : '12'} viewBox="0 0 200 12" preserveAspectRatio="none">
                 {Array.from({ length: 40 }).map((_, i) => (
                   <rect
                     key={i}
@@ -326,31 +391,31 @@ function ChatStage() {
           </div>
 
           {/* User reply */}
-          <div data-msg="3" className="self-end max-w-[78%] px-3.5 py-2 rounded-2xl rounded-br-md text-[11px] leading-relaxed flex items-center gap-2" style={{ backgroundColor: `${theme.accent}25`, border: `1px solid ${theme.accent}40`, color: theme.textPrimary }}>
+          <div data-msg="3" className={`self-end max-w-[78%] ${s.bubbleText} rounded-2xl rounded-br-md leading-relaxed flex items-center gap-2`} style={{ backgroundColor: `${theme.accent}25`, border: `1px solid ${theme.accent}40`, color: theme.textPrimary }}>
             <span>Sent. Uploading proof now…</span>
-            <CheckCheck size={11} style={{ color: theme.accent }} />
+            <CheckCheck size={isMobile ? 9 : 11} style={{ color: theme.accent }} />
           </div>
 
           {/* Payment proof */}
           <div data-msg="4" className="self-end max-w-[78%] rounded-2xl rounded-br-md overflow-hidden" style={{ backgroundColor: `${theme.success}10`, border: `1px solid ${theme.success}30` }}>
-            <div className="px-3 py-2 flex items-center gap-2">
-              <Upload size={11} style={{ color: theme.success }} />
-              <span className="text-[10px] font-bold" style={{ color: theme.success }}>Payment Proof Uploaded</span>
+            <div className={`${s.proofPx} flex items-center gap-2`}>
+              <Upload size={s.proofIcon} style={{ color: theme.success }} />
+              <span className={`${s.proofText} font-bold`} style={{ color: theme.success }}>Payment Proof Uploaded</span>
             </div>
-            <div className="px-3 pb-2 text-[9px]" style={{ color: theme.textMuted }}>
+            <div className={`${s.proofDesc}`} style={{ color: theme.textMuted }}>
               MoMo Receipt · TXN-88421 · Verified by AI
             </div>
           </div>
         </div>
 
         {/* Composer */}
-        <div className="flex items-center gap-2 px-3 py-3 border-t" style={{ borderColor: theme.border, backgroundColor: theme.surface }}>
-          <Mic size={16} style={{ color: theme.textMuted }} />
-          <div className="flex-1 h-9 rounded-full px-4 flex items-center text-[11px]" style={{ backgroundColor: theme.background, border: `1px solid ${theme.border}`, color: theme.textMuted }}>
+        <div className={`flex items-center gap-2 ${s.composerPx} border-t`} style={{ borderColor: theme.border, backgroundColor: theme.surface }}>
+          <Mic size={s.composerIcon} style={{ color: theme.textMuted }} />
+          <div className={`flex-1 ${s.composerHeight} rounded-full ${s.composerText} flex items-center`} style={{ backgroundColor: theme.background, border: `1px solid ${theme.border}`, color: theme.textMuted }}>
             Type a message…
           </div>
-          <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ backgroundColor: theme.accent }}>
-            <Send size={14} style={{ color: theme.isDark ? '#000' : '#fff' }} />
+          <div className={`${s.composerBtnSize} rounded-full flex items-center justify-center`} style={{ backgroundColor: theme.accent }}>
+            <Send size={s.composerBtnIcon} style={{ color: theme.isDark ? '#000' : '#fff' }} />
           </div>
         </div>
       </div>
