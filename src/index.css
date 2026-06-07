@@ -157,6 +157,43 @@
   .tilt-card:hover {
     transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateY(-4px);
   }
+
+  /* Animated gradient-clipped text — flows the themed hero gradient through
+     glyphs. Pairs with GSAP opacity/blur reveals (those touch transform/filter,
+     not color, so they compose cleanly). */
+  .text-gradient-flow {
+    background: linear-gradient(
+      120deg,
+      var(--theme-hero-1),
+      var(--theme-hero-2),
+      var(--theme-hero-3),
+      var(--theme-hero-1)
+    );
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: aurora-flow 8s ease infinite;
+  }
+
+  /* Fine film grain — adds analog depth over flat dark surfaces. Drop into a
+     pointer-events-none absolute layer inside a section for a premium feel. */
+  .grain-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+
+  /* Slow continuous float — for ambient accent orbs. */
+  @keyframes drift-slow {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, -22px, 0); }
+  }
+  .drift-slow { animation: drift-slow 9s ease-in-out infinite; }
 }
 
 /* Ensure no horizontal overflow on mobile */
