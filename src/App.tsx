@@ -23,6 +23,9 @@ export default function App() {
         <SkipToContent />
         <CustomCursor />
         <ScrollProgress />
+        {/* Site-wide film grain for analog depth. Fixed + pointer-events-none,
+            z below the nav (z-50) so the nav stays crisp. */}
+        <div aria-hidden className="grain-overlay" style={{ position: 'fixed', zIndex: 40 }} />
         <Navigation />
         <main id="main-content">
           <PageTransition>

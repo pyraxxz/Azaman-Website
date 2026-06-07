@@ -6,7 +6,7 @@
 
 import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowDown, ShieldCheck, Zap, Globe } from 'lucide-react'
 import ParticleCanvas from '@/components/ParticleCanvas'
 import PhoneFrame from '@/components/PhoneFrame'
@@ -16,11 +16,29 @@ import { useLenis } from '@/lib/lenis'
 import { gsap, ScrollTrigger, prefersReducedMotion } from '@/lib/gsap'
 
 const RAILS = [
-  { id: 'zelle', label: 'Zelle', short: 'ZL', color: '#6D1ED4' },
-  { id: 'cashapp', label: 'CashApp', short: '$', color: '#00D54B' },
-  { id: 'momo', label: 'MoMo', short: 'MM', color: '#FFCB05' },
+  { id: 'momo', label: 'MTN MoMo', short: 'MM', color: '#FFCB05' },
+  { id: 'telecel', label: 'Telecel Cash', short: 'TC', color: '#E2231A' },
+  { id: 'airteltigo', label: 'AirtelTigo', short: 'AT', color: '#0033A0' },
   { id: 'bank', label: 'Bank Transfer', short: 'BK', color: '#0088FF' },
 ]
+
+// ── Bridge clusters ───────────────────────────────────────────────────────────
+// Azaman's whole pitch is bridging LOCAL Ghanaian rails and GLOBAL/cross-border
+// rails through a single neutral asset (USDC). Both clusters are shown together
+// and a looping conversion animation moves value across the bridge in both
+// directions. The animation is Framer-driven (autoplay/loop), so it renders
+// IDENTICALLY on mobile and desktop — no scroll dependency, full consistency.
+const LOCAL_RAILS = RAILS
+const GLOBAL_RAILS = [
+  { id: 'cashapp', label: 'Cash App', short: '$', color: '#00D54B' },
+  { id: 'venmo', label: 'Venmo', short: 'V', color: '#3D95CE' },
+  { id: 'zelle', label: 'Zelle', short: 'ZL', color: '#6D1ED4' },
+  { id: 'applepay', label: 'Apple Pay', short: '⌘', color: '#A0A0A0' },
+]
+
+// Currency labels the central USDC core cycles through to signify conversion:
+// local fiat → the stablecoin bridge → foreign fiat.
+const BRIDGE_CYCLE = ['GH₵ 15.20', '◎ 1.00 USDC', '$ 1.00']
 
 const VENDOR_GRID = [
   { name: 'KwameGold', rate: '11.44', method: 'Bank', risk: 'Low', trades: 1248 },
@@ -75,7 +93,12 @@ export default function HeroBridge() {
       gsap.set(ctas, { y: 24, opacity: 0 })
       gsap.set(trust, { y: 24, opacity: 0 })
       gsap.set(railNodes, { scale: 0, opacity: 0 })
-      gsap.set(phonePanels, { x: 0, y: 0, rotation: 0, opacity: 1 })
+      // BLACK-SCREEN FIX: the shatter panels must START invisible so the live
+      // phone screen is visible on load. They are momentarily flashed in and
+      // then flung out during the Act-3 scroll explosion (see below). Forcing
+      // opacity:1 here (the old behaviour) blanketed the screen in opaque dark
+      // tiles before any scroll happened → the hero phone read as a black slab.
+      gsap.set(phonePanels, { x: 0, y: 0, rotation: 0, opacity: 0 })
       if (grid) gsap.set(grid, { opacity: 0, y: 30 })
 
       // ACT 1: Intro
@@ -191,6 +214,41 @@ export default function HeroBridge() {
     return () => { clearTimeout(timer) }
   }, [isDesktop])
 
+  // ─── SHARED: Payment-bridge scroll reveal (mobile + desktop) ─────────────────
+  // The desktop hero owns a pinned/scrubbed timeline and the old mobile path had
+  // NO scroll-driven motion at all. This non-pinned reveal fires on BOTH form
+  // factors (start: 'top 88%', once) so the bridge animates in on scroll the same
+  // way everywhere — the consistency fix. The bridge's internal conversion loop
+  // autoplays regardless, so reduced-motion users still see a static, legible
+  // bridge (we just skip the entrance tween here).
+  useEffect(() => {
+    if (prefersReducedMotion()) return
+    const root = sectionRef.current
+    if (!root) return
+    let tween: ReturnType<typeof gsap.fromTo> | null = null
+    const timer = setTimeout(() => {
+      const bridge = root.querySelector('[data-bridge]') as HTMLElement | null
+      if (!bridge) return
+      tween = gsap.fromTo(
+        bridge,
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: 'power3.out',
+          scrollTrigger: { trigger: bridge, start: 'top 88%', once: true },
+        }
+      )
+    }, 120)
+    return () => {
+      clearTimeout(timer)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(tween as any)?.scrollTrigger?.kill?.()
+      tween?.kill()
+    }
+  }, [])
+
   const handleCta = (e: React.MouseEvent<HTMLAnchorElement>, target: string) => {
     e.preventDefault()
     scrollTo(target, { offset: -80 })
@@ -213,7 +271,10 @@ export default function HeroBridge() {
 
       {/* Main content */}
       <div className="relative z-[2] min-h-[100dvh] flex items-center">
-        <div className="w-full max-w-[1280px] mx-auto px-5 lg:px-12 py-24 lg:py-0">
+        {/* pt clears the fixed floating nav (~80px) so centered hero content
+            never tucks under it on first paint — esp. now the bridge makes
+            the column taller. */}
+        <div className="w-full max-w-[1280px] mx-auto px-5 lg:px-12 pt-28 pb-16 lg:pt-32 lg:pb-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Left: Text content */}
             <div className="lg:col-span-7 text-center lg:text-left">
@@ -222,23 +283,21 @@ export default function HeroBridge() {
                 className="text-4xl sm:text-5xl lg:text-[72px] xl:text-[80px] font-bold leading-[0.95] tracking-[-0.03em] mb-7"
                 style={{ fontFamily: 'Space Grotesk' }}
               >
-                {HEADLINE_WORDS.map((word, i) => (
-                  <span
-                    key={i}
-                    data-word
-                    className="inline-block mr-[0.25em]"
-                    style={{
-                      color: (word === 'Finance.' || word === 'Different.')
-                        ? theme.accent
-                        : theme.textPrimary,
-                      textShadow: (word === 'Finance.' || word === 'Different.')
-                        ? `0 0 36px ${theme.accent}55`
-                        : 'none',
-                    }}
-                  >
-                    {word}
-                  </span>
-                ))}
+                {HEADLINE_WORDS.map((word, i) => {
+                  const isAccent = word === 'Finance.' || word === 'Different.'
+                  return (
+                    <span
+                      key={i}
+                      data-word
+                      className={`inline-block mr-[0.25em] ${isAccent ? 'text-gradient-flow' : ''}`}
+                      style={{
+                        color: isAccent ? undefined : theme.textPrimary,
+                      }}
+                    >
+                      {word}
+                    </span>
+                  )
+                })}
               </h1>
 
               {/* Subline */}
@@ -247,8 +306,8 @@ export default function HeroBridge() {
                 className="text-base sm:text-lg lg:text-xl font-light max-w-2xl mx-auto lg:mx-0 mb-10 leading-relaxed"
                 style={{ color: theme.textSecondary }}
               >
-                Buy and sell USDC at the best rates. Hold stablecoins. Cash out via MoMo.
-                Zero hidden fees.
+                Trade, save, and move money at the speed of trust. P2P stablecoin swaps,
+                group Susu savings, secure Vaults, and instant MoMo cash-out: all in one app.
               </p>
 
               {/* CTAs */}
@@ -362,34 +421,8 @@ export default function HeroBridge() {
             </div>
           </div>
 
-          {/* Mobile: payment rail pill carousel */}
-          <div className="lg:hidden mt-8 -mx-5 px-5 overflow-x-auto scrollbar-none">
-            <div className="flex gap-3 w-max">
-              {RAILS.map((rail) => (
-                <div
-                  key={rail.id}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-full shrink-0"
-                  style={{
-                    backgroundColor: `${theme.surface}`,
-                    border: `1px solid ${theme.border}`,
-                  }}
-                >
-                  <div
-                    className="w-6 h-6 rounded-md flex items-center justify-center text-[9px] font-black"
-                    style={{
-                      backgroundColor: `${rail.color}20`,
-                      color: rail.color,
-                    }}
-                  >
-                    {rail.short}
-                  </div>
-                  <span className="text-xs font-medium" style={{ color: theme.textPrimary }}>
-                    {rail.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* Payment bridge — LOCAL ⇄ USDC ⇄ GLOBAL conversion (all breakpoints) */}
+          <PaymentBridge />
         </div>
       </div>
 
@@ -637,6 +670,173 @@ function HeroPhoneScreen() {
             }}
           />
         ))}
+      </div>
+    </div>
+  )
+}
+
+// =============================================================================
+// PaymentBridge — the "bridging the gap" centerpiece.
+// LOCAL rails (left)  ⇄  USDC core (center)  ⇄  GLOBAL rails (right)
+// A looping, Framer-driven conversion animation runs in BOTH directions and the
+// core cycles its currency label (GH₵ → USDC → $). Autoplay + loop means it is
+// pixel-consistent across mobile and desktop with no scroll dependency. Layout
+// is horizontal on desktop and stacks vertically on mobile.
+// =============================================================================
+
+type Rail = { id: string; label: string; short: string; color: string }
+
+function PaymentBridge() {
+  const { theme } = useTheme()
+  return (
+    <div data-bridge className="relative mx-auto mt-10 lg:mt-12 max-w-4xl">
+      <div className="text-center mb-6">
+        <div className="text-[11px] uppercase tracking-[0.24em] mb-1.5" style={{ color: theme.textMuted }}>
+          One asset · every border
+        </div>
+        <div className="text-sm lg:text-base font-medium" style={{ color: theme.textSecondary }}>
+          Local money and global money — bridged through USDC, settled in seconds.
+        </div>
+      </div>
+
+      <div className="flex flex-col lg:flex-row items-center justify-center gap-3 lg:gap-5">
+        <ChipCluster title="Local" rails={LOCAL_RAILS} />
+        <BridgeConnector />
+        <UsdcCore />
+        <BridgeConnector reverse />
+        <ChipCluster title="Global" rails={GLOBAL_RAILS} />
+      </div>
+    </div>
+  )
+}
+
+function ChipCluster({ title, rails }: { title: string; rails: Rail[] }) {
+  const { theme } = useTheme()
+  return (
+    <div className="flex flex-col items-center gap-2 shrink-0">
+      <div className="text-[10px] uppercase tracking-[0.2em]" style={{ color: theme.textMuted }}>
+        {title}
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {rails.map((r, i) => (
+          <motion.div
+            key={r.id}
+            initial={{ opacity: 0.9 }}
+            animate={{
+              opacity: [0.9, 1, 0.9],
+              boxShadow: [`0 0 0px ${r.color}00`, `0 0 14px ${r.color}66`, `0 0 0px ${r.color}00`],
+            }}
+            transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut', delay: i * 0.35 }}
+            className="flex items-center gap-2 px-3 py-2 rounded-xl"
+            style={{ backgroundColor: theme.surface, border: `1px solid ${theme.border}` }}
+          >
+            <span
+              className="w-6 h-6 rounded-md flex items-center justify-center text-[9px] font-black shrink-0"
+              style={{ background: `${r.color}22`, color: r.color }}
+            >
+              {r.short}
+            </span>
+            <span className="text-[11px] font-medium whitespace-nowrap" style={{ color: theme.textPrimary }}>
+              {r.label}
+            </span>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function BridgeConnector({ reverse = false }: { reverse?: boolean }) {
+  const { theme } = useTheme()
+  const dot = { background: theme.accent, boxShadow: `0 0 10px ${theme.accent}` }
+  const delay = reverse ? 0.9 : 0
+  return (
+    <>
+      {/* Desktop: horizontal connector */}
+      <div
+        className="hidden lg:block relative h-[2px] flex-1 min-w-[56px] max-w-[120px] rounded-full"
+        style={{ background: theme.border }}
+      >
+        <div
+          className="absolute inset-0 rounded-full opacity-40"
+          style={{
+            background: `linear-gradient(${reverse ? 270 : 90}deg, ${theme.accent}, ${theme.glow})`,
+          }}
+        />
+        <motion.div
+          className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full"
+          style={dot}
+          animate={{ left: reverse ? ['100%', '0%'] : ['0%', '100%'], opacity: [0, 1, 1, 0] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay }}
+        />
+      </div>
+      {/* Mobile: vertical connector */}
+      <div
+        className="lg:hidden relative w-[2px] h-7 rounded-full self-center"
+        style={{ background: theme.border }}
+      >
+        <div
+          className="absolute inset-0 rounded-full opacity-40"
+          style={{
+            background: `linear-gradient(${reverse ? 0 : 180}deg, ${theme.accent}, ${theme.glow})`,
+          }}
+        />
+        <motion.div
+          className="absolute left-1/2 -translate-x-1/2 w-2 h-2 rounded-full"
+          style={dot}
+          animate={{ top: reverse ? ['100%', '0%'] : ['0%', '100%'], opacity: [0, 1, 1, 0] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay }}
+        />
+      </div>
+    </>
+  )
+}
+
+function UsdcCore() {
+  const { theme } = useTheme()
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => setI((v) => (v + 1) % BRIDGE_CYCLE.length), 1600)
+    return () => clearInterval(t)
+  }, [])
+  return (
+    <div className="relative flex flex-col items-center justify-center shrink-0 py-1">
+      {/* expanding pulse ring */}
+      <motion.div
+        aria-hidden
+        className="absolute rounded-full"
+        style={{ width: 72, height: 72, border: `1px solid ${theme.accent}` }}
+        animate={{ scale: [1, 1.7], opacity: [0.5, 0] }}
+        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }}
+      />
+      <motion.div
+        className="relative w-[72px] h-[72px] rounded-full flex flex-col items-center justify-center"
+        style={{
+          background: `radial-gradient(circle at 30% 30%, ${theme.accent}, ${theme.glow})`,
+          boxShadow: `0 0 36px ${theme.accent}66`,
+          color: theme.isDark ? '#000' : '#fff',
+        }}
+        animate={{ scale: [1, 1.06, 1] }}
+        transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+      >
+        <span className="text-[10px] font-black tracking-wide leading-none">USDC</span>
+        <div className="h-[14px] overflow-hidden mt-1">
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={i}
+              initial={{ y: 9, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -9, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="block text-[9px] font-bold whitespace-nowrap leading-none"
+            >
+              {BRIDGE_CYCLE[i]}
+            </motion.span>
+          </AnimatePresence>
+        </div>
+      </motion.div>
+      <div className="mt-2 text-[9px] uppercase tracking-[0.18em]" style={{ color: theme.textMuted }}>
+        Bridge
       </div>
     </div>
   )
