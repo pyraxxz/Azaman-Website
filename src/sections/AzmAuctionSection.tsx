@@ -61,7 +61,13 @@ export default function AzmAuctionSection() {
       // Pick a non-leader to escalate
       setVendors((prev) => {
         if (!listRef.current) return prev
-        const state = Flip.getState(listRef.current.querySelectorAll('[data-vendor-row]'))
+        // Pin the list height before the reorder. Without this the Flip below
+        // (which lifts rows to position:absolute) collapses the container to 0,
+        // yanking everything beneath the leaderboard up and back — a visible
+        // page jump on every refresh. Locking the height keeps the page steady.
+        const listEl = listRef.current
+        listEl.style.minHeight = `${listEl.offsetHeight}px`
+        const state = Flip.getState(listEl.querySelectorAll('[data-vendor-row]'))
         const next = prev.map((v) => ({ ...v }))
         // Choose someone in positions 2-5 to outbid the leader
         const challengerIdx = 1 + Math.floor(Math.random() * (next.length - 2))
@@ -85,6 +91,10 @@ export default function AzmAuctionSection() {
             stagger: 0.05,
             absolute: true,
             onEnter: (els) => gsap.fromTo(els, { opacity: 0 }, { opacity: 1 }),
+            onComplete: () => {
+              // Release the height lock once rows are back in normal flow.
+              if (listRef.current) listRef.current.style.minHeight = ''
+            },
           })
         })
         return next
@@ -157,12 +167,6 @@ export default function AzmAuctionSection() {
               </span>
               <span className="text-xs" style={{ color: theme.textMuted }}>
                 burned today
-              </span>
-              <span
-                className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                style={{ backgroundColor: `${theme.success}15`, color: theme.success }}
-              >
-                LIVE
               </span>
             </div>
           </Glass>

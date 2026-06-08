@@ -26,7 +26,10 @@ export default function ChatTicketsSection() {
   const stageRef = useRef<HTMLDivElement>(null)
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024
 
-  // GSAP chat loop - preserved from original
+  // GSAP chat loop - messages reveal progressively as the phone scrolls into
+  // view. The same scroll-scrubbed timeline now drives BOTH mobile and desktop:
+  // previously desktop ran an auto-playing loop, so on a laptop you had to sit
+  // and wait for each message to play out instead of pulling them in on scroll.
   useEffect(() => {
     const stage = stageRef.current
     if (!stage) return
@@ -41,14 +44,15 @@ export default function ChatTicketsSection() {
       gsap.set(stage.querySelector('[data-progress]'), { width: '0%' })
       gsap.set(stage.querySelector('[data-ticket]'), { opacity: 0, scale: 0.85, y: 12 })
 
-      if (isMobile) {
-        tl = gsap.timeline({
-          scrollTrigger: { trigger: stage, start: 'top 90%', end: 'center center', scrub: 0.5 },
-          defaults: { ease: 'power3.out' },
-        })
-      } else {
-        tl = gsap.timeline({ defaults: { ease: 'power3.out' }, repeat: -1, repeatDelay: 1.6 })
-      }
+      tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: stage,
+          start: 'top 85%',
+          end: isMobile ? 'center center' : 'center 45%',
+          scrub: 0.5,
+        },
+        defaults: { ease: 'power3.out' },
+      })
 
       tl.to(stage.querySelector('[data-msg="0"]'), { opacity: 1, y: 0, duration: 0.5 })
       tl.to(stage.querySelector('[data-typing]'), { opacity: 1, duration: 0.3 }, '+=0.2')
@@ -68,23 +72,7 @@ export default function ChatTicketsSection() {
       tl.to(stage.querySelector('[data-msg="4"]'), { opacity: 1, y: 0, duration: 0.5 }, '+=0.2')
     }
 
-    if (isMobile) {
-      setup()
-    } else {
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            if (tl) tl.resume()
-            else setup()
-          } else {
-            tl?.pause()
-          }
-        },
-        { threshold: 0.3 }
-      )
-      observer.observe(stage)
-      return () => { observer.disconnect(); tl?.kill() }
-    }
+    setup()
 
     return () => { tl?.scrollTrigger?.kill(); tl?.kill() }
   }, [isMobile])

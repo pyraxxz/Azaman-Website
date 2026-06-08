@@ -788,7 +788,7 @@ function VendorApplicationSteps() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {steps.map((s) => {
             const Icon = s.icon
             return (
@@ -1020,10 +1020,10 @@ function VendorClosing() {
             the tab three times. We'll take it from there.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4">
             <a
               href="https://azaman.me/app"
-              className="group flex items-center gap-3 px-8 py-4 rounded-2xl font-semibold transition-transform active:scale-[0.97]"
+              className="group flex items-center justify-center gap-3 px-8 py-4 rounded-2xl font-semibold transition-transform active:scale-[0.97]"
               style={{
                 backgroundColor: theme.accent,
                 color: theme.isDark ? '#000' : '#fff',
@@ -1035,7 +1035,7 @@ function VendorClosing() {
             </a>
             <a
               href="mailto:vendors@azaman.app?subject=Vendor%20Application%20Inquiry"
-              className="flex items-center gap-2 px-7 py-4 rounded-2xl font-semibold transition-transform active:scale-[0.97]"
+              className="flex items-center justify-center gap-2 px-7 py-4 rounded-2xl font-semibold transition-transform active:scale-[0.97]"
               style={{
                 color: theme.textPrimary,
                 border: `1px solid ${theme.border}`,
