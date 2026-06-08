@@ -42,8 +42,10 @@ export default function LiveTickerSection() {
   const { theme } = useTheme()
   const [rates, setRates] = useState(INITIAL_RATES)
 
-  // Drift the rates slightly every 3 seconds to feel live
+  // Drift the rates slightly every 3 seconds to feel live. Skipped under
+  // prefers-reduced-motion so the figures stay static and legible.
   useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const interval = setInterval(() => {
       setRates((prev) =>
         prev.map((r) => {
@@ -81,7 +83,7 @@ export default function LiveTickerSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="flex items-center justify-between flex-wrap gap-4"
         >
           <div className="flex items-center gap-3">
@@ -115,7 +117,7 @@ export default function LiveTickerSection() {
         </motion.div>
       </div>
 
-      {/* Rates marquee — left to right */}
+      {/* Rates marquee - left to right */}
       <div className="relative overflow-hidden mask-fade">
         <div className="flex marquee-track gap-8 whitespace-nowrap">
           {[...rates, ...rates].map((rate, i) => {
@@ -159,7 +161,7 @@ export default function LiveTickerSection() {
         </div>
       </div>
 
-      {/* Trades marquee — right to left */}
+      {/* Trades marquee - right to left */}
       <div className="relative overflow-hidden mt-4 mask-fade">
         <div className="flex marquee-track-reverse gap-6 whitespace-nowrap">
           {[...TRADES, ...TRADES, ...TRADES].map((trade, i) => (

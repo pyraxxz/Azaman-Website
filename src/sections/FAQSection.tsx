@@ -1,5 +1,5 @@
 // =============================================================================
-// FAQSection — Two-column layout with search + category filter + accordion
+// FAQSection - Two-column layout with search + category filter + accordion
 // =============================================================================
 
 import { useState, useMemo } from 'react'
@@ -16,7 +16,7 @@ interface FAQItem {
 
 const FAQS: FAQItem[] = [
   { category: 'general', question: 'What is Azaman and how does it work?', answer: 'Azaman is a P2P finance platform built for Africa. Buy/sell USDC at competitive rates, send money instantly for free, and protect savings from devaluation. Verified vendors + smart escrow = secure trades.' },
-  { category: 'fees', question: 'Does Azaman charge fees?', answer: 'Internal transfers are free. Revenue comes from the spread between corporate and retail rates — users never see explicit fees. 2% exit fee only on fiat/crypto withdrawals.' },
+  { category: 'fees', question: 'Does Azaman charge fees?', answer: 'Internal transfers are free. Revenue comes from the spread between corporate and retail rates - users never see explicit fees. 2% exit fee only on fiat/crypto withdrawals.' },
   { category: 'security', question: 'How are my funds protected?', answer: 'Biometric auth, multi-sig cold storage, ACID transactions, rate limiting, real-time fraud detection. Every P2P trade locked in escrow. Licensed under Act 1154 (2025).' },
   { category: 'general', question: 'How fast are transactions?', answer: 'Internal: under 0.3s. P2P trades: 2-5 minutes after payment confirmation. Crypto withdrawals: 1-3 minutes depending on network.' },
   { category: 'vendors', question: 'How do I become a vendor?', answer: 'Complete KYC, pass background check, apply in-app. Set your own margins. Keep 40-50% of margin profit per trade. Top vendors earn $500+/month.' },
@@ -52,10 +52,10 @@ export default function FAQSection() {
   }, [category, search])
 
   return (
-    <section id="faq" className="relative py-24 lg:py-32 overflow-hidden" style={{ backgroundColor: theme.background }}>
+    <section id="faq" className="relative py-24 lg:py-40 overflow-hidden" style={{ backgroundColor: theme.background }}>
       <div className="relative max-w-[1200px] mx-auto px-5 lg:px-12">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-12">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }} className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4 text-xs font-semibold uppercase tracking-[0.2em]" style={{ backgroundColor: `${theme.accent}10`, border: `1px solid ${theme.accent}30`, color: theme.accent }}>
             <HelpCircle size={12} />
             FAQ
@@ -92,6 +92,7 @@ export default function FAQSection() {
                   key={cat.id}
                   onClick={() => { setCategory(cat.id); setOpen(null) }}
                   data-cursor="hover"
+                  className="transition-transform active:scale-[0.97]"
                 >
                   <Glass radius="lg" padding="none">
                     <div
@@ -131,7 +132,7 @@ export default function FAQSection() {
                       >
                         <button
                           onClick={() => setOpen(isOpen ? null : i)}
-                          className="w-full flex items-center justify-between gap-4 p-5 text-left"
+                          className="w-full flex items-center justify-between gap-4 p-5 text-left transition-transform active:scale-[0.99]"
                           data-cursor="hover"
                         >
                           <span className="font-semibold text-sm" style={{ color: theme.textPrimary }}>{faq.question}</span>

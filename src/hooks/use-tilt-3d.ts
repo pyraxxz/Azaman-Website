@@ -1,5 +1,5 @@
 // =============================================================================
-// useTilt3D — pointer-tracking 3D perspective tilt for cards and mockups.
+// useTilt3D - pointer-tracking 3D perspective tilt for cards and mockups.
 // Uses GSAP quickTo for damped interpolation. Honors reduced motion.
 // Returns a ref + handlers to spread on the target element.
 // =============================================================================

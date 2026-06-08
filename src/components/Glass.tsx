@@ -1,5 +1,5 @@
 // =============================================================================
-// Glass — themed glassmorphic surface with optional 3D tilt and anamorphic
+// Glass - themed glassmorphic surface with optional 3D tilt and anamorphic
 // cursor-tracking glow. Use it as the base for every premium card on the site.
 // =============================================================================
 

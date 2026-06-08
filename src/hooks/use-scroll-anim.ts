@@ -1,5 +1,5 @@
 // =============================================================================
-// useScrollAnim — thin wrapper around useGSAP that auto-cleans ScrollTriggers.
+// useScrollAnim - thin wrapper around useGSAP that auto-cleans ScrollTriggers.
 // Pass a setup function that receives the element ref and returns nothing or a
 // gsap.context cleanup. ScrollTrigger.refresh is called on theme changes to
 // keep pin durations correct after layout shifts.
@@ -24,7 +24,7 @@ export function useScrollAnim<T extends HTMLElement = HTMLElement>(setup: SetupF
     { scope: ref, dependencies: [themeId] }
   )
 
-  // After theme change, layout heights can shift — refresh ScrollTrigger.
+  // After theme change, layout heights can shift - refresh ScrollTrigger.
   useEffect(() => {
     const id = window.setTimeout(() => ScrollTrigger.refresh(), 60)
     return () => window.clearTimeout(id)

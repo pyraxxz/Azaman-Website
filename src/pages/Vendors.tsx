@@ -1,5 +1,5 @@
 // =============================================================================
-// Vendors — the long-form vendor landing page that the mobile app deep-links to
+// Vendors - the long-form vendor landing page that the mobile app deep-links to
 // at https://azaman.me/vendors. Mirrors the app's vendor application flow:
 //   - Explains the in-app pull-tab gestures (3-pull for new users, 1-pull
 //     for existing vendors).
@@ -39,9 +39,9 @@ export default function VendorsPage() {
   const { theme } = useTheme()
 
   useEffect(() => {
-    document.title = 'Become a Vendor — Azaman'
+    document.title = 'Become a Vendor - Azaman'
     const desc =
-      'Apply to become a verified Azaman P2P vendor. Earn 40–50% of every margin spread, climb the leaderboard, and claim the boosted spotlight slot.'
+      'Apply to become a verified Azaman P2P vendor. Earn 40-50% of every margin spread, climb the leaderboard, and claim the boosted spotlight slot.'
     let meta = document.querySelector<HTMLMetaElement>('meta[name="description"]')
     if (!meta) {
       meta = document.createElement('meta')
@@ -50,7 +50,7 @@ export default function VendorsPage() {
     }
     meta.content = desc
     return () => {
-      document.title = 'Azaman — The Future of P2P Finance in Africa'
+      document.title = 'Azaman - The Future of P2P Finance in Africa'
     }
   }, [])
 
@@ -69,7 +69,7 @@ export default function VendorsPage() {
 }
 
 // =============================================================================
-// HERO — crown / storefront / aurora gradient
+// HERO - crown / storefront / aurora gradient
 // =============================================================================
 function VendorHero() {
   const { theme } = useTheme()
@@ -135,7 +135,7 @@ function VendorHero() {
           </h1>
           <p className="text-lg lg:text-xl leading-relaxed max-w-2xl mb-8" style={{ color: theme.textSecondary }}>
             Azaman vendors are the engine of the P2P marketplace. Set your own margins,
-            keep 40–50% of every fill, and compete for the boosted leaderboard slot. Top
+            keep 40-50% of every fill, and compete for the boosted leaderboard slot. Top
             vendors earn USD 500+ per month with under an hour of daily work.
           </p>
           <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -145,7 +145,7 @@ function VendorHero() {
                 e.preventDefault()
                 document.getElementById('apply')?.scrollIntoView({ behavior: 'smooth' })
               }}
-              className="group flex items-center gap-3 px-7 py-3.5 rounded-2xl font-semibold cursor-pointer"
+              className="group flex items-center gap-3 px-7 py-3.5 rounded-2xl font-semibold cursor-pointer transition-transform active:scale-[0.97]"
               style={{
                 backgroundColor: theme.accent,
                 color: theme.isDark ? '#000' : '#fff',
@@ -157,7 +157,7 @@ function VendorHero() {
             </a>
             <Link
               to="/"
-              className="flex items-center gap-2 px-6 py-3.5 rounded-2xl font-semibold"
+              className="flex items-center gap-2 px-6 py-3.5 rounded-2xl font-semibold transition-transform active:scale-[0.97]"
               style={{
                 color: theme.textPrimary,
                 border: `1px solid ${theme.border}`,
@@ -165,7 +165,7 @@ function VendorHero() {
                 backdropFilter: 'blur(8px)',
               }}
             >
-              ← Back to home
+              {'<-'} Back to home
             </Link>
           </div>
 
@@ -198,7 +198,7 @@ function VendorHero() {
           </div>
         </motion.div>
 
-        {/* Right — vendor card mockup */}
+        {/* Right - vendor card mockup */}
         <motion.div
           initial={{ opacity: 0, scale: 0.94 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -307,7 +307,7 @@ function VendorHero() {
 }
 
 // =============================================================================
-// PULL-TAB EXPLAINER — describes the in-app gesture for new users vs vendors
+// PULL-TAB EXPLAINER - describes the in-app gesture for new users vs vendors
 // =============================================================================
 function VendorPullTabExplainer() {
   const { theme } = useTheme()
@@ -350,7 +350,7 @@ function VendorPullTabExplainer() {
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* New user — 3 pulls */}
+          {/* New user - 3 pulls */}
           <Glass radius="2xl" padding="lg" tilt tiltMax={5} elevated>
             <div className="flex items-start gap-3 mb-4">
               <div
@@ -383,7 +383,7 @@ function VendorPullTabExplainer() {
                 {
                   n: 1,
                   title: 'Toggle vendor mode in Settings.',
-                  desc: 'Open the app, head to Settings → Vendor Mode, and flip it on. This unlocks the pull-tab on the P2P screen.',
+                  desc: 'Open the app, head to Settings -> Vendor Mode, and flip it on. This unlocks the pull-tab on the P2P screen.',
                 },
                 {
                   n: 2,
@@ -434,7 +434,7 @@ function VendorPullTabExplainer() {
             </div>
           </Glass>
 
-          {/* Existing vendor — 1 pull */}
+          {/* Existing vendor - 1 pull */}
           <Glass radius="2xl" padding="lg" tilt tiltMax={5} elevated>
             <div className="flex items-start gap-3 mb-4">
               <div
@@ -467,7 +467,7 @@ function VendorPullTabExplainer() {
                 {
                   n: 1,
                   title: 'Open the P2P market.',
-                  desc: 'The pull-tab on the left edge now reads "VENDOR" — your verified credential is recognized.',
+                  desc: 'The pull-tab on the left edge now reads "VENDOR" - your verified credential is recognized.',
                 },
                 {
                   n: 2,
@@ -477,7 +477,7 @@ function VendorPullTabExplainer() {
                 {
                   n: 3,
                   title: 'Manage everything from one place.',
-                  desc: 'Live ads, queue, dispute alerts, AZM boost auction, earnings, and trust score — all in the dashboard.',
+                  desc: 'Live ads, queue, dispute alerts, AZM boost auction, earnings, and trust score - all in the dashboard.',
                 },
               ].map((step) => (
                 <li key={step.n} className="flex gap-3">
@@ -524,7 +524,7 @@ function VendorPullTabExplainer() {
 }
 
 // =============================================================================
-// EARNINGS — how vendors get paid
+// EARNINGS - how vendors get paid
 // =============================================================================
 function VendorEarnings() {
   const { theme } = useTheme()
@@ -567,7 +567,7 @@ function VendorEarnings() {
             {
               icon: Banknote,
               title: 'Margin share',
-              metric: '40 – 50%',
+              metric: '40 - 50%',
               desc: 'Of every spread on every fill. Higher tier vendors get the bigger slice.',
             },
             {
@@ -580,7 +580,7 @@ function VendorEarnings() {
               icon: Gauge,
               title: 'Tier system',
               metric: '5 levels',
-              desc: 'Bronze → Silver → Gold → Diamond → Legend. Each tier unlocks larger limits and faster payouts.',
+              desc: 'Bronze -> Silver -> Gold -> Diamond -> Legend. Each tier unlocks larger limits and faster payouts.',
             },
           ].map((card) => {
             const Icon = card.icon
@@ -617,7 +617,7 @@ function VendorEarnings() {
 }
 
 // =============================================================================
-// EARNINGS CALCULATOR — real-time estimate based on trades/day and avg size
+// EARNINGS CALCULATOR - real-time estimate based on trades/day and avg size
 // =============================================================================
 function VendorEarningsCalculator() {
   const { theme } = useTheme()
@@ -713,7 +713,7 @@ function VendorEarningsCalculator() {
 }
 
 // =============================================================================
-// 5-STEP APPLICATION — mirrors VendorApplyScreen in the app
+// 5-STEP APPLICATION - mirrors VendorApplyScreen in the app
 // =============================================================================
 function VendorApplicationSteps() {
   const { theme } = useTheme()
@@ -897,7 +897,7 @@ function VendorRequirements() {
 }
 
 // =============================================================================
-// FAQ — vendor-specific
+// FAQ - vendor-specific
 // =============================================================================
 function VendorFAQ() {
   const { theme } = useTheme()
@@ -916,7 +916,7 @@ function VendorFAQ() {
     },
     {
       q: 'Do I get to set my own rates?',
-      a: 'Yes — within platform-defined floor and ceiling bands tied to the live oracle rate. The AI matchmaker rewards competitive rates with more inbound matches.',
+      a: 'Yes - within platform-defined floor and ceiling bands tied to the live oracle rate. The AI matchmaker rewards competitive rates with more inbound matches.',
     },
     {
       q: 'How does the AZM boost auction work?',
@@ -924,7 +924,7 @@ function VendorFAQ() {
     },
     {
       q: 'Can I deactivate vendor mode without losing my history?',
-      a: 'Yes. Toggle off in Settings → Vendor Mode. Your trade history, reviews, and trust score are preserved. Reactivating restores everything.',
+      a: 'Yes. Toggle off in Settings -> Vendor Mode. Your trade history, reviews, and trust score are preserved. Reactivating restores everything.',
     },
   ]
   return (
@@ -964,7 +964,7 @@ function VendorFAQ() {
               }}
             >
               <summary
-                className="cursor-pointer list-none flex items-center justify-between gap-4 p-5"
+                className="cursor-pointer list-none flex items-center justify-between gap-4 p-5 transition-transform active:scale-[0.99]"
                 style={{ color: theme.textPrimary }}
               >
                 <span className="font-semibold text-sm sm:text-base">{faq.q}</span>
@@ -990,7 +990,7 @@ function VendorFAQ() {
 }
 
 // =============================================================================
-// CLOSING — final CTA: download + email
+// CLOSING - final CTA: download + email
 // =============================================================================
 function VendorClosing() {
   const { theme } = useTheme()
@@ -1023,7 +1023,7 @@ function VendorClosing() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               href="https://azaman.me/app"
-              className="group flex items-center gap-3 px-8 py-4 rounded-2xl font-semibold"
+              className="group flex items-center gap-3 px-8 py-4 rounded-2xl font-semibold transition-transform active:scale-[0.97]"
               style={{
                 backgroundColor: theme.accent,
                 color: theme.isDark ? '#000' : '#fff',
@@ -1035,7 +1035,7 @@ function VendorClosing() {
             </a>
             <a
               href="mailto:vendors@azaman.app?subject=Vendor%20Application%20Inquiry"
-              className="flex items-center gap-2 px-7 py-4 rounded-2xl font-semibold"
+              className="flex items-center gap-2 px-7 py-4 rounded-2xl font-semibold transition-transform active:scale-[0.97]"
               style={{
                 color: theme.textPrimary,
                 border: `1px solid ${theme.border}`,

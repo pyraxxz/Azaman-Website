@@ -1,5 +1,5 @@
 // =============================================================================
-// AzmAuctionSection — vendor leaderboard. The top "Boosted" slot is the prize.
+// AzmAuctionSection - vendor leaderboard. The top "Boosted" slot is the prize.
 // Vendors burn AZM to claim it. Every ~6s a different vendor outbids and the
 // list re-orders using a GSAP Flip animation.
 // =============================================================================
@@ -99,7 +99,7 @@ export default function AzmAuctionSection() {
     <section
       ref={sectionRef}
       id="auction"
-      className="relative py-24 lg:py-32 overflow-hidden"
+      className="relative py-24 lg:py-40 overflow-hidden"
       style={{ backgroundColor: theme.background }}
     >
       <AmbientOrbs count={2} />
@@ -115,7 +115,7 @@ export default function AzmAuctionSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-10"
         >
           <div
@@ -170,7 +170,7 @@ export default function AzmAuctionSection() {
 
         {/* Main content: Leaderboard + Burn Stats */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Leaderboard — 2/3 width */}
+        {/* Leaderboard - 2/3 width */}
         <div className="lg:col-span-2">
         <Glass radius="2xl" padding="md" elevated mouseGlow>
           <div ref={listRef} className="space-y-2.5">
@@ -332,7 +332,7 @@ export default function AzmAuctionSection() {
                   initial={{ height: 0 }}
                   whileInView={{ height: `${h}%` }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: i * 0.05 }}
+                  transition={{ duration: 0.6, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
                   className="flex-1 rounded-t-sm"
                   style={{ backgroundColor: `${theme.accent}${i === 6 ? '' : '60'}` }}
                 />
@@ -355,7 +355,7 @@ export default function AzmAuctionSection() {
                   <div className="text-sm font-bold" style={{ color: theme.textPrimary }}>Become a Vendor</div>
                   <div className="text-xs" style={{ color: theme.textMuted }}>Earn 40-50% of every spread</div>
                 </div>
-                <span className="text-lg" style={{ color: theme.accent }}>→</span>
+                <span className="text-lg" style={{ color: theme.accent }}>{'->'}</span>
               </div>
             </Glass>
           </Link>
@@ -367,7 +367,7 @@ export default function AzmAuctionSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
+          transition={{ duration: 0.5, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mt-10"
         >
           <p className="text-sm mb-4" style={{ color: theme.textMuted }}>
@@ -375,7 +375,7 @@ export default function AzmAuctionSection() {
           </p>
           <Link
             to="/vendors"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-transform hover:scale-[1.03]"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-transform hover:scale-[1.03] active:scale-[0.97]"
             style={{
               backgroundColor: theme.accent,
               color: theme.isDark ? '#000' : '#fff',

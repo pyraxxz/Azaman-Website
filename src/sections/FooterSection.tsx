@@ -101,7 +101,7 @@ export default function FooterSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={item.label}
-                  className="w-9 h-9 rounded-lg flex items-center justify-center transition-all hover:scale-110"
+                  className="w-9 h-9 rounded-lg flex items-center justify-center transition-all hover:scale-110 active:scale-[0.92]"
                   style={{
                     backgroundColor: `${theme.accent}10`,
                     border: `1px solid ${theme.border}`,
@@ -164,7 +164,7 @@ export default function FooterSection() {
               onClick={() => {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
               }}
-              className="px-3 py-1.5 rounded-full text-[11px] font-medium transition-all hover:scale-105"
+              className="px-3 py-1.5 rounded-full text-[11px] font-medium transition-all hover:scale-105 active:scale-[0.97]"
               style={{
                 backgroundColor: `${theme.accent}10`,
                 border: `1px solid ${theme.border}`,
@@ -173,7 +173,7 @@ export default function FooterSection() {
               aria-label="Back to top"
               data-cursor="hover"
             >
-              ↑ Back to top
+              Back to top
             </button>
           </div>
         </div>

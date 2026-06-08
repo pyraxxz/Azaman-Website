@@ -1,6 +1,6 @@
 // =============================================================================
-// NAVIGATION — Floating island nav
-// Starts full-width. After 80px scroll → collapses to pill (680px, rounded).
+// NAVIGATION - Floating island nav
+// Starts full-width. After 80px scroll -> collapses to pill (680px, rounded).
 // GSAP ScrollTrigger scrub for the morph. IntersectionObserver for active link.
 // =============================================================================
 
@@ -35,7 +35,7 @@ export default function Navigation() {
   const navInnerRef = useRef<HTMLDivElement>(null)
   const dlRef = useMagnetic<HTMLSpanElement>(0.4)
 
-  // ─── GSAP pill morph on scroll ───────────────────────────────────────────────
+  // --- GSAP pill morph on scroll -----------------------------------------------
   useEffect(() => {
     if (prefersReducedMotion()) return
     const nav = navRef.current
@@ -79,7 +79,7 @@ export default function Navigation() {
     }
   }, [])
 
-  // ─── IntersectionObserver for active section ─────────────────────────────────
+  // --- IntersectionObserver for active section ---------------------------------
   useEffect(() => {
     if (location.pathname !== '/') return
 
@@ -110,7 +110,7 @@ export default function Navigation() {
     }
   }, [location.pathname])
 
-  // ─── Close theme picker on outside click ─────────────────────────────────────
+  // --- Close theme picker on outside click -------------------------------------
   useEffect(() => {
     if (!themePickerOpen) return
     const handler = (e: MouseEvent) => {
@@ -121,7 +121,7 @@ export default function Navigation() {
     return () => window.removeEventListener('click', handler)
   }, [themePickerOpen])
 
-  // ─── Lock body scroll when mobile menu open ──────────────────────────────────
+  // --- Lock body scroll when mobile menu open ----------------------------------
   useEffect(() => {
     if (mobileOpen) {
       document.body.style.overflow = 'hidden'
@@ -131,7 +131,7 @@ export default function Navigation() {
     return () => { document.body.style.overflow = '' }
   }, [mobileOpen])
 
-  // ─── Navigation handler ──────────────────────────────────────────────────────
+  // --- Navigation handler ------------------------------------------------------
   const handleClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault()
     setMobileOpen(false)
@@ -234,7 +234,7 @@ export default function Navigation() {
                   e.stopPropagation()
                   setThemePickerOpen(!themePickerOpen)
                 }}
-                className="w-8 h-8 rounded-full flex items-center justify-center transition-all"
+                className="w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-[0.92]"
                 style={{
                   backgroundColor: themePickerOpen ? `${theme.accent}20` : `${theme.surface}80`,
                   border: `1px solid ${themePickerOpen ? theme.accent : theme.border}`,
@@ -275,7 +275,7 @@ export default function Navigation() {
                               setThemeId(t.id)
                               setTimeout(() => setThemePickerOpen(false), 250)
                             }}
-                            className="relative flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all hover:scale-105"
+                            className="relative flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all hover:scale-105 active:scale-[0.95]"
                             style={{
                               backgroundColor: isActive ? `${t.accent}20` : 'transparent',
                               border: `1px solid ${isActive ? t.accent : 'transparent'}`,
@@ -313,7 +313,7 @@ export default function Navigation() {
               </AnimatePresence>
             </div>
 
-            {/* Download App CTA — desktop only */}
+            {/* Download App CTA - desktop only */}
             <span ref={dlRef} className="hidden md:inline-block">
             <a
               href="#download"
@@ -331,9 +331,9 @@ export default function Navigation() {
             </a>
             </span>
 
-            {/* Hamburger — mobile only */}
+            {/* Hamburger - mobile only */}
             <button
-              className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg"
+              className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg transition-transform active:scale-[0.9]"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
               style={{ color: theme.textPrimary }}
@@ -345,7 +345,7 @@ export default function Navigation() {
         </div>
       </motion.nav>
 
-      {/* ─── Mobile overlay ─────────────────────────────────────────────────────── */}
+      {/* --- Mobile overlay ------------------------------------------------------- */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -362,7 +362,7 @@ export default function Navigation() {
           >
             {/* Close button */}
             <button
-              className="absolute top-5 right-5 w-10 h-10 flex items-center justify-center rounded-full"
+              className="absolute top-5 right-5 w-10 h-10 flex items-center justify-center rounded-full transition-transform active:scale-[0.9]"
               onClick={() => setMobileOpen(false)}
               aria-label="Close menu"
               style={{
@@ -387,6 +387,7 @@ export default function Navigation() {
                     onClick={(e) => handleClick(e, link.href)}
                     initial={{ opacity: 0, x: 40 }}
                     animate={{ opacity: 1, x: 0 }}
+                    whileTap={{ scale: 0.95 }}
                     transition={{ duration: 0.4, delay: 0.1 + i * 0.06, ease: [0.22, 1, 0.36, 1] }}
                     className="text-[32px] font-semibold transition-all duration-200"
                     style={{
@@ -406,6 +407,7 @@ export default function Navigation() {
               onClick={(e) => handleClick(e, '#download')}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
+              whileTap={{ scale: 0.97 }}
               transition={{ duration: 0.4, delay: 0.5 }}
               className="absolute bottom-12 px-8 py-4 rounded-full text-base font-semibold"
               style={{

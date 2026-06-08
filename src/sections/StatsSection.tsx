@@ -11,6 +11,11 @@ function Counter({ target, prefix = '', suffix = '', decimals = 0 }: {
   const started = useRef(false)
 
   useEffect(() => {
+    // Reduced-motion fallback: show the final figure immediately, no count-up.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setCount(target)
+      return
+    }
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting && !started.current) {
         started.current = true
@@ -68,7 +73,7 @@ export default function StatsSection() {
   return (
     <section
       ref={ref}
-      className="relative py-24 lg:py-32 overflow-hidden border-y"
+      className="relative py-24 lg:py-40 overflow-hidden border-y"
       style={{ backgroundColor: theme.background, borderColor: theme.border }}
     >
       <motion.div
@@ -88,7 +93,7 @@ export default function StatsSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-16"
         >
           <div
@@ -117,7 +122,7 @@ export default function StatsSection() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.12 }}
+              transition={{ duration: 0.5, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] }}
               className="text-center"
             >
               <Counter target={stat.target} prefix={stat.prefix} suffix={stat.suffix} decimals={stat.decimals} />

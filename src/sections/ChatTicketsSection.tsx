@@ -1,5 +1,5 @@
 // =============================================================================
-// ChatTicketsSection — 50/50 layout
+// ChatTicketsSection - 50/50 layout
 // LEFT: Phone mockup with GSAP chat loop (preserved logic)
 // RIGHT: 3 stacked Glass feature cards sliding in from right
 // =============================================================================
@@ -26,7 +26,7 @@ export default function ChatTicketsSection() {
   const stageRef = useRef<HTMLDivElement>(null)
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024
 
-  // GSAP chat loop — preserved from original
+  // GSAP chat loop - preserved from original
   useEffect(() => {
     const stage = stageRef.current
     if (!stage) return
@@ -93,7 +93,7 @@ export default function ChatTicketsSection() {
     {
       icon: MessageCircle,
       title: 'Trade Chat',
-      desc: 'Every trade has its own private channel. Send proof, voice notes, and files — end-to-end secured.',
+      desc: 'Every trade has its own private channel. Send proof, voice notes, and files - end-to-end secured.',
     },
     {
       icon: Receipt,
@@ -110,7 +110,7 @@ export default function ChatTicketsSection() {
   return (
     <section
       id="chat-tickets"
-      className="relative py-24 lg:py-32 overflow-hidden"
+      className="relative py-24 lg:py-40 overflow-hidden"
       style={{ backgroundColor: theme.background }}
     >
       <div
@@ -123,7 +123,7 @@ export default function ChatTicketsSection() {
         {/* LEFT: Phone mockup */}
         <div className="flex items-center justify-center">
           <div ref={stageRef} style={{ perspective: '1400px' }}>
-            <PhoneFrame width={isMobile ? 240 : 300} height={isMobile ? 500 : 620} tilt>
+            <PhoneFrame width={isMobile ? 240 : 300} height={isMobile ? 500 : 620} tilt scanlines>
               <ChatStage isMobile={isMobile} />
             </PhoneFrame>
           </div>
@@ -135,7 +135,7 @@ export default function ChatTicketsSection() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="mb-4"
           >
             <div
@@ -198,7 +198,7 @@ export default function ChatTicketsSection() {
 }
 
 // =============================================================================
-// ChatStage — scripted chat view inside the phone
+// ChatStage - scripted chat view inside the phone
 // =============================================================================
 
 function ChatStage({ isMobile }: { isMobile: boolean }) {

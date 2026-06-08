@@ -1,5 +1,5 @@
 // =============================================================================
-// AmbientOrbs — soft, blurred accent orbs that drift behind a section for
+// AmbientOrbs - soft, blurred accent orbs that drift behind a section for
 // living depth. Pure CSS animation (.drift-slow), pointer-events-none, themed.
 // Drop <AmbientOrbs /> as the first child of a `relative` section.
 // =============================================================================
@@ -7,7 +7,7 @@
 import { useTheme } from '@/contexts/ThemeContext'
 
 interface AmbientOrbsProps {
-  /** Number of orbs (1–3 looks best). */
+  /** Number of orbs (1-3 looks best). */
   count?: number
   className?: string
 }

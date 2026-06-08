@@ -1,6 +1,6 @@
 // =============================================================================
-// NodeGraph — animated SVG node-graph. Used in:
-//   - BentoEcosystem  → "Smart Routes" cell (Wallet → Calendar → Risk → MoMo)
+// NodeGraph - animated SVG node-graph. Used in:
+//   - BentoEcosystem  -> "Smart Routes" cell (Wallet -> Calendar -> Risk -> MoMo)
 //   - Reused for Susu's circular layout via positions prop.
 //
 // Each connection's path is drawn with a stroke-dash reveal, then a glowing

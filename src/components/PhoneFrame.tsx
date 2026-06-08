@@ -1,5 +1,5 @@
 // =============================================================================
-// PhoneFrame — premium 3D-bezelled mobile mockup. Used in HeroBridge and
+// PhoneFrame - premium 3D-bezelled mobile mockup. Used in HeroBridge and
 // across showcase sections. Supports optional pointer-tracking tilt.
 // =============================================================================
 
@@ -12,6 +12,7 @@ interface PhoneFrameProps {
   width?: number
   height?: number
   tilt?: boolean
+  scanlines?: boolean
   className?: string
   style?: CSSProperties
 }
@@ -21,6 +22,7 @@ export default function PhoneFrame({
   width = 280,
   height = 580,
   tilt = false,
+  scanlines = false,
   className,
   style,
 }: PhoneFrameProps) {
@@ -94,6 +96,10 @@ export default function PhoneFrame({
         }}
       >
         {children}
+        {/* Subtle CRT scanline overlay for a consistent analog look. Static. */}
+        {scanlines && (
+          <div className="az-scanlines pointer-events-none absolute inset-0 z-30" aria-hidden="true" />
+        )}
       </div>
 
       {/* Home indicator */}

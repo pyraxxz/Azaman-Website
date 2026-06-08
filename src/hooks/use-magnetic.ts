@@ -1,5 +1,5 @@
 // =============================================================================
-// useMagnetic — pulls an element toward the cursor on hover (Apple/Linear feel).
+// useMagnetic - pulls an element toward the cursor on hover (Apple/Linear feel).
 // Apply the returned ref to a WRAPPER around the button so the button keeps its
 // own hover:scale transform. No-ops on touch devices.
 // =============================================================================
