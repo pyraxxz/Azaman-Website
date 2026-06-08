@@ -154,6 +154,26 @@ export const THEMES: ThemeColors[] = [
     isDark: true,
   },
   {
+    id: 'snow',
+    name: 'Snow',
+    icon: '❄️',
+    background: '#F8FAFF',
+    surface: '#FFFFFF',
+    card: '#F0F4FF',
+    border: 'rgba(66,165,245,0.20)',
+    accent: '#1976D2',
+    accentSecondary: '#42A5F5',
+    glow: '#42A5F5',
+    success: '#26A69A',
+    danger: '#EF5350',
+    warning: '#FFA726',
+    textPrimary: '#1A237E',
+    textSecondary: '#5C6BC0',
+    textMuted: '#9FA8DA',
+    heroGradient: ['#1976D2', '#42A5F5', '#26A69A'],
+    isDark: false,
+  },
+  {
     id: 'light',
     name: 'Light',
     icon: '☀️',
@@ -186,8 +206,8 @@ const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [themeId, setThemeIdState] = useState<string>(() => {
-    if (typeof window === 'undefined') return 'dark'
-    return localStorage.getItem('azaman-theme') || 'dark'
+    if (typeof window === 'undefined') return 'light'
+    return localStorage.getItem('azaman-theme') || 'light'
   })
 
   const theme = THEMES.find((t) => t.id === themeId) ?? THEMES[0]
