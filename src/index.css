@@ -6,23 +6,24 @@
 
 @layer base {
   :root {
-    /* Live theme variables — written by ThemeContext */
-    --theme-bg: #050508;
-    --theme-surface: #0F1015;
-    --theme-card: #1A1B22;
-    --theme-border: rgba(255, 255, 255, 0.06);
-    --theme-accent: #D4AF37;
-    --theme-accent-secondary: #F0B90B;
+    /* Live theme variables — written by ThemeContext. Defaults match the
+       Light (white) theme so the first paint before React mounts is white. */
+    --theme-bg: #FAFAF7;
+    --theme-surface: #FFFFFF;
+    --theme-card: #F2EFE6;
+    --theme-border: rgba(184, 148, 30, 0.18);
+    --theme-accent: #B8941E;
+    --theme-accent-secondary: #D4AF37;
     --theme-glow: #D4AF37;
-    --theme-success: #02C076;
-    --theme-danger: #F6465D;
-    --theme-warning: #F0B90B;
-    --theme-text-primary: #FFFFFF;
-    --theme-text-secondary: #B0B0B8;
-    --theme-text-muted: #6B6B78;
-    --theme-hero-1: #D4AF37;
-    --theme-hero-2: #02C076;
-    --theme-hero-3: #F0B90B;
+    --theme-success: #2E7D32;
+    --theme-danger: #C62828;
+    --theme-warning: #EF6C00;
+    --theme-text-primary: #1A1A2E;
+    --theme-text-secondary: #4A4A5C;
+    --theme-text-muted: #7A7A8C;
+    --theme-hero-1: #B8941E;
+    --theme-hero-2: #D4AF37;
+    --theme-hero-3: #EF6C00;
 
     /* shadcn baseline (kept for shadcn components) */
     --background: 0 0% 2%;
