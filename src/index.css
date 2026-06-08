@@ -231,6 +231,39 @@ html, body {
   background: var(--theme-accent);
 }
 
+/* Range slider thumb - the calculator sliders use appearance-none, which hides
+   the native handle in WebKit/Firefox. Without an explicit thumb there is
+   nothing visible to grab, so the slider reads as broken on every device. */
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  background: var(--theme-accent);
+  border: 2px solid #fff;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--theme-accent) 60%, transparent);
+  cursor: pointer;
+  margin-top: -6px; /* center the 20px thumb on the 8px (h-2) track */
+}
+input[type='range']::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  background: var(--theme-accent);
+  border: 2px solid #fff;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--theme-accent) 60%, transparent);
+  cursor: pointer;
+}
+input[type='range']:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 /* Custom cursor - hide native cursor on desktop when active */
 html.custom-cursor-active { cursor: none !important; }
 html.custom-cursor-active * { cursor: none !important; }

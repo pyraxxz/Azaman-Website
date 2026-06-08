@@ -98,12 +98,6 @@ export default function LiveTickerSection() {
                 <h3 className="text-xl font-bold" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
                   Live Market Pulse
                 </h3>
-                <span
-                  className="text-[10px] px-2 py-0.5 rounded-full font-bold tracking-wider"
-                  style={{ backgroundColor: `${theme.success}20`, color: theme.success }}
-                >
-                  ● LIVE
-                </span>
               </div>
               <p className="text-sm mt-0.5" style={{ color: theme.textMuted }}>
                 Real-time rates · Updated every 10 seconds via oracle

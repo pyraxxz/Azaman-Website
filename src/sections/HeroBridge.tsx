@@ -83,7 +83,6 @@ export default function HeroBridge() {
       const trust = root.querySelector('[data-trust]') as HTMLElement
       if (!subline || !ctas || !trust) return
       const railNodes = root.querySelectorAll<HTMLElement>('[data-rail]')
-      const usdcChip = root.querySelector('[data-usdc-chip]') as HTMLElement
       const phonePanels = root.querySelectorAll<HTMLElement>('[data-panel]')
       const grid = root.querySelector('[data-grid]') as HTMLElement
       const balanceEl = root.querySelector('[data-balance]') as HTMLElement
@@ -149,18 +148,11 @@ export default function HeroBridge() {
         defaults: { ease: 'power2.inOut' },
       })
 
-      if (usdcChip) tl.to(usdcChip, { scale: 1.3, y: -20, duration: 0.1 }, 0)
+      // The USDC balance figure (◎ 1,088.65 USDC) stays static — no scale or
+      // motion-path animation. It reads as a steady, trustworthy balance.
       railNodes.forEach((node, i) => {
         tl.to(node, { scale: 1, opacity: 1, duration: 0.15, ease: 'back.out(1.7)' }, 0.05 + i * 0.08)
       })
-      const chipPaths = [{ x: -200, y: -150 }, { x: 200, y: -120 }, { x: -180, y: 80 }, { x: 200, y: 100 }]
-      if (usdcChip) {
-        chipPaths.forEach((target, i) => {
-          const startTime = 0.08 + i * 0.1
-          tl.to(usdcChip, { motionPath: { path: [{ x: 0, y: 0 }, { x: target.x * 0.3, y: target.y - 60 }, { x: target.x, y: target.y }], curviness: 1.5 }, duration: 0.1, ease: 'power1.inOut' }, startTime)
-          tl.to(usdcChip, { x: 0, y: -20, duration: 0.02 }, startTime + 0.1)
-        })
-      }
       const explodes = [{ x: -80, y: -60, rotation: -12 }, { x: 80, y: -60, rotation: 12 }, { x: -80, y: 0, rotation: -8 }, { x: 80, y: 0, rotation: 8 }, { x: -80, y: 60, rotation: 14 }, { x: 80, y: 60, rotation: -14 }]
       phonePanels.forEach((panel, i) => {
         tl.to(panel, { x: explodes[i].x, y: explodes[i].y, rotation: explodes[i].rotation, opacity: 0, duration: 0.3 }, 0.5 + i * 0.04)
@@ -370,7 +362,7 @@ export default function HeroBridge() {
                 {[
                   { icon: '🔒', label: 'Licensed VASP · Act 1154' },
                   { icon: '⚡', label: 'Sub-second transfers' },
-                  { icon: '🌍', label: 'Ghana · Nigeria · Kenya' },
+                  { icon: '🌍', label: 'Live in Ghana · Africa next' },
                 ].map((pill) => (
                   <div
                     key={pill.label}

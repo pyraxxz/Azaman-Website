@@ -58,10 +58,10 @@ function Counter({ target, prefix = '', suffix = '', decimals = 0 }: {
 
 
 const STATS = [
-  { target: 2.4, prefix: '$', suffix: 'M', decimals: 1, label: 'Volume Processed', sub: 'Total platform throughput' },
-  { target: 50000, prefix: '', suffix: '+', decimals: 0, label: 'Users Registered', sub: 'And growing every day' },
-  { target: 99.9, prefix: '', suffix: '%', decimals: 1, label: 'Platform Uptime', sub: 'Enterprise reliability' },
-  { target: 0.3, prefix: '<', suffix: 's', decimals: 1, label: 'Settlement Time', sub: 'Internal transfers' },
+  { target: 2.4, prefix: '$', suffix: 'M', decimals: 1, label: 'Volume Potential', sub: 'Projected throughput at scale' },
+  { target: 50000, prefix: '', suffix: '+', decimals: 0, label: 'Users Within Reach', sub: 'Across our expansion markets' },
+  { target: 99.9, prefix: '', suffix: '%', decimals: 1, label: 'Target Uptime', sub: 'Enterprise-grade reliability' },
+  { target: 0.3, prefix: '<', suffix: 's', decimals: 1, label: 'Settlement Speed', sub: 'Built for instant transfers' },
 ]
 
 export default function StatsSection() {
@@ -104,15 +104,23 @@ export default function StatsSection() {
               color: theme.success,
             }}
           >
-            📊 Platform Metrics
+            📈 Market Opportunity
           </div>
           <h2
             className="text-3xl sm:text-4xl lg:text-5xl font-bold"
             style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}
           >
-            Numbers that{' '}
-            <span className="text-gradient-flow">speak volumes</span>
+            The scale we're{' '}
+            <span className="text-gradient-flow">building toward</span>
           </h2>
+          <p
+            className="max-w-2xl mx-auto mt-5 text-base lg:text-lg leading-relaxed"
+            style={{ color: theme.textSecondary }}
+          >
+            Africa's digital economy is accelerating fast. These are the numbers Azaman is
+            engineered to reach as we expand across the continent — our projected potential, not
+            today's totals.
+          </p>
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
