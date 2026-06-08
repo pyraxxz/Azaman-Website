@@ -25,7 +25,7 @@ export default function PhoneFrame({
   style,
 }: PhoneFrameProps) {
   const { theme } = useTheme()
-  const ref = useTilt3D<HTMLDivElement>({ max: tilt ? 10 : 0, lift: tilt ? 24 : 0, glare: tilt })
+  const ref = useTilt3D<HTMLDivElement>({ max: tilt ? 10 : 0, lift: tilt ? 24 : 0, glare: tilt, touch: tilt })
 
   return (
     <div

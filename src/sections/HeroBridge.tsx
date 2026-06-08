@@ -13,6 +13,7 @@ import PhoneFrame from '@/components/PhoneFrame'
 import Glass from '@/components/Glass'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useLenis } from '@/lib/lenis'
+import { useMagnetic } from '@/hooks/use-magnetic'
 import { gsap, ScrollTrigger, prefersReducedMotion } from '@/lib/gsap'
 
 const RAILS = [
@@ -55,6 +56,7 @@ export default function HeroBridge() {
   const { theme } = useTheme()
   const { scrollTo } = useLenis()
   const sectionRef = useRef<HTMLDivElement>(null)
+  const getAppRef = useMagnetic<HTMLSpanElement>()
 
   // BUG 1 FIX: Reactive isDesktop
   const [isDesktop, setIsDesktop] = useState(false)
@@ -315,6 +317,7 @@ export default function HeroBridge() {
                 data-ctas
                 className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 mb-10"
               >
+                <span ref={getAppRef} className="inline-block">
                 <a
                   href="#download"
                   onClick={(e) => handleCta(e, '#download')}
@@ -335,6 +338,7 @@ export default function HeroBridge() {
                   />
                   <span className="relative z-10">Get the App</span>
                 </a>
+                </span>
 
                 <a
                   href="#features"

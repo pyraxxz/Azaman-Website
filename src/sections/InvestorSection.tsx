@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
-import { TrendingUp, Users, Shield, Cpu, Globe, Coins } from 'lucide-react'
+import { TrendingUp, Users, Shield, Cpu, Globe, Coins, CheckCircle2, Rocket } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeContext'
+import AmbientOrbs from '@/components/AmbientOrbs'
 
 const REVENUE_STREAMS = [
   { label: 'Arbitrage Spread', desc: 'Buy USDC at corporate rates, sell at retail', pct: '40%' },
@@ -27,6 +28,7 @@ export default function InvestorSection() {
       className="relative py-24 lg:py-32"
       style={{ backgroundColor: theme.background }}
     >
+      <AmbientOrbs count={2} />
       <div className="relative max-w-[1200px] mx-auto px-5 lg:px-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -46,7 +48,7 @@ export default function InvestorSection() {
             style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}
           >
             A $50B market.{' '}
-            <span style={{ color: theme.accent }}>One platform.</span>
+            <span className="text-gradient-flow">One platform.</span>
           </h2>
           <p className="text-lg max-w-2xl mx-auto" style={{ color: theme.textMuted }}>
             Africa's digital finance market is projected to reach $50B by 2028. Azaman is positioned at the intersection of crypto adoption, neo-banking, and social finance.
@@ -160,40 +162,81 @@ export default function InvestorSection() {
           </p>
         </motion.div>
 
-        {/* Traction Section */}
+        {/* Traction — connected roadmap timeline */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mt-16"
+          className="mt-20"
         >
-          <h3 className="text-xl font-bold mb-6 text-center" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
+          <h3 className="text-xl font-bold mb-2 text-center" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
             Traction
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <p className="text-sm text-center mb-12" style={{ color: theme.textMuted }}>
+            From zero to live in West Africa — and scaling.
+          </p>
+
+          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-4">
+            {/* Gradient connector line (desktop) — sits behind the nodes */}
+            <div
+              aria-hidden
+              className="hidden md:block absolute top-[34px] left-[16%] right-[16%] h-[2px] rounded-full"
+              style={{
+                background: `linear-gradient(90deg, ${theme.success}, ${theme.accent}, ${theme.warning})`,
+                opacity: 0.45,
+              }}
+            />
             {[
-              { title: 'Beta Complete', desc: 'Beta users onboarded. First trades completed.' },
-              { title: 'Public Launch', desc: 'Public launch Ghana. Vendor program open. Nigeria waitlist live.' },
-              { title: 'Raising $500K', desc: 'Raising $500K for infrastructure and Nigeria expansion.' },
-            ].map((item, i) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="p-5 rounded-xl"
-                style={{
-                  backgroundColor: theme.surface,
-                  border: `1px solid ${theme.border}`,
-                  borderLeft: `3px solid ${theme.accent}`,
-                }}
-              >
-                <h4 className="font-bold text-sm mb-1" style={{ color: theme.textPrimary }}>{item.title}</h4>
-                <p className="text-xs leading-relaxed" style={{ color: theme.textMuted }}>{item.desc}</p>
-              </motion.div>
-            ))}
+              { title: 'Beta Complete', status: 'Shipped', color: theme.success, icon: CheckCircle2, desc: 'Private beta onboarded — first live P2P trades and Susu cycles completed end-to-end.' },
+              { title: 'Public Launch — Ghana', status: 'Live now', color: theme.accent, icon: Rocket, desc: 'Open in Ghana with the vendor program running. Nigeria waitlist filling fast.' },
+              { title: 'Seed Raise — $500K', status: 'Open', color: theme.warning, icon: TrendingUp, desc: 'Raising to scale infrastructure and launch Nigeria. Investor deck available on request.' },
+            ].map((p, i) => {
+              const Icon = p.icon
+              return (
+                <motion.div
+                  key={p.title}
+                  initial={{ opacity: 0, y: 28 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.14 }}
+                  className="relative flex flex-col items-center text-center"
+                >
+                  {/* Phase node */}
+                  <div
+                    className="relative z-10 w-[68px] h-[68px] rounded-full flex items-center justify-center mb-5"
+                    style={{
+                      background: `radial-gradient(circle at 30% 30%, ${p.color}, ${theme.surface})`,
+                      border: `1px solid ${p.color}66`,
+                      boxShadow: `0 0 28px ${p.color}44`,
+                    }}
+                  >
+                    <Icon size={26} style={{ color: '#fff' }} />
+                    <span
+                      className="absolute -bottom-1 -right-1 text-[9px] font-black px-1.5 py-0.5 rounded-full"
+                      style={{ backgroundColor: theme.background, color: p.color, border: `1px solid ${p.color}` }}
+                    >
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                  </div>
+
+                  {/* Status pill */}
+                  <span
+                    className="text-[10px] uppercase tracking-[0.2em] font-bold px-3 py-1 rounded-full mb-3"
+                    style={{ color: p.color, backgroundColor: `${p.color}15`, border: `1px solid ${p.color}40` }}
+                  >
+                    {p.status}
+                  </span>
+
+                  <h4 className="font-bold text-base mb-1.5" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
+                    {p.title}
+                  </h4>
+                  <p className="text-xs leading-relaxed max-w-[260px]" style={{ color: theme.textMuted }}>
+                    {p.desc}
+                  </p>
+                </motion.div>
+              )
+            })}
           </div>
         </motion.div>
       </div>

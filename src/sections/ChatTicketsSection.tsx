@@ -150,7 +150,7 @@ export default function ChatTicketsSection() {
               style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}
             >
               Chat that closes{' '}
-              <span style={{ color: theme.accent }}>the deal.</span>
+              <span className="text-gradient-flow">the deal.</span>
             </h2>
             <p className="text-base lg:text-lg leading-relaxed" style={{ color: theme.textSecondary }}>
               Trade-bound chat with built-in audio, payment proof, and live tickets.

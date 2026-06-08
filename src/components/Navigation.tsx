@@ -10,6 +10,7 @@ import { Menu, X, Palette, Check } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useLenis } from '@/lib/lenis'
+import { useMagnetic } from '@/hooks/use-magnetic'
 import { gsap, prefersReducedMotion } from '@/lib/gsap'
 
 const NAV_LINKS = [
@@ -32,6 +33,7 @@ export default function Navigation() {
 
   const navRef = useRef<HTMLElement>(null)
   const navInnerRef = useRef<HTMLDivElement>(null)
+  const dlRef = useMagnetic<HTMLSpanElement>(0.4)
 
   // ─── GSAP pill morph on scroll ───────────────────────────────────────────────
   useEffect(() => {
@@ -150,8 +152,11 @@ export default function Navigation() {
 
   return (
     <>
-      <nav
+      <motion.nav
         ref={navRef}
+        initial={{ y: -80, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none"
         style={{ padding: '12px 16px' }}
       >
@@ -182,12 +187,8 @@ export default function Navigation() {
             aria-label="Azaman home"
           >
             <span
-              className="text-lg font-black tracking-tight"
-              style={{
-                fontFamily: 'Space Grotesk',
-                color: theme.accent,
-                textShadow: `0 0 24px ${theme.accent}60`,
-              }}
+              className="text-lg font-black tracking-tight text-gradient-flow"
+              style={{ fontFamily: 'Space Grotesk' }}
             >
               AZAMAN
             </span>
@@ -313,10 +314,11 @@ export default function Navigation() {
             </div>
 
             {/* Download App CTA — desktop only */}
+            <span ref={dlRef} className="hidden md:inline-block">
             <a
               href="#download"
               onClick={(e) => handleClick(e, '#download')}
-              className="hidden md:inline-flex items-center px-4 py-[7px] rounded-full text-[13px] font-semibold transition-all duration-200 hover:scale-[1.03] active:scale-[0.97]"
+              className="inline-flex items-center px-4 py-[7px] rounded-full text-[13px] font-semibold transition-all duration-200 hover:scale-[1.03] active:scale-[0.97]"
               style={{
                 backgroundColor: theme.accent,
                 color: theme.isDark ? '#000' : '#fff',
@@ -327,6 +329,7 @@ export default function Navigation() {
             >
               Download App
             </a>
+            </span>
 
             {/* Hamburger — mobile only */}
             <button
@@ -340,7 +343,7 @@ export default function Navigation() {
             </button>
           </div>
         </div>
-      </nav>
+      </motion.nav>
 
       {/* ─── Mobile overlay ─────────────────────────────────────────────────────── */}
       <AnimatePresence>

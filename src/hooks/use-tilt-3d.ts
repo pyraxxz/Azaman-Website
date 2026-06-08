@@ -16,10 +16,13 @@ interface Options {
   glare?: boolean
   /** Disable on touch devices to avoid jitter. */
   disableOnTouch?: boolean
+  /** Enable finger-drag tilt on touch devices (mirrors desktop mouse-move).
+   *  Sets touch-action:none on the element so the drag tilts instead of scrolls. */
+  touch?: boolean
 }
 
 export function useTilt3D<T extends HTMLElement = HTMLDivElement>(options: Options = {}) {
-  const { max = 8, lift = 14, glare = true, disableOnTouch = true } = options
+  const { max = 8, lift = 14, glare = true, disableOnTouch = true, touch = false } = options
   const ref = useRef<T>(null)
   const glareRef = useRef<HTMLElement | null>(null)
 
@@ -27,10 +30,14 @@ export function useTilt3D<T extends HTMLElement = HTMLDivElement>(options: Optio
     const el = ref.current
     if (!el) return
     if (prefersReducedMotion()) return
-    if (disableOnTouch && window.matchMedia('(hover: none)').matches) return
+    // Skip on touch devices ONLY when finger-drag tilt isn't explicitly enabled.
+    if (disableOnTouch && !touch && window.matchMedia('(hover: none)').matches) return
 
     el.style.transformStyle = 'preserve-3d'
     el.style.willChange = 'transform'
+    // When touch tilt is on, claim the gesture so a finger drag tilts the
+    // element (fires pointermove) instead of scrolling the page.
+    if (touch) el.style.touchAction = 'none'
 
     glareRef.current = el.querySelector<HTMLElement>('[data-tilt-glare]')
 
@@ -72,14 +79,16 @@ export function useTilt3D<T extends HTMLElement = HTMLDivElement>(options: Optio
     el.addEventListener('pointermove', onMove)
     el.addEventListener('pointerleave', onLeave)
     el.addEventListener('pointercancel', onLeave)
+    el.addEventListener('pointerup', onLeave)
 
     return () => {
       el.removeEventListener('pointermove', onMove)
       el.removeEventListener('pointerleave', onLeave)
       el.removeEventListener('pointercancel', onLeave)
+      el.removeEventListener('pointerup', onLeave)
       gsap.set(el, { clearProps: 'transform,z,rotationX,rotationY,willChange' })
     }
-  }, [max, lift, glare, disableOnTouch])
+  }, [max, lift, glare, disableOnTouch, touch])
 
   return ref
 }

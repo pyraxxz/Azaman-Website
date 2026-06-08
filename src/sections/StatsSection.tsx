@@ -106,7 +106,7 @@ export default function StatsSection() {
             style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}
           >
             Numbers that{' '}
-            <span style={{ color: theme.accent }}>speak volumes</span>
+            <span className="text-gradient-flow">speak volumes</span>
           </h2>
         </motion.div>
 
