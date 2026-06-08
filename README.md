@@ -20,7 +20,7 @@ npm run dev
 ## Build & Deploy
 
 ```bash
-npm run build   # TypeScript check + Vite build → dist/
+npm run build   # TypeScript check + Vite build -> dist/
 ```
 
 The GitHub Actions workflow (`.github/workflows/static.yml`) builds and deploys to GitHub Pages on every push to `main`. Custom domain: `azaman.me` (via `public/CNAME`).
@@ -38,9 +38,9 @@ VITE_API_URL=http://localhost:3000 npm run dev
 
 | Section | File | Description |
 |---|---|---|
-| **Hero** | `HeroBridge.tsx` | Full-screen cinematic hero. 3-act GSAP scroll timeline on desktop; Framer Motion sequence on mobile. Includes the LOCAL ⇄ USDC ⇄ GLOBAL payment bridge visualization showing supported rails (MoMo, Telecel, AirtelTigo, CashApp, Venmo, Zelle, Apple Pay) |
+| **Hero** | `HeroBridge.tsx` | Full-screen cinematic hero. 3-act GSAP scroll timeline on desktop; Framer Motion sequence on mobile. Includes the LOCAL <-> USDC <-> GLOBAL payment bridge visualization showing supported rails (MoMo, Telecel, AirtelTigo, CashApp, Venmo, Zelle, Apple Pay) |
 | **Live Ticker** | `LiveTickerSection.tsx` | Dual infinite-scroll marquee: live crypto/fiat rates (drifting) and recent trade activity |
-| **Chat & Tickets** | `ChatTicketsSection.tsx` | 50/50 layout — animated phone mockup (GSAP chat loop) + 3 feature cards |
+| **Chat & Tickets** | `ChatTicketsSection.tsx` | 50/50 layout - animated phone mockup (GSAP chat loop) + 3 feature cards |
 | **Bento Ecosystem** | `BentoEcosystem.tsx` | Asymmetric CSS Grid bento layout: Vaults, Smart Routes, 11-theme picker, AZM token, Hologram balance, Security, Live Oracle |
 | **Susu Engine** | `SusuEngineSection.tsx` | Desktop: GSAP scroll-pinned 4-act circle animation. Mobile: horizontal snap-scroll cards with animated SVGs |
 | **AZM Auction** | `AzmAuctionSection.tsx` | Live leaderboard with GSAP Flip re-ordering (every 8s a vendor outbids), burn ticker, 7-day bar chart |
@@ -55,7 +55,7 @@ VITE_API_URL=http://localhost:3000 npm run dev
 
 | Component | Description |
 |---|---|
-| `Navigation.tsx` | Floating pill nav — GSAP morphs from full-width to pill on scroll. Theme picker (11 themes). Mobile overlay menu. |
+| `Navigation.tsx` | Floating pill nav - GSAP morphs from full-width to pill on scroll. Theme picker (11 themes). Mobile overlay menu. |
 | `Glass.tsx` | Glassmorphism card wrapper with 3D tilt on hover and optional mouse-glow effect |
 | `PhoneFrame.tsx` | Realistic phone frame used in hero and chat sections |
 | `ParticleCanvas.tsx` | Ambient particle background on the hero |

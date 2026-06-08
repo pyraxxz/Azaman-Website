@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from '
 // =============================================================================
 // AZAMAN GLOBAL THEME SYSTEM
 // 11 immersive themes that transform the ENTIRE website (not just a preview).
-// Background, surfaces, accents, glows, text — all change globally.
+// Background, surfaces, accents, glows, text - all change globally.
 // =============================================================================
 
 export interface ThemeColors {

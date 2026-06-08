@@ -1,5 +1,5 @@
 // =============================================================================
-// AppShowcase — Scroll-scrubbed phone carousel
+// AppShowcase - Scroll-scrubbed phone carousel
 // Desktop: GSAP pin for 4× viewport. 5 screens absolutely positioned inside
 // phone, GSAP controls opacity/y. Dot indicator + left headline cross-fade.
 // Mobile: 5 stacked Glass cards with mini phone mockups.
@@ -106,7 +106,7 @@ export default function AppShowcase() {
 
       <div className="relative max-w-[1280px] mx-auto px-5 lg:px-12">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-12 lg:mb-16 lg:pt-20">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }} className="text-center mb-12 lg:mb-16 lg:pt-20">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4 text-xs font-semibold uppercase tracking-[0.2em]" style={{ backgroundColor: `${theme.accent}10`, border: `1px solid ${theme.accent}30`, color: theme.accent }}>
             <Sparkles size={12} />
             App Experience
@@ -146,12 +146,14 @@ export default function AppShowcase() {
                   <div data-screen className="absolute inset-0" style={{ opacity: 0 }}><ScreenTrade accent={theme.accent} theme={theme} /></div>
                   <div data-screen className="absolute inset-0" style={{ opacity: 0 }}><ScreenSusu accent={theme.accent} theme={theme} /></div>
                   <div data-screen className="absolute inset-0" style={{ opacity: 0 }}><ScreenVault accent={theme.accent} theme={theme} /></div>
+                  {/* Subtle CRT scanline overlay - matches the hero phone. Static. */}
+                  <div className="az-scanlines pointer-events-none absolute inset-0 z-10" aria-hidden="true" />
                 </div>
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-24 h-1 rounded-full bg-white/30 z-20" />
               </div>
             </div>
 
-            {/* Right: Vertical dot indicator — BUG 4 FIX: justify-between + flexShrink */}
+            {/* Right: Vertical dot indicator - BUG 4 FIX: justify-between + flexShrink */}
             <div className="flex flex-col items-center">
               <div className="relative flex flex-col items-center justify-between" style={{ height: 200 }}>
                 <div className="absolute top-0 bottom-0 w-[2px] rounded-full" style={{ backgroundColor: theme.border }} />
@@ -173,13 +175,15 @@ export default function AppShowcase() {
                   initial={{ opacity: 0, y: 40 }} 
                   whileInView={{ opacity: 1, y: 0 }} 
                   viewport={{ once: false, amount: 0.3 }} 
-                  transition={{ duration: 0.6, ease: 'easeOut' }}
+                  transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 >
                   <Glass radius="xl" padding="md" tilt tiltMax={4}>
                     <div className="flex items-center gap-4">
                       {/* Mini phone mockup */}
                       <div className="flex-shrink-0 w-[110px] h-[224px] rounded-[22px] border-2 bg-black overflow-hidden relative" style={{ borderColor: '#1F2128' }}>
                         <MiniScreen idx={i} accent={theme.accent} theme={theme} />
+                        {/* Subtle CRT scanline overlay - matches the hero phone. Static. */}
+                        <div className="az-scanlines pointer-events-none absolute inset-0 z-30" aria-hidden="true" />
                       </div>
                       {/* Text content */}
                       <div className="flex-1 min-w-0">

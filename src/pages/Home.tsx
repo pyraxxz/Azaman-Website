@@ -1,5 +1,5 @@
 // =============================================================================
-// Home — the cinematic landing page. Extracted from App so React Router can
+// Home - the cinematic landing page. Extracted from App so React Router can
 // handle additional routes (e.g. /vendors) cleanly.
 // Below-the-fold sections are lazy-loaded so the hero is interactive faster.
 // =============================================================================

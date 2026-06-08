@@ -1,5 +1,5 @@
 // =============================================================================
-// useMouseGlow — anamorphic radial glow that follows the cursor inside an
+// useMouseGlow - anamorphic radial glow that follows the cursor inside an
 // element. Updates two CSS custom properties: --mx, --my (in % of the box).
 // The host element styles its own glow layer using those vars; this keeps it
 // theme-agnostic and lets us re-use it everywhere.

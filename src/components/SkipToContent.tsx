@@ -1,5 +1,5 @@
 // =============================================================================
-// SKIP TO CONTENT — accessible skip-link, appears on keyboard focus
+// SKIP TO CONTENT - accessible skip-link, appears on keyboard focus
 // =============================================================================
 
 export default function SkipToContent() {

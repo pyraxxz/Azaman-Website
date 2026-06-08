@@ -1,5 +1,5 @@
 // =============================================================================
-// PAGE TRANSITION — full-screen accent overlay sweep between routes
+// PAGE TRANSITION - full-screen accent overlay sweep between routes
 // Uses scaleY animation: covering from bottom, revealing from top.
 // z-index 99998 (just below custom cursor).
 // =============================================================================

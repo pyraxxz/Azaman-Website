@@ -1,5 +1,5 @@
 // =============================================================================
-// AZAMAN — LenisProvider
+// AZAMAN - LenisProvider
 // Wires Studio Freight's Lenis smooth-scroll into the React tree, syncs it with
 // GSAP ScrollTrigger, and exposes a useLenis() hook + a scroll-velocity context
 // that downstream components (e.g. ParticleCanvas) can read.

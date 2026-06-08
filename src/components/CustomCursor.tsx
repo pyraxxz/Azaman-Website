@@ -1,5 +1,5 @@
 // =============================================================================
-// CUSTOM CURSOR — high-performance custom cursor with state machine
+// CUSTOM CURSOR - high-performance custom cursor with state machine
 // Only renders on devices with fine pointer (desktop). Uses refs + rAF for
 // 60fps updates without React re-renders.
 // =============================================================================
@@ -84,7 +84,7 @@ export default function CustomCursor() {
     const ring = ringRef.current
     if (!dot || !ring) return
 
-    // Mouse move handler — direct DOM mutation for zero-lag dot
+    // Mouse move handler - direct DOM mutation for zero-lag dot
     const onMouseMove = (e: MouseEvent) => {
       mouseX.current = e.clientX
       mouseY.current = e.clientY
@@ -92,7 +92,7 @@ export default function CustomCursor() {
       dot.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%) scale(${stateRef.current === 'default' ? 1 : 0.6})`
 
       if (reducedMotion.current) {
-        // Skip lerp — apply directly
+        // Skip lerp - apply directly
         ringX.current = e.clientX
         ringY.current = e.clientY
         ring.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`
@@ -138,7 +138,7 @@ export default function CustomCursor() {
       }
     }
 
-    // Mouse leave window — hide cursor
+    // Mouse leave window - hide cursor
     const onMouseLeave = () => {
       if (dot) dot.style.opacity = '0'
       if (ring) ring.style.opacity = '0'
@@ -197,7 +197,7 @@ export default function CustomCursor() {
       }}
       aria-hidden="true"
     >
-      {/* Inner dot — zero lag */}
+      {/* Inner dot - zero lag */}
       <div
         ref={dotRef}
         style={{
@@ -212,7 +212,7 @@ export default function CustomCursor() {
           transform: 'translate(-50%, -50%)',
         }}
       />
-      {/* Outer ring — lerp follow */}
+      {/* Outer ring - lerp follow */}
       <div
         ref={ringRef}
         style={{

@@ -1,5 +1,5 @@
 // =============================================================================
-// SusuEngineSection — "The Savings Circle. Reimagined."
+// SusuEngineSection - "The Savings Circle. Reimagined."
 // Desktop: 50/50 with GSAP scroll-pinned 4-act circle animation
 // Mobile: horizontal snap-scroll cards with animated SVGs + progress dots
 // =============================================================================
@@ -61,7 +61,7 @@ export default function SusuEngineSection() {
   const { theme } = useTheme()
   const members = useMemo(() => buildMembers(), [])
 
-  // Desktop GSAP scroll-scrubbed pin — 4 acts over 3× viewport
+  // Desktop GSAP scroll-scrubbed pin - 4 acts over 3× viewport
   const stageRef = useScrollAnim<HTMLDivElement>(({ ref, gsap: g }) => {
     if (prefersReducedMotion()) return
     if (typeof window !== 'undefined' && window.innerWidth < 1024) return
@@ -96,13 +96,13 @@ export default function SusuEngineSection() {
       },
     })
 
-    // Act 1 (0–0.25): Avatars enter one by one
+    // Act 1 (0-0.25): Avatars enter one by one
     avatars.forEach((a, i) => {
       tl.to(a, { opacity: 1, scale: 1, duration: 0.12, ease: 'back.out(1.6)' }, 0.02 + i * 0.04)
     })
     tl.to(pool, { opacity: 1, scale: 1, duration: 0.15, ease: 'power3.out' }, 0.1)
 
-    // Act 2 (0.25–0.5): Contribution orbs travel to pool, pool fills via clipPath
+    // Act 2 (0.25-0.5): Contribution orbs travel to pool, pool fills via clipPath
     contribOrbs.forEach((orb, i) => {
       const member = members[i]
       g.set(orb, { attr: { cx: member.position.x, cy: member.position.y }, opacity: 0 })
@@ -115,7 +115,7 @@ export default function SusuEngineSection() {
     }
     tl.to(pool, { scale: 1.15, duration: 0.15 }, 0.35)
 
-    // Act 3 (0.5–0.75): Crown on payee, payout orb travels, payee scales up
+    // Act 3 (0.5-0.75): Crown on payee, payout orb travels, payee scales up
     if (payoutOrb) {
       const payeePos = members[payeeIdx].position
       g.set(payoutOrb, { attr: { cx: CENTER.x, cy: CENTER.y } })
@@ -126,7 +126,7 @@ export default function SusuEngineSection() {
       tl.to(avatars[payeeIdx], { scale: 1, duration: 0.08 }, 0.76)
     }
 
-    // Act 4 (0.75–1.0): Pool empties, cycle counter flips, next payee glows
+    // Act 4 (0.75-1.0): Pool empties, cycle counter flips, next payee glows
     if (poolClip) {
       tl.to(poolClip, { attr: { height: 0 }, duration: 0.15, ease: 'power2.in' }, 0.78)
     }
@@ -141,7 +141,7 @@ export default function SusuEngineSection() {
   return (
     <section
       id="susu"
-      className="relative py-24 lg:py-32"
+      className="relative py-24 lg:py-40"
       style={{ backgroundColor: theme.background }}
     >
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true" style={{ background: `radial-gradient(ellipse 80% 60% at 50% 30%, ${theme.glow}12, transparent 70%)` }} />
@@ -149,7 +149,7 @@ export default function SusuEngineSection() {
 
       <div className="relative max-w-[1280px] mx-auto px-5 lg:px-12">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-12">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }} className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4 text-xs font-semibold uppercase tracking-[0.2em]" style={{ backgroundColor: `${theme.accent}10`, border: `1px solid ${theme.accent}30`, color: theme.accent }}>
             <Users size={12} />
             Susu Engine
@@ -211,7 +211,7 @@ export default function SusuEngineSection() {
           </div>
           <div className="flex flex-col gap-6 py-8">
             {STEPS.map((step, i) => (
-              <motion.div key={step.n} initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }} className="relative">
+              <motion.div key={step.n} initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }} className="relative">
                 <span className="absolute -left-2 -top-4 text-[72px] font-black pointer-events-none select-none" style={{ fontFamily: 'Space Grotesk', color: theme.textPrimary, opacity: 0.08 }}>{step.n}</span>
                 <Glass radius="xl" padding="md" tilt tiltMax={4}>
                   <h3 className="text-xl font-bold mb-2 relative z-10" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>{step.title}</h3>
@@ -230,7 +230,7 @@ export default function SusuEngineSection() {
 }
 
 // =============================================================================
-// Mobile snap-scroll — BUG FIXES:
+// Mobile snap-scroll - BUG FIXES:
 // 1. No whileInView on individual cards (breaks in overflow-x scroll)
 // 2. Section has no overflow-hidden (moved to specific elements)
 // 3. Each card has animated SVG illustration
@@ -272,12 +272,12 @@ function MobileSnapScroll({ theme }: { theme: ReturnType<typeof useTheme>['theme
         </>
       )}
 
-      {/* Scroll container — animated as a whole, not individual cards */}
+      {/* Scroll container - animated as a whole, not individual cards */}
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       >
         <div
           ref={scrollRef}
@@ -306,7 +306,7 @@ function MobileSnapScroll({ theme }: { theme: ReturnType<typeof useTheme>['theme
               </Glass>
             </div>
 
-            {/* Card 2: Everyone Contributes — dots animate toward center */}
+            {/* Card 2: Everyone Contributes - dots animate toward center */}
             <div className="flex-shrink-0" style={{ width: '85vw', maxWidth: 340, scrollSnapAlign: 'start' }}>
               <Glass radius="2xl" padding="lg" tilt tiltMax={5} className="h-[280px]">
                 <div className="flex flex-col h-full">
@@ -340,7 +340,7 @@ function MobileSnapScroll({ theme }: { theme: ReturnType<typeof useTheme>['theme
               </Glass>
             </div>
 
-            {/* Card 3: Payout Time — pulse ring + crown */}
+            {/* Card 3: Payout Time - pulse ring + crown */}
             <div className="flex-shrink-0" style={{ width: '85vw', maxWidth: 340, scrollSnapAlign: 'start' }}>
               <Glass radius="2xl" padding="lg" tilt tiltMax={5} className="h-[280px]">
                 <div className="flex flex-col h-full">
@@ -364,7 +364,7 @@ function MobileSnapScroll({ theme }: { theme: ReturnType<typeof useTheme>['theme
               </Glass>
             </div>
 
-            {/* Card 4: Cycle Resets — highlighted member + "Cycle 2" text */}
+            {/* Card 4: Cycle Resets - highlighted member + "Cycle 2" text */}
             <div className="flex-shrink-0" style={{ width: '85vw', maxWidth: 340, scrollSnapAlign: 'start' }}>
               <Glass radius="2xl" padding="lg" tilt tiltMax={5} className="h-[280px]">
                 <div className="flex flex-col h-full">

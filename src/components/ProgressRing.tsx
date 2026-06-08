@@ -1,5 +1,5 @@
 // =============================================================================
-// ProgressRing — SVG circular progress that animates as it enters the viewport.
+// ProgressRing - SVG circular progress that animates as it enters the viewport.
 // Used in the Vault bento cell.
 // =============================================================================
 

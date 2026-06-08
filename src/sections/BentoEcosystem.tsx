@@ -1,5 +1,5 @@
 // =============================================================================
-// BentoEcosystem — Asymmetric CSS Grid with named areas
+// BentoEcosystem - Asymmetric CSS Grid with named areas
 // Desktop: "vaults vaults smartroute themes" / "security azm azm themes" / "hologram hologram oracle oracle"
 // Tablet: 2-col. Mobile: single column.
 // =============================================================================
@@ -34,7 +34,7 @@ export default function BentoEcosystem() {
     <section
       ref={sectionRef}
       id="ecosystem"
-      className="relative py-24 lg:py-32 overflow-hidden"
+      className="relative py-24 lg:py-40 overflow-hidden"
       style={{ backgroundColor: theme.background }}
     >
       <AmbientOrbs count={2} />
@@ -49,7 +49,7 @@ export default function BentoEcosystem() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-12"
         >
           <div
@@ -117,7 +117,7 @@ export default function BentoEcosystem() {
   )
 }
 
-// ─── Vaults Cell ────────────────────────────────────────────────────────────────
+// --- Vaults Cell ----------------------------------------------------------------
 function VaultsCell() {
   const { theme } = useTheme()
   return (
@@ -172,7 +172,7 @@ function VaultsCell() {
   )
 }
 
-// ─── Smart Routes Cell ──────────────────────────────────────────────────────────
+// --- Smart Routes Cell ----------------------------------------------------------
 function SmartRoutesCell() {
   const { theme } = useTheme()
   const nodes = useMemo(() => [
@@ -204,7 +204,7 @@ function SmartRoutesCell() {
   )
 }
 
-// ─── Themes Cell ────────────────────────────────────────────────────────────────
+// --- Themes Cell ----------------------------------------------------------------
 function ThemesCell() {
   const { theme, themes, themeId, setThemeId } = useTheme()
   return (
@@ -225,7 +225,7 @@ function ThemesCell() {
                 key={t.id}
                 onClick={() => setThemeId(t.id)}
                 title={t.name}
-                className="w-10 h-10 rounded-full transition-all duration-200 hover:scale-[1.2]"
+                className="w-10 h-10 rounded-full transition-all duration-200 hover:scale-[1.2] active:scale-[0.92]"
                 style={{
                   background: `linear-gradient(135deg, ${t.background}, ${t.accent})`,
                   border: `2px solid ${active ? t.accent : 'transparent'}`,
@@ -241,7 +241,7 @@ function ThemesCell() {
   )
 }
 
-// ─── AZM Token Cell ─────────────────────────────────────────────────────────────
+// --- AZM Token Cell -------------------------------------------------------------
 function AzmTokenCell() {
   const { theme } = useTheme()
   const [burned, setBurned] = useState(47128)
@@ -288,7 +288,7 @@ function AzmTokenCell() {
   )
 }
 
-// ─── Hologram Balance Cell ──────────────────────────────────────────────────────
+// --- Hologram Balance Cell ------------------------------------------------------
 function HologramCell() {
   const { theme } = useTheme()
   return (
@@ -328,7 +328,7 @@ function HologramCell() {
   )
 }
 
-// ─── Security Cell ──────────────────────────────────────────────────────────────
+// --- Security Cell --------------------------------------------------------------
 function SecurityCell() {
   const { theme } = useTheme()
   return (
@@ -371,7 +371,7 @@ function SecurityCell() {
   )
 }
 
-// ─── Oracle Cell ────────────────────────────────────────────────────────────────
+// --- Oracle Cell ----------------------------------------------------------------
 function OracleCell() {
   const { theme } = useTheme()
   const [cellRef, isVisible] = useInViewport<HTMLDivElement>(0.2)
@@ -419,7 +419,7 @@ function OracleCell() {
             <div className="text-2xl font-black" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
               {last}
             </div>
-            <div className="text-[10px]" style={{ color: theme.textMuted }}>USDC → GHS · 10s refresh</div>
+            <div className="text-[10px]" style={{ color: theme.textMuted }}>USDC {'->'} GHS · 10s refresh</div>
           </div>
           <div className="flex-1">
             <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-16">

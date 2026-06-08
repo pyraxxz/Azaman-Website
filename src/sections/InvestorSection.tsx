@@ -25,7 +25,7 @@ export default function InvestorSection() {
   return (
     <section
       id="investors"
-      className="relative py-24 lg:py-32"
+      className="relative py-24 lg:py-40"
       style={{ backgroundColor: theme.background }}
     >
       <AmbientOrbs count={2} />
@@ -34,7 +34,7 @@ export default function InvestorSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-16"
         >
           <div
@@ -60,7 +60,7 @@ export default function InvestorSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="rounded-2xl p-8 mb-16"
           style={{ backgroundColor: theme.surface, border: `1px solid ${theme.border}` }}
         >
@@ -74,7 +74,7 @@ export default function InvestorSection() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.08 }}
+                transition={{ duration: 0.4, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
                 className="p-4 rounded-xl"
                 style={{ backgroundColor: theme.card, border: `1px solid ${theme.border}` }}
               >
@@ -95,7 +95,7 @@ export default function InvestorSection() {
             style={{ backgroundColor: `${theme.accent}08`, border: `1px solid ${theme.accent}20` }}
           >
             <p className="text-sm" style={{ color: theme.textSecondary }}>
-              <strong style={{ color: theme.textPrimary }}>Key insight:</strong> Revenue is generated from the <em>spread</em> between corporate and retail rates — users never see fees. This makes Azaman more affordable than competitors while being more profitable.
+              <strong style={{ color: theme.textPrimary }}>Key insight:</strong> Revenue is generated from the <em>spread</em> between corporate and retail rates - users never see fees. This makes Azaman more affordable than competitors while being more profitable.
             </p>
           </div>
         </motion.div>
@@ -105,7 +105,7 @@ export default function InvestorSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
           <h3 className="text-xl font-bold mb-8 text-center" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
             Competitive Moats
@@ -119,7 +119,7 @@ export default function InvestorSection() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.08 }}
+                  transition={{ duration: 0.5, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
                   whileHover={{ y: -4 }}
                   className="p-5 rounded-xl transition-colors"
                   style={{ backgroundColor: theme.surface, border: `1px solid ${theme.border}` }}
@@ -141,7 +141,7 @@ export default function InvestorSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
+          transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
           className="mt-16 text-center"
         >
           <motion.a
@@ -155,30 +155,30 @@ export default function InvestorSection() {
               boxShadow: `0 0 40px ${theme.accent}40`,
             }}
           >
-            Request Investor Deck →
+            Request Investor Deck {'->'}
           </motion.a>
           <p className="text-sm mt-4" style={{ color: theme.textMuted }}>
             Detailed financials, projections, and team bios available on request.
           </p>
         </motion.div>
 
-        {/* Traction — connected roadmap timeline */}
+        {/* Traction - connected roadmap timeline */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="mt-20"
         >
           <h3 className="text-xl font-bold mb-2 text-center" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
             Traction
           </h3>
           <p className="text-sm text-center mb-12" style={{ color: theme.textMuted }}>
-            From zero to live in West Africa — and scaling.
+            From zero to live in West Africa - and scaling.
           </p>
 
           <div className="relative grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-4">
-            {/* Gradient connector line (desktop) — sits behind the nodes */}
+            {/* Gradient connector line (desktop) - sits behind the nodes */}
             <div
               aria-hidden
               className="hidden md:block absolute top-[34px] left-[16%] right-[16%] h-[2px] rounded-full"
@@ -188,9 +188,9 @@ export default function InvestorSection() {
               }}
             />
             {[
-              { title: 'Beta Complete', status: 'Shipped', color: theme.success, icon: CheckCircle2, desc: 'Private beta onboarded — first live P2P trades and Susu cycles completed end-to-end.' },
-              { title: 'Public Launch — Ghana', status: 'Live now', color: theme.accent, icon: Rocket, desc: 'Open in Ghana with the vendor program running. Nigeria waitlist filling fast.' },
-              { title: 'Seed Raise — $500K', status: 'Open', color: theme.warning, icon: TrendingUp, desc: 'Raising to scale infrastructure and launch Nigeria. Investor deck available on request.' },
+              { title: 'Beta Complete', status: 'Shipped', color: theme.success, icon: CheckCircle2, desc: 'Private beta onboarded - first live P2P trades and Susu cycles completed end-to-end.' },
+              { title: 'Public Launch - Ghana', status: 'Live now', color: theme.accent, icon: Rocket, desc: 'Open in Ghana with the vendor program running. Nigeria waitlist filling fast.' },
+              { title: 'Seed Raise - $500K', status: 'Open', color: theme.warning, icon: TrendingUp, desc: 'Raising to scale infrastructure and launch Nigeria. Investor deck available on request.' },
             ].map((p, i) => {
               const Icon = p.icon
               return (
@@ -199,7 +199,7 @@ export default function InvestorSection() {
                   initial={{ opacity: 0, y: 28 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.14 }}
+                  transition={{ duration: 0.5, delay: i * 0.14, ease: [0.22, 1, 0.36, 1] }}
                   className="relative flex flex-col items-center text-center"
                 >
                   {/* Phase node */}

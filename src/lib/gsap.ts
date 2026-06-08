@@ -1,5 +1,5 @@
 // =============================================================================
-// AZAMAN — Centralized GSAP setup
+// AZAMAN - Centralized GSAP setup
 // One place to register plugins, expose easing tokens, and detect reduced motion.
 // =============================================================================
 

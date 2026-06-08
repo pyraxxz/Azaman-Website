@@ -1,5 +1,5 @@
 // =============================================================================
-// HeroBridge — TOTAL REBUILD
+// HeroBridge - TOTAL REBUILD
 // Full-screen cinematic hero. 3-act GSAP scroll timeline on desktop.
 // Mobile: Framer Motion sequence, no pin.
 // =============================================================================
@@ -23,12 +23,12 @@ const RAILS = [
   { id: 'bank', label: 'Bank Transfer', short: 'BK', color: '#0088FF' },
 ]
 
-// ── Bridge clusters ───────────────────────────────────────────────────────────
+// -- Bridge clusters -----------------------------------------------------------
 // Azaman's whole pitch is bridging LOCAL Ghanaian rails and GLOBAL/cross-border
 // rails through a single neutral asset (USDC). Both clusters are shown together
 // and a looping conversion animation moves value across the bridge in both
 // directions. The animation is Framer-driven (autoplay/loop), so it renders
-// IDENTICALLY on mobile and desktop — no scroll dependency, full consistency.
+// IDENTICALLY on mobile and desktop - no scroll dependency, full consistency.
 const LOCAL_RAILS = RAILS
 const GLOBAL_RAILS = [
   { id: 'cashapp', label: 'Cash App', short: '$', color: '#00D54B' },
@@ -38,7 +38,7 @@ const GLOBAL_RAILS = [
 ]
 
 // Currency labels the central USDC core cycles through to signify conversion:
-// local fiat → the stablecoin bridge → foreign fiat.
+// local fiat -> the stablecoin bridge -> foreign fiat.
 const BRIDGE_CYCLE = ['GH₵ 15.20', '◎ 1.00 USDC', '$ 1.00']
 
 const VENDOR_GRID = [
@@ -67,7 +67,7 @@ export default function HeroBridge() {
     return () => window.removeEventListener('resize', check)
   }, [])
 
-  // ─── DESKTOP: GSAP 3-act scroll timeline ─────────────────────────────────────
+  // --- DESKTOP: GSAP 3-act scroll timeline -------------------------------------
   useEffect(() => {
     if (!isDesktop || prefersReducedMotion()) return
     const root = sectionRef.current
@@ -99,9 +99,13 @@ export default function HeroBridge() {
       // phone screen is visible on load. They are momentarily flashed in and
       // then flung out during the Act-3 scroll explosion (see below). Forcing
       // opacity:1 here (the old behaviour) blanketed the screen in opaque dark
-      // tiles before any scroll happened → the hero phone read as a black slab.
+      // tiles before any scroll happened -> the hero phone read as a black slab.
       gsap.set(phonePanels, { x: 0, y: 0, rotation: 0, opacity: 0 })
       if (grid) gsap.set(grid, { opacity: 0, y: 30 })
+      // Reset the balance to 0 up front so the count-up animates from zero. The
+      // JSX default is the final figure (12,450.00) so reduced-motion and mobile
+      // users, who never run this timeline, still read a meaningful static value.
+      if (balanceEl) gsap.set(balanceEl, { innerText: '0' })
 
       // ACT 1: Intro
       const intro = gsap.timeline({ defaults: { ease: 'power3.out' } })
@@ -161,7 +165,9 @@ export default function HeroBridge() {
       phonePanels.forEach((panel, i) => {
         tl.to(panel, { x: explodes[i].x, y: explodes[i].y, rotation: explodes[i].rotation, opacity: 0, duration: 0.3 }, 0.5 + i * 0.04)
       })
-      tl.to(phone, { opacity: 0, scale: 0.9, duration: 0.3 }, 0.55)
+      // Phone stays fully visible through the whole scroll. The vendor grid
+      // reveals on a lower z-index (z-[1]) than the phone layer (z-[2]), so the
+      // cards settle UNDER the phone as background detail (fine if hidden).
       if (grid) tl.to(grid, { opacity: 1, y: 0, duration: 0.4 }, 0.6)
       const vendorCards = root.querySelectorAll<HTMLElement>('[data-vendor-card]')
       gsap.set(vendorCards, { y: 20, opacity: 0 })
@@ -174,7 +180,7 @@ export default function HeroBridge() {
     }
   }, [isDesktop, theme])
 
-  // ─── MOBILE: GSAP intro (no pin) ────────────────────────────────────────────
+  // --- MOBILE: GSAP intro (no pin) --------------------------------------------
   useEffect(() => {
     if (isDesktop || prefersReducedMotion()) return
     const root = sectionRef.current
@@ -216,11 +222,11 @@ export default function HeroBridge() {
     return () => { clearTimeout(timer) }
   }, [isDesktop])
 
-  // ─── SHARED: Payment-bridge scroll reveal (mobile + desktop) ─────────────────
+  // --- SHARED: Payment-bridge scroll reveal (mobile + desktop) -----------------
   // The desktop hero owns a pinned/scrubbed timeline and the old mobile path had
   // NO scroll-driven motion at all. This non-pinned reveal fires on BOTH form
   // factors (start: 'top 88%', once) so the bridge animates in on scroll the same
-  // way everywhere — the consistency fix. The bridge's internal conversion loop
+  // way everywhere - the consistency fix. The bridge's internal conversion loop
   // autoplays regardless, so reduced-motion users still see a static, legible
   // bridge (we just skip the entrance tween here).
   useEffect(() => {
@@ -274,7 +280,7 @@ export default function HeroBridge() {
       {/* Main content */}
       <div className="relative z-[2] min-h-[100dvh] flex items-center">
         {/* pt clears the fixed floating nav (~80px) so centered hero content
-            never tucks under it on first paint — esp. now the bridge makes
+            never tucks under it on first paint - esp. now the bridge makes
             the column taller. */}
         <div className="w-full max-w-[1280px] mx-auto px-5 lg:px-12 pt-28 pb-16 lg:pt-32 lg:pb-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
@@ -343,7 +349,7 @@ export default function HeroBridge() {
                 <a
                   href="#features"
                   onClick={(e) => handleCta(e, '#features')}
-                  className="flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold cursor-pointer transition-all duration-200 hover:scale-[1.03]"
+                  className="flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold cursor-pointer transition-all duration-200 hover:scale-[1.03] active:scale-[0.97]"
                   style={{
                     color: theme.textPrimary,
                     border: `1px solid ${theme.border}`,
@@ -399,7 +405,7 @@ export default function HeroBridge() {
                 </PhoneFrame>
               </motion.div>
 
-              {/* Trust badges below phone — desktop */}
+              {/* Trust badges below phone - desktop */}
               <div className="hidden lg:flex absolute -bottom-16 left-1/2 -translate-x-1/2 gap-3">
                 {[
                   { icon: ShieldCheck, label: 'Escrow' },
@@ -425,7 +431,7 @@ export default function HeroBridge() {
             </div>
           </div>
 
-          {/* Payment bridge — LOCAL ⇄ USDC ⇄ GLOBAL conversion (all breakpoints) */}
+          {/* Payment bridge - LOCAL <-> USDC <-> GLOBAL conversion (all breakpoints) */}
           <PaymentBridge />
         </div>
       </div>
@@ -538,7 +544,7 @@ export default function HeroBridge() {
 }
 
 // =============================================================================
-// HeroPhoneScreen — USDC balance with countUp target + explosion panels
+// HeroPhoneScreen - USDC balance with countUp target + explosion panels
 // =============================================================================
 
 function HeroPhoneScreen() {
@@ -546,7 +552,7 @@ function HeroPhoneScreen() {
 
   return (
     <div
-      className="w-full h-full overflow-hidden relative"
+      className="az-crt w-full h-full overflow-hidden relative"
       style={{
         background: theme.surface || '#0d0e12',
       }}
@@ -608,7 +614,7 @@ function HeroPhoneScreen() {
                 className="text-xl font-black"
                 style={{ fontFamily: 'Space Grotesk', color: '#fff' }}
               >
-                0.00
+                12,450.00
               </span>
             </div>
             <div className="flex items-center gap-2 text-[9px] mt-1">
@@ -659,8 +665,8 @@ function HeroPhoneScreen() {
         </div>
       </div>
 
-      {/* Explosion panels — 6-cell overlay for Act 3 shatter (DESKTOP ONLY) */}
-      {/* Start transparent — GSAP will set opacity:1 when ready */}
+      {/* Explosion panels - 6-cell overlay for Act 3 shatter (DESKTOP ONLY) */}
+      {/* Start transparent - GSAP will set opacity:1 when ready */}
       <div className="pointer-events-none absolute inset-0 grid grid-cols-2 grid-rows-3 z-20 hidden lg:grid">
         {Array.from({ length: 6 }).map((_, i) => (
           <div
@@ -675,15 +681,58 @@ function HeroPhoneScreen() {
           />
         ))}
       </div>
+
+      {/* CRT power-on flash + persistent scanlines for an analog, old-TV feel. */}
+      <div
+        className="az-crt-flash pointer-events-none absolute inset-0 z-30"
+        aria-hidden="true"
+        style={{
+          background: `radial-gradient(120% 80% at 50% 50%, ${theme.glow || '#ffffff'}, transparent 70%)`,
+          opacity: 0,
+        }}
+      />
+      <div className="az-scanlines pointer-events-none absolute inset-0 z-30" aria-hidden="true" />
+
+      <style>{`
+        .az-crt { transform-origin: center center; backface-visibility: hidden; }
+        .az-scanlines {
+          background-image: repeating-linear-gradient(
+            to bottom,
+            rgba(0,0,0,0.10) 0px,
+            rgba(0,0,0,0.10) 1px,
+            transparent 1px,
+            transparent 3px
+          );
+          mix-blend-mode: overlay;
+          opacity: 0.3;
+        }
+        @media (prefers-reduced-motion: no-preference) {
+          .az-crt { animation: azCrtOn 1150ms cubic-bezier(0.2, 0.8, 0.2, 1) 420ms both; }
+          .az-crt-flash { animation: azCrtFlash 1150ms ease-out 420ms both; }
+        }
+        @keyframes azCrtOn {
+          0%   { transform: scale(1, 0.003); filter: brightness(5) contrast(1.4); opacity: 0; }
+          12%  { transform: scale(1, 0.004); filter: brightness(5) contrast(1.4); opacity: 1; }
+          40%  { transform: scale(1, 0.008); filter: brightness(4) contrast(1.3); opacity: 1; }
+          58%  { transform: scale(1.015, 1.05); filter: brightness(2.2) contrast(1.15); }
+          74%  { transform: scale(0.998, 0.985); filter: brightness(1.35); }
+          100% { transform: scale(1, 1); filter: brightness(1) contrast(1); opacity: 1; }
+        }
+        @keyframes azCrtFlash {
+          0%, 46% { opacity: 0; }
+          58% { opacity: 0.8; }
+          100% { opacity: 0; }
+        }
+      `}</style>
     </div>
   )
 }
 
 // =============================================================================
-// PaymentBridge — the "bridging the gap" centerpiece.
-// LOCAL rails (left)  ⇄  USDC core (center)  ⇄  GLOBAL rails (right)
+// PaymentBridge - the "bridging the gap" centerpiece.
+// LOCAL rails (left)  <->  USDC core (center)  <->  GLOBAL rails (right)
 // A looping, Framer-driven conversion animation runs in BOTH directions and the
-// core cycles its currency label (GH₵ → USDC → $). Autoplay + loop means it is
+// core cycles its currency label (GH₵ -> USDC -> $). Autoplay + loop means it is
 // pixel-consistent across mobile and desktop with no scroll dependency. Layout
 // is horizontal on desktop and stacks vertically on mobile.
 // =============================================================================
@@ -699,7 +748,7 @@ function PaymentBridge() {
           One asset · every border
         </div>
         <div className="text-sm lg:text-base font-medium" style={{ color: theme.textSecondary }}>
-          Local money and global money — bridged through USDC, settled in seconds.
+          Local money and global money - bridged through USDC, settled in seconds.
         </div>
       </div>
 

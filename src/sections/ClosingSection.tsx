@@ -1,5 +1,5 @@
 // =============================================================================
-// ClosingSection — "Africa's money moves here."
+// ClosingSection - "Africa's money moves here."
 // 3 coded blobs, gradient headline, email capture, app store badges, trust pills
 // =============================================================================
 
@@ -58,7 +58,7 @@ export default function ClosingSection() {
       </div>
 
       <div className="relative max-w-[800px] mx-auto px-5 text-center">
-        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
+        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}>
           {/* Gradient headline */}
           <h2
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
@@ -73,7 +73,7 @@ export default function ClosingSection() {
             Africa's money moves here.
           </h2>
           <p className="text-lg mb-10 max-w-xl mx-auto leading-relaxed" style={{ color: theme.textSecondary }}>
-            Whether you're trading, saving, or building — Azaman is the platform that moves with you.
+            Whether you're trading, saving, or building - Azaman is the platform that moves with you.
           </p>
 
           {/* Email capture */}
@@ -92,7 +92,7 @@ export default function ClosingSection() {
                 />
                 <button
                   type="submit"
-                  className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform hover:scale-105"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform hover:scale-105 active:scale-[0.97]"
                   style={{ backgroundColor: theme.accent, color: theme.isDark ? '#000' : '#fff' }}
                   data-cursor="hover"
                 >
@@ -115,6 +115,7 @@ export default function ClosingSection() {
             <motion.a
               href="#"
               whileHover={{ filter: 'brightness(1.1)' }}
+              whileTap={{ scale: 0.97 }}
               className="flex items-center gap-3 px-5 py-3 rounded-xl"
               style={{ backgroundColor: '#000', border: `1px solid ${theme.border}` }}
               data-cursor="hover"
@@ -128,6 +129,7 @@ export default function ClosingSection() {
             <motion.a
               href="#"
               whileHover={{ filter: 'brightness(1.1)' }}
+              whileTap={{ scale: 0.97 }}
               className="flex items-center gap-3 px-5 py-3 rounded-xl"
               style={{ backgroundColor: '#000', border: `1px solid ${theme.border}` }}
               data-cursor="hover"
