@@ -10,6 +10,7 @@ import { Crown, Flame, TrendingUp, Star } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Glass from '@/components/Glass'
 import { useTheme } from '@/contexts/ThemeContext'
+import AmbientOrbs from '@/components/AmbientOrbs'
 import { Flip, gsap, prefersReducedMotion } from '@/lib/gsap'
 import { useInViewport } from '@/hooks/use-in-viewport'
 
@@ -101,6 +102,7 @@ export default function AzmAuctionSection() {
       className="relative py-24 lg:py-32 overflow-hidden"
       style={{ backgroundColor: theme.background }}
     >
+      <AmbientOrbs count={2} />
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -132,7 +134,7 @@ export default function AzmAuctionSection() {
             style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}
           >
             Burn AZM.{' '}
-            <span style={{ color: theme.accent }}>Claim the spotlight.</span>
+            <span className="text-gradient-flow">Claim the spotlight.</span>
           </h2>
           <p className="text-lg max-w-2xl mx-auto" style={{ color: theme.textMuted }}>
             Vendors compete in a live auction for the boosted slot. Highest AZM bid wins

@@ -11,6 +11,7 @@ import Glass from '@/components/Glass'
 import NodeGraph from '@/components/NodeGraph'
 import ProgressRing from '@/components/ProgressRing'
 import { useTheme } from '@/contexts/ThemeContext'
+import AmbientOrbs from '@/components/AmbientOrbs'
 import { gsap, prefersReducedMotion } from '@/lib/gsap'
 import { useInViewport } from '@/hooks/use-in-viewport'
 
@@ -36,6 +37,7 @@ export default function BentoEcosystem() {
       className="relative py-24 lg:py-32 overflow-hidden"
       style={{ backgroundColor: theme.background }}
     >
+      <AmbientOrbs count={2} />
       <div
         className="absolute inset-0 pointer-events-none"
         aria-hidden="true"
@@ -58,7 +60,7 @@ export default function BentoEcosystem() {
             The Ecosystem
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
-            One platform.{' '}<span style={{ color: theme.accent }}>Every flow you need.</span>
+            One platform.{' '}<span className="text-gradient-flow">Every flow you need.</span>
           </h2>
           <p className="text-lg max-w-2xl mx-auto" style={{ color: theme.textMuted }}>
             Vaults that reward consistency. Smart Routes that automate payouts. Tokens that fuel the marketplace.

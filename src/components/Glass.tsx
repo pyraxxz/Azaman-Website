@@ -89,7 +89,7 @@ export default function Glass({
   return (
     <div
       ref={ref}
-      className={cn('relative overflow-hidden', RADIUS[radius], PADDING[padding], className)}
+      className={cn('relative overflow-hidden transition-transform duration-300 ease-out hover:-translate-y-1', RADIUS[radius], PADDING[padding], className)}
       style={innerStyle}
       {...rest}
     >

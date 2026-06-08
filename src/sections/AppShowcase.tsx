@@ -112,7 +112,7 @@ export default function AppShowcase() {
             App Experience
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
-            Five screens. <span style={{ color: theme.accent }}>One scroll.</span>
+            Five screens. <span className="text-gradient-flow">One scroll.</span>
           </h2>
         </motion.div>
 
@@ -178,7 +178,7 @@ export default function AppShowcase() {
                   <Glass radius="xl" padding="md" tilt tiltMax={4}>
                     <div className="flex items-center gap-4">
                       {/* Mini phone mockup */}
-                      <div className="flex-shrink-0 w-[100px] h-[180px] rounded-[20px] border-2 bg-black overflow-hidden" style={{ borderColor: '#1F2128' }}>
+                      <div className="flex-shrink-0 w-[110px] h-[224px] rounded-[22px] border-2 bg-black overflow-hidden relative" style={{ borderColor: '#1F2128' }}>
                         <MiniScreen idx={i} accent={theme.accent} theme={theme} />
                       </div>
                       {/* Text content */}
@@ -480,16 +480,34 @@ function ScreenVault({ accent, theme, isMini }: ScreenProps) {
 // =============================================================================
 function MiniScreen({ idx, accent, theme }: { idx: number; accent: string; theme: ScreenProps['theme'] }) {
   const screens = [
-    <ScreenHome key="h" accent={accent} theme={theme} isMini={true} />,
-    <ScreenMarketplace key="m" accent={accent} theme={theme} isMini={true} />,
-    <ScreenTrade key="t" accent={accent} theme={theme} isMini={true} />,
-    <ScreenSusu key="s" accent={accent} theme={theme} isMini={true} />,
-    <ScreenVault key="v" accent={accent} theme={theme} isMini={true} />,
+    <ScreenHome key="h" accent={accent} theme={theme} />,
+    <ScreenMarketplace key="m" accent={accent} theme={theme} />,
+    <ScreenTrade key="t" accent={accent} theme={theme} />,
+    <ScreenSusu key="s" accent={accent} theme={theme} />,
+    <ScreenVault key="v" accent={accent} theme={theme} />,
   ]
 
+  // True thumbnail: render the FULL-resolution screen in a fixed 280×570 stage,
+  // then CSS-scale the whole stage to fit the 110px-wide mini frame. This keeps
+  // the real proportions instead of cropping the top of an oversized layout
+  // (which read as "zoomed in").
+  const FRAME_W = 110
+  const STAGE_W = 280
+  const STAGE_H = 570
+  const scale = FRAME_W / STAGE_W
+
   return (
-    <div className="w-full h-full overflow-hidden">
-      {screens[idx]}
+    <div className="absolute inset-0 overflow-hidden">
+      <div
+        style={{
+          width: STAGE_W,
+          height: STAGE_H,
+          transform: `scale(${scale})`,
+          transformOrigin: 'top left',
+        }}
+      >
+        {screens[idx]}
+      </div>
     </div>
   )
 }

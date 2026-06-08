@@ -9,6 +9,7 @@ import { motion } from 'framer-motion'
 import { Crown, Users, ChevronLeft, ChevronRight } from 'lucide-react'
 import Glass from '@/components/Glass'
 import { useTheme } from '@/contexts/ThemeContext'
+import AmbientOrbs from '@/components/AmbientOrbs'
 import { useScrollAnim } from '@/hooks/use-scroll-anim'
 import { prefersReducedMotion } from '@/lib/gsap'
 
@@ -144,6 +145,7 @@ export default function SusuEngineSection() {
       style={{ backgroundColor: theme.background }}
     >
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true" style={{ background: `radial-gradient(ellipse 80% 60% at 50% 30%, ${theme.glow}12, transparent 70%)` }} />
+      <AmbientOrbs count={2} />
 
       <div className="relative max-w-[1280px] mx-auto px-5 lg:px-12">
         {/* Header */}
@@ -153,7 +155,7 @@ export default function SusuEngineSection() {
             Susu Engine
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
-            The Savings Circle. <span style={{ color: theme.accent }}>Reimagined.</span>
+            The Savings Circle. <span className="text-gradient-flow">Reimagined.</span>
           </h2>
           <p className="text-lg max-w-2xl mx-auto" style={{ color: theme.textMuted }}>
             Susu is the oldest savings system in Africa. We just made it trustless, digital, and powered by USDC. Your group. Your rules. Your payout.

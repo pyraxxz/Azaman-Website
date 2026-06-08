@@ -61,7 +61,7 @@ export default function FAQSection() {
             FAQ
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
-            Got questions? <span style={{ color: theme.accent }}>We have answers.</span>
+            Got questions? <span className="text-gradient-flow">We have answers.</span>
           </h2>
         </motion.div>
 
