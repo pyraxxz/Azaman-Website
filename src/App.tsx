@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import PreloaderAnimation from '@/components/PreloaderAnimation'
 import Navigation from '@/components/Navigation'
 import ScrollProgress from '@/components/ScrollProgress'
 import CustomCursor from '@/components/CustomCursor'
@@ -20,6 +21,7 @@ export default function App() {
           color: theme.textPrimary,
         }}
       >
+        <PreloaderAnimation />
         <SkipToContent />
         <CustomCursor />
         <ScrollProgress />

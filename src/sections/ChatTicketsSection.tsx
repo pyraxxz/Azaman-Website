@@ -1,104 +1,46 @@
 // =============================================================================
-// ChatTicketsSection - 50/50 layout
-// LEFT: Phone mockup with GSAP chat loop (preserved logic)
-// RIGHT: 3 stacked Glass feature cards sliding in from right
+// ChatTicketsSection - "Chat that moves money."
+// A friend chat where you gift money inside the conversation: messages pop in,
+// a Send sheet slides up (amount + reference), a slide-to-confirm travels across,
+// then confetti bursts and the screen flips to "Money sent". Auto-plays (and
+// loops) when scrolled into view. Reduced-motion shows the final sent state.
 // =============================================================================
 
 import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import {
-  MessageCircle,
-  Receipt,
-  Users,
-  Play,
-  Send,
-  CheckCheck,
-  Upload,
-  Mic,
-} from 'lucide-react'
+import { MessageCircle, Gift, Wallet, ShieldCheck, Send, Check, ChevronsRight } from 'lucide-react'
 import Glass from '@/components/Glass'
 import PhoneFrame from '@/components/PhoneFrame'
 import { useTheme } from '@/contexts/ThemeContext'
+import type { ThemeColors } from '@/contexts/ThemeContext'
 import { gsap, prefersReducedMotion } from '@/lib/gsap'
+
+const FEATURE_CARDS = [
+  {
+    icon: Gift,
+    title: 'Gift a friend in seconds',
+    desc: 'Split a bill, send a birthday gift, settle up. Drop USDC right into the chat with a note like “🎂 Happy Birthday”.',
+  },
+  {
+    icon: Wallet,
+    title: 'No addresses, no app-switching',
+    desc: 'No copy-pasting wallet addresses or leaving the conversation. The chat is the wallet.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Confirmed by you',
+    desc: 'Every transfer ends with a deliberate slide-to-send, so money only moves the moment you mean it.',
+  },
+]
 
 export default function ChatTicketsSection() {
   const { theme } = useTheme()
-  const stageRef = useRef<HTMLDivElement>(null)
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024
-
-  // GSAP chat loop - messages reveal progressively as the phone scrolls into
-  // view. The same scroll-scrubbed timeline now drives BOTH mobile and desktop:
-  // previously desktop ran an auto-playing loop, so on a laptop you had to sit
-  // and wait for each message to play out instead of pulling them in on scroll.
-  useEffect(() => {
-    const stage = stageRef.current
-    if (!stage) return
-    if (prefersReducedMotion()) return
-
-    let tl: gsap.core.Timeline | null = null
-
-    const setup = () => {
-      gsap.set(stage.querySelectorAll('[data-msg]'), { opacity: 0, y: 16 })
-      gsap.set(stage.querySelector('[data-typing]'), { opacity: 0 })
-      gsap.set(stage.querySelectorAll('[data-bar]'), { scaleY: 0.2 })
-      gsap.set(stage.querySelector('[data-progress]'), { width: '0%' })
-      gsap.set(stage.querySelector('[data-ticket]'), { opacity: 0, scale: 0.85, y: 12 })
-
-      tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: stage,
-          start: 'top 85%',
-          end: isMobile ? 'center center' : 'center 45%',
-          scrub: 0.5,
-        },
-        defaults: { ease: 'power3.out' },
-      })
-
-      tl.to(stage.querySelector('[data-msg="0"]'), { opacity: 1, y: 0, duration: 0.5 })
-      tl.to(stage.querySelector('[data-typing]'), { opacity: 1, duration: 0.3 }, '+=0.2')
-      tl.to(stage.querySelector('[data-msg="1"]'), { opacity: 1, y: 0, duration: 0.5 }, '+=0.3')
-      tl.to(stage.querySelector('[data-typing]'), { opacity: 0, duration: 0.2 }, '<')
-      tl.to(stage.querySelector('[data-msg="2"]'), { opacity: 1, y: 0, duration: 0.5 }, '+=0.2')
-      const bars = stage.querySelectorAll('[data-bar]')
-      tl.to(bars, {
-        scaleY: () => 0.3 + Math.random() * 1.3,
-        duration: 0.16,
-        stagger: { each: 0.04, repeat: 3, yoyo: true },
-        ease: 'sine.inOut',
-      }, '<')
-      tl.to(stage.querySelector('[data-progress]'), { width: '100%', duration: 1.5, ease: 'none' }, '<')
-      tl.to(stage.querySelector('[data-ticket]'), { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: 'back.out(1.4)' }, '+=0.2')
-      tl.to(stage.querySelector('[data-msg="3"]'), { opacity: 1, y: 0, duration: 0.5 }, '+=0.2')
-      tl.to(stage.querySelector('[data-msg="4"]'), { opacity: 1, y: 0, duration: 0.5 }, '+=0.2')
-    }
-
-    setup()
-
-    return () => { tl?.scrollTrigger?.kill(); tl?.kill() }
-  }, [isMobile])
-
-  const FEATURE_CARDS = [
-    {
-      icon: MessageCircle,
-      title: 'Trade Chat',
-      desc: 'Every trade has its own private channel. Send proof, voice notes, and files - end-to-end secured.',
-    },
-    {
-      icon: Receipt,
-      title: 'Support Tickets',
-      desc: 'Disputes auto-escalate. AI reviews the evidence. Most resolved in under 30 minutes.',
-    },
-    {
-      icon: Users,
-      title: 'Social Chat',
-      desc: 'Send money inside any conversation. Biometric confirmed.',
-    },
-  ]
 
   return (
     <section
       id="chat-tickets"
-      className="relative py-24 lg:py-40 overflow-hidden"
+      className="relative py-20 lg:py-32 overflow-hidden"
       style={{ backgroundColor: theme.background }}
     >
       <div
@@ -109,39 +51,39 @@ export default function ChatTicketsSection() {
 
       <div className="relative max-w-[1280px] mx-auto px-5 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         {/* LEFT: Phone mockup */}
-        <div className="flex items-center justify-center">
-          <div ref={stageRef} style={{ perspective: '1400px' }}>
-            <PhoneFrame width={isMobile ? 240 : 300} height={isMobile ? 500 : 620} tilt scanlines>
-              <ChatStage isMobile={isMobile} />
+        <div className="flex items-center justify-center order-2 lg:order-1">
+          <div style={{ perspective: '1400px' }}>
+            <PhoneFrame width={isMobile ? 250 : 330} height={isMobile ? 520 : 680} tilt scanlines>
+              <ChatStage theme={theme} />
             </PhoneFrame>
           </div>
         </div>
 
         {/* RIGHT: Feature cards */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 order-1 lg:order-2">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-4"
+            className="mb-2"
           >
             <div
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4 text-xs font-semibold uppercase tracking-[0.2em]"
               style={{ backgroundColor: `${theme.accent}10`, border: `1px solid ${theme.accent}30`, color: theme.accent }}
             >
               <MessageCircle size={12} />
-              Social-Transactional
+              Social Payments
             </div>
             <h2
               className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 leading-[1.05]"
               style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}
             >
-              Chat that closes{' '}
-              <span className="text-gradient-flow">the deal.</span>
+              Chat that{' '}
+              <span className="text-gradient-flow">moves money.</span>
             </h2>
             <p className="text-base lg:text-lg leading-relaxed" style={{ color: theme.textSecondary }}>
-              Trade-bound chat with built-in audio, payment proof, and live tickets.
+              Message your friends, then send them USDC without ever leaving the conversation. Add a note, slide to send, done.
             </p>
           </motion.div>
 
@@ -156,10 +98,7 @@ export default function ChatTicketsSection() {
                 transition={{ duration: 0.5, delay: 0.1 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
               >
                 <Glass tilt tiltMax={4} radius="xl" padding="md" mouseGlow>
-                  <div
-                    className="flex items-start gap-4 group transition-all duration-200"
-                    style={{ borderLeft: '3px solid transparent' }}
-                  >
+                  <div className="flex items-start gap-4">
                     <div
                       className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
                       style={{ backgroundColor: `${theme.accent}15`, border: `1px solid ${theme.accent}30` }}
@@ -186,80 +125,106 @@ export default function ChatTicketsSection() {
 }
 
 // =============================================================================
-// ChatStage - scripted chat view inside the phone
+// ChatStage - scripted friend-chat + gift flow inside the phone.
 // =============================================================================
 
-function ChatStage({ isMobile }: { isMobile: boolean }) {
-  const { theme } = useTheme()
+const MESSAGES = [
+  { side: 'in', text: 'Yooo guess what 👀' },
+  { side: 'in', text: 'It’s my birthday today!! 🎂🎉' },
+  { side: 'out', text: 'Happy birthday bestie 🥳' },
+  { side: 'out', text: 'Sending you something rn 👇' },
+] as const
 
-  // Responsive sizes - dramatically smaller for mobile
-  const s = isMobile ? {
-    headerPx: 'px-2.5 pt-6 pb-2',
-    avatarSize: 'w-7 h-7 text-xs',
-    nameText: 'text-xs',
-    statusText: 'text-[8px]',
-    timerPx: 'px-1.5 py-0.5',
-    timerText: 'text-[8px]',
-    msgPadding: 'p-2 gap-2',
-    systemText: 'text-[7px] px-2 py-0.5',
-    bubbleText: 'text-[9px] px-2.5 py-1.5',
-    audioSize: 'w-5 h-5',
-    audioPlaySize: 9,
-    audioBarGap: 'gap-[1px]',
-    audioTime: 'text-[8px]',
-    ticketPx: 'px-2 py-1.5',
-    ticketHeaderPx: 'px-2 py-1.5',
-    ticketIcon: 10,
-    ticketTitle: 'text-[8px]',
-    ticketTx: 'text-[7px]',
-    ticketLabel: 'text-[7px]',
-    ticketValue: 'text-[9px]',
-    proofPx: 'px-2 py-1.5',
-    proofIcon: 9,
-    proofText: 'text-[8px]',
-    proofDesc: 'text-[7px] px-2 pb-1.5',
-    composerPx: 'px-2 py-2',
-    composerIcon: 14,
-    composerHeight: 'h-7',
-    composerText: 'text-[9px] px-3',
-    composerBtnSize: 'w-7 h-7',
-    composerBtnIcon: 12,
-  } : {
-    headerPx: 'px-4 pt-8 pb-3',
-    avatarSize: 'w-9 h-9 text-sm',
-    nameText: 'text-sm',
-    statusText: 'text-[10px]',
-    timerPx: 'px-2 py-1',
-    timerText: 'text-[10px]',
-    msgPadding: 'p-3 gap-2.5',
-    systemText: 'text-[9px] px-3 py-1',
-    bubbleText: 'text-[11px] px-3.5 py-2',
-    audioSize: 'w-7 h-7',
-    audioPlaySize: 11,
-    audioBarGap: 'gap-[2px]',
-    audioTime: 'text-[10px]',
-    ticketPx: 'px-3 py-2.5',
-    ticketHeaderPx: 'px-3 py-2',
-    ticketIcon: 12,
-    ticketTitle: 'text-[10px]',
-    ticketTx: 'text-[9px]',
-    ticketLabel: 'text-[8px]',
-    ticketValue: 'text-[11px]',
-    proofPx: 'px-3 py-2',
-    proofIcon: 11,
-    proofText: 'text-[10px]',
-    proofDesc: 'text-[9px] px-3 pb-2',
-    composerPx: 'px-3 py-3',
-    composerIcon: 16,
-    composerHeight: 'h-9',
-    composerText: 'text-[11px] px-4',
-    composerBtnSize: 'w-9 h-9',
-    composerBtnIcon: 14,
-  };
+const CONFETTI_COUNT = 30
+
+function ChatStage({ theme }: { theme: ThemeColors }) {
+  const rootRef = useRef<HTMLDivElement>(null)
+
+  const confettiColors = [theme.accent, theme.accentSecondary, theme.success, theme.warning, theme.textPrimary]
+
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+
+    const bubbles = root.querySelectorAll<HTMLElement>('[data-bubble]')
+    const sheet = root.querySelector<HTMLElement>('[data-sheet]')
+    const amount = root.querySelector<HTMLElement>('[data-amount]')
+    const ref = root.querySelector<HTMLElement>('[data-ref]')
+    const track = root.querySelector<HTMLElement>('[data-slide-track]')
+    const thumb = root.querySelector<HTMLElement>('[data-slide-thumb]')
+    const fill = root.querySelector<HTMLElement>('[data-slide-fill]')
+    const slideLabel = root.querySelector<HTMLElement>('[data-slide-label]')
+    const success = root.querySelector<HTMLElement>('[data-success]')
+    const pieces = root.querySelectorAll<HTMLElement>('[data-confetti-piece]')
+    if (!sheet || !track || !thumb || !fill || !success) return
+
+    // Reduced motion: show the completed "sent" state, nothing animates.
+    if (prefersReducedMotion()) {
+      gsap.set(bubbles, { opacity: 1, y: 0 })
+      gsap.set(sheet, { yPercent: 0, opacity: 1 })
+      gsap.set(success, { opacity: 1, scale: 1 })
+      return
+    }
+
+    const fireConfetti = () => {
+      pieces.forEach((p) => {
+        const angle = Math.random() * Math.PI * 2
+        const dist = 50 + Math.random() * 130
+        gsap.killTweensOf(p)
+        gsap.set(p, { x: 0, y: 0, opacity: 1, scale: 0.5 + Math.random() * 0.9 })
+        gsap.to(p, {
+          x: Math.cos(angle) * dist,
+          y: Math.sin(angle) * dist - 30,
+          rotation: (Math.random() - 0.5) * 600,
+          opacity: 0,
+          duration: 1.1 + Math.random() * 0.7,
+          ease: 'power2.out',
+        })
+      })
+    }
+
+    const slideMax = () => Math.max(0, track.clientWidth - thumb.offsetWidth - 8)
+
+    const reset = () => {
+      gsap.set(bubbles, { opacity: 0, y: 16 })
+      gsap.set(sheet, { yPercent: 110, opacity: 0 })
+      gsap.set([amount, ref], { opacity: 0, y: 8 })
+      gsap.set(thumb, { x: 0 })
+      gsap.set(fill, { width: 0 })
+      gsap.set(slideLabel, { opacity: 1 })
+      gsap.set(success, { opacity: 0, scale: 0.9 })
+      gsap.set(pieces, { opacity: 0, x: 0, y: 0 })
+    }
+
+    const tl = gsap.timeline({ repeat: -1, repeatDelay: 2.4, paused: true })
+    tl.call(reset)
+      .to(bubbles, { opacity: 1, y: 0, duration: 0.45, stagger: 0.5, ease: 'power3.out' })
+      .to(sheet, { yPercent: 0, opacity: 1, duration: 0.5, ease: 'back.out(1.3)' }, '+=0.2')
+      .to(amount, { opacity: 1, y: 0, duration: 0.35 }, '-=0.1')
+      .to(ref, { opacity: 1, y: 0, duration: 0.35 }, '-=0.15')
+      .to(fill, { width: '100%', duration: 1.1, ease: 'power2.inOut' }, '+=0.35')
+      .to(thumb, { x: slideMax, duration: 1.1, ease: 'power2.inOut' }, '<')
+      .to(slideLabel, { opacity: 0, duration: 0.3 }, '<')
+      .call(fireConfetti, [], '-=0.05')
+      .to(success, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.5)' }, '-=0.05')
+      .to(sheet, { opacity: 0.15, duration: 0.4 }, '<')
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) tl.play()
+        else tl.pause()
+      },
+      { threshold: 0.35 }
+    )
+    io.observe(root)
+
+    return () => { io.disconnect(); tl.kill() }
+  }, [theme])
 
   return (
     <div
-      className="w-full h-full overflow-hidden"
+      ref={rootRef}
+      className="relative w-full h-full overflow-hidden"
       style={{
         background: `linear-gradient(180deg, ${theme.surface}, ${theme.background})`,
         boxShadow: `inset 0 0 40px ${theme.glow}15`,
@@ -267,145 +232,120 @@ function ChatStage({ isMobile }: { isMobile: boolean }) {
     >
       <div className="flex flex-col w-full h-full">
         {/* Header */}
-        <div className={`flex items-center gap-2.5 ${s.headerPx} border-b`} style={{ borderColor: theme.border }}>
+        <div className="flex items-center gap-2.5 px-4 pt-8 pb-3 border-b" style={{ borderColor: theme.border }}>
           <div
-            className={`${s.avatarSize} rounded-full flex items-center justify-center font-bold`}
-            style={{ backgroundColor: `${theme.accent}20`, color: theme.accent, border: `1px solid ${theme.accent}` }}
+            className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold"
+            style={{ background: `linear-gradient(135deg, ${theme.accent}, ${theme.accentSecondary})`, color: theme.isDark ? '#000' : '#fff' }}
           >
-            KG
+            A
           </div>
           <div className="flex-1 min-w-0">
-            <div className={`${s.nameText} font-bold truncate`} style={{ color: theme.textPrimary }}>KwameGold</div>
-            <div className={`${s.statusText} flex items-center gap-1`} style={{ color: theme.success }}>
+            <div className="text-sm font-bold truncate" style={{ color: theme.textPrimary }}>Ama 🎂</div>
+            <div className="text-[10px] flex items-center gap-1" style={{ color: theme.success }}>
               <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: theme.success }} />
-              Trade #1024 · Active
+              online
             </div>
           </div>
-          <motion.div
-            className={`${s.timerPx} rounded-full`}
-            style={{ backgroundColor: `${theme.accent}15`, border: `1px solid ${theme.accent}30` }}
-            animate={{ scale: [1, 1.04, 1] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <span className={`${s.timerText} font-mono font-bold`} style={{ color: theme.accent }}>⏱ 12:45</span>
-          </motion.div>
         </div>
 
         {/* Messages */}
-        <div className={`flex-1 overflow-hidden ${s.msgPadding} flex flex-col relative`}>
-          <div data-msg="0" className={`self-center ${s.systemText} rounded-full`} style={{ backgroundColor: `${theme.surface}b0`, color: theme.textMuted }}>
-            Trade started · 100 USDC for GH₵ 1,144
-          </div>
-
-          {/* Vendor bubble */}
-          <div data-msg="1" className={`self-start max-w-[78%] ${s.bubbleText} rounded-2xl rounded-bl-md leading-relaxed`} style={{ backgroundColor: theme.card, color: theme.textPrimary, border: `1px solid ${theme.border}` }}>
-            Hey 👋 Send to MTN MoMo: <strong>024-xxx-1234</strong>. Name: Kwame A.
-          </div>
-
-          {/* Typing */}
-          <div data-typing className={`self-start flex items-center gap-1 ${isMobile ? 'px-2 py-1.5' : 'px-3 py-2'} rounded-2xl`} style={{ backgroundColor: theme.card, border: `1px solid ${theme.border}` }}>
-            {[0, 1, 2].map((i) => (
-              <motion.span key={i} className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: theme.textMuted }} animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.1, repeat: Infinity, delay: i * 0.18 }} />
-            ))}
-          </div>
-
-          {/* Audio waveform */}
-          <div data-msg="2" className={`self-end max-w-[80%] ${isMobile ? 'px-2 py-2' : 'px-3 py-2.5'} rounded-2xl rounded-br-md flex items-center gap-2`} style={{ backgroundColor: `${theme.accent}25`, border: `1px solid ${theme.accent}40` }}>
-            <div className={`${s.audioSize} rounded-full flex items-center justify-center flex-shrink-0`} style={{ backgroundColor: theme.accent }}>
-              <Play size={s.audioPlaySize} className="text-black" fill="currentColor" />
+        <div className="flex-1 overflow-hidden p-3 flex flex-col gap-2">
+          {MESSAGES.map((m, i) => (
+            <div
+              key={i}
+              data-bubble
+              className={`max-w-[80%] text-[11px] px-3.5 py-2 leading-relaxed rounded-2xl ${m.side === 'out' ? 'self-end rounded-br-md' : 'self-start rounded-bl-md'}`}
+              style={
+                m.side === 'out'
+                  ? { backgroundColor: `${theme.accent}25`, border: `1px solid ${theme.accent}40`, color: theme.textPrimary }
+                  : { backgroundColor: theme.card, border: `1px solid ${theme.border}`, color: theme.textPrimary }
+              }
+            >
+              {m.text}
             </div>
-            <div className={`flex-1 flex items-center ${s.audioBarGap} ${s.audioSize}`}>
-              {Array.from({ length: isMobile ? 20 : 28 }).map((_, i) => (
-                <div key={i} data-bar className="flex-1 rounded-full" style={{ backgroundColor: theme.accent, height: '70%', transformOrigin: 'center' }} />
-              ))}
-            </div>
-            <span className={`${s.audioTime} font-mono flex-shrink-0`} style={{ color: theme.accent }}>0:08</span>
+          ))}
+        </div>
+
+        {/* Send-money sheet */}
+        <div
+          data-sheet
+          className="relative mx-2 mb-2 rounded-2xl p-3"
+          style={{ background: `linear-gradient(135deg, ${theme.surface}, ${theme.card})`, border: `1px solid ${theme.accent}40`, boxShadow: `0 -8px 30px ${theme.glow}20` }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <Gift size={13} style={{ color: theme.accent }} />
+            <span className="text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: theme.accent }}>Send to Ama</span>
           </div>
 
-          {/* Progress */}
-          <div className="self-end -mt-1 h-[2px] rounded-full overflow-hidden" style={{ width: '70%', backgroundColor: `${theme.accent}20` }}>
-            <div data-progress className="h-full" style={{ backgroundColor: theme.accent, width: 0 }} />
+          <div data-amount className="flex items-end gap-1.5 mb-2">
+            <span className="text-2xl font-black" style={{ fontFamily: 'Space Grotesk', color: theme.textPrimary }}>GH₵ 200</span>
+            <span className="text-[10px] mb-1" style={{ color: theme.textMuted }}>≈ 17.5 USDC</span>
           </div>
 
-          {/* Ticket card */}
+          <div data-ref className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full mb-3" style={{ backgroundColor: `${theme.accent}12`, border: `1px solid ${theme.accent}25` }}>
+            <span className="text-[10px]" style={{ color: theme.textSecondary }}>🎂 Happy Birthday Ama!</span>
+          </div>
+
+          {/* Slide to send */}
           <div
-            data-ticket
-            className={`self-center ${isMobile ? 'w-[95%] mt-0.5' : 'w-[90%] mt-1'} rounded-2xl overflow-hidden`}
-            style={{
-              background: `linear-gradient(135deg, ${theme.accent}25, ${theme.accent}08)`,
-              border: `1px solid ${theme.accent}50`,
-              borderLeft: `1px dashed ${theme.accent}50`,
-              borderRight: `1px dashed ${theme.accent}50`,
-              boxShadow: `0 0 24px ${theme.accent}30`,
-            }}
+            data-slide-track
+            className="relative h-10 rounded-full overflow-hidden flex items-center"
+            style={{ backgroundColor: `${theme.textMuted}1F`, border: `1px solid ${theme.border}` }}
           >
-            <div className={`flex items-center gap-2 ${s.ticketHeaderPx} border-b`} style={{ borderColor: `${theme.accent}30` }}>
-              <Receipt size={s.ticketIcon} style={{ color: theme.accent }} />
-              <span className={`${s.ticketTitle} font-bold tracking-[0.18em] uppercase`} style={{ color: theme.accent }}>
-                TRADE #4721
-              </span>
-              <span className={`ml-auto ${s.ticketTx}`} style={{ color: theme.textMuted }}>#TX-88421</span>
-            </div>
-            <div className={`${s.ticketPx} grid grid-cols-3 gap-2`}>
-              <div>
-                <div className={s.ticketLabel} style={{ color: theme.textMuted }}>Amount</div>
-                <div className={`${s.ticketValue} font-bold`} style={{ color: theme.textPrimary }}>100 USDC</div>
-              </div>
-              <div>
-                <div className={s.ticketLabel} style={{ color: theme.textMuted }}>Rate</div>
-                <div className={`${s.ticketValue} font-bold`} style={{ color: theme.accent }}>GH₵ 11.44</div>
-              </div>
-              <div>
-                <div className={s.ticketLabel} style={{ color: theme.textMuted }}>Status</div>
-                <div className={`${s.ticketValue} font-bold`} style={{ color: theme.success }}>Open</div>
-              </div>
-            </div>
-            {/* SVG barcode pattern */}
-            <div className={isMobile ? 'px-2 pb-1.5' : 'px-3 pb-2'}>
-              <svg width="100%" height={isMobile ? '10' : '12'} viewBox="0 0 200 12" preserveAspectRatio="none">
-                {Array.from({ length: 40 }).map((_, i) => (
-                  <rect
-                    key={i}
-                    x={i * 5}
-                    y={0}
-                    width={i % 3 === 0 ? 3 : 1.5}
-                    height={12}
-                    fill={theme.accent}
-                    opacity={0.3}
-                  />
-                ))}
-              </svg>
-            </div>
-          </div>
-
-          {/* User reply */}
-          <div data-msg="3" className={`self-end max-w-[78%] ${s.bubbleText} rounded-2xl rounded-br-md leading-relaxed flex items-center gap-2`} style={{ backgroundColor: `${theme.accent}25`, border: `1px solid ${theme.accent}40`, color: theme.textPrimary }}>
-            <span>Sent. Uploading proof now…</span>
-            <CheckCheck size={isMobile ? 9 : 11} style={{ color: theme.accent }} />
-          </div>
-
-          {/* Payment proof */}
-          <div data-msg="4" className="self-end max-w-[78%] rounded-2xl rounded-br-md overflow-hidden" style={{ backgroundColor: `${theme.success}10`, border: `1px solid ${theme.success}30` }}>
-            <div className={`${s.proofPx} flex items-center gap-2`}>
-              <Upload size={s.proofIcon} style={{ color: theme.success }} />
-              <span className={`${s.proofText} font-bold`} style={{ color: theme.success }}>Payment Proof Uploaded</span>
-            </div>
-            <div className={`${s.proofDesc}`} style={{ color: theme.textMuted }}>
-              MoMo Receipt · TXN-88421 · Verified by AI
+            <div data-slide-fill className="absolute left-0 top-0 bottom-0 rounded-full" style={{ background: `linear-gradient(90deg, ${theme.accent}, ${theme.accentSecondary})`, width: 0 }} aria-hidden="true" />
+            <span data-slide-label className="absolute inset-0 flex items-center justify-center text-[11px] font-semibold pointer-events-none" style={{ color: theme.textSecondary }}>
+              Slide to send →
+            </span>
+            <div
+              data-slide-thumb
+              className="relative z-10 w-8 h-8 ml-1 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: theme.accent, color: theme.isDark ? '#000' : '#fff' }}
+            >
+              <ChevronsRight size={16} />
             </div>
           </div>
         </div>
 
         {/* Composer */}
-        <div className={`flex items-center gap-2 ${s.composerPx} border-t`} style={{ borderColor: theme.border, backgroundColor: theme.surface }}>
-          <Mic size={s.composerIcon} style={{ color: theme.textMuted }} />
-          <div className={`flex-1 ${s.composerHeight} rounded-full ${s.composerText} flex items-center`} style={{ backgroundColor: theme.background, border: `1px solid ${theme.border}`, color: theme.textMuted }}>
-            Type a message…
+        <div className="flex items-center gap-2 px-3 py-3 border-t" style={{ borderColor: theme.border, backgroundColor: theme.surface }}>
+          <div className="flex-1 h-8 rounded-full text-[11px] px-4 flex items-center" style={{ backgroundColor: theme.background, border: `1px solid ${theme.border}`, color: theme.textMuted }}>
+            Message Ama…
           </div>
-          <div className={`${s.composerBtnSize} rounded-full flex items-center justify-center`} style={{ backgroundColor: theme.accent }}>
-            <Send size={s.composerBtnIcon} style={{ color: theme.isDark ? '#000' : '#fff' }} />
+          <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: theme.accent }}>
+            <Send size={14} style={{ color: theme.isDark ? '#000' : '#fff' }} />
           </div>
         </div>
+      </div>
+
+      {/* Success overlay */}
+      <div
+        data-success
+        className="absolute inset-0 flex flex-col items-center justify-center text-center px-6"
+        style={{ background: `linear-gradient(180deg, ${theme.surface}, ${theme.background})`, opacity: 0 }}
+      >
+        <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: `linear-gradient(135deg, ${theme.success}, ${theme.accent})`, boxShadow: `0 0 40px ${theme.success}66` }}>
+          <Check size={30} style={{ color: theme.isDark ? '#000' : '#fff' }} strokeWidth={3} />
+        </div>
+        <div className="text-xl font-black" style={{ fontFamily: 'Space Grotesk', color: theme.textPrimary }}>Money sent</div>
+        <div className="text-2xl font-black mt-1" style={{ fontFamily: 'Space Grotesk', color: theme.accent }}>GH₵ 200 → Ama</div>
+        <div className="text-xs mt-2" style={{ color: theme.textMuted }}>She’ll get a notification 🎉</div>
+      </div>
+
+      {/* Confetti layer */}
+      <div className="absolute left-1/2 top-1/2 pointer-events-none z-20" aria-hidden="true">
+        {Array.from({ length: CONFETTI_COUNT }).map((_, i) => (
+          <span
+            key={i}
+            data-confetti-piece
+            className="absolute block rounded-[2px]"
+            style={{
+              width: i % 3 === 0 ? 6 : 8,
+              height: i % 3 === 0 ? 10 : 8,
+              backgroundColor: confettiColors[i % confettiColors.length],
+              opacity: 0,
+            }}
+          />
+        ))}
       </div>
     </div>
   )

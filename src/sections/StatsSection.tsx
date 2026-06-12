@@ -58,10 +58,10 @@ function Counter({ target, prefix = '', suffix = '', decimals = 0 }: {
 
 
 const STATS = [
-  { target: 2.4, prefix: '$', suffix: 'M', decimals: 1, label: 'Volume Potential', sub: 'Projected throughput at scale' },
-  { target: 50000, prefix: '', suffix: '+', decimals: 0, label: 'Users Within Reach', sub: 'Across our expansion markets' },
-  { target: 99.9, prefix: '', suffix: '%', decimals: 1, label: 'Target Uptime', sub: 'Enterprise-grade reliability' },
-  { target: 0.3, prefix: '<', suffix: 's', decimals: 1, label: 'Settlement Speed', sub: 'Built for instant transfers' },
+  { target: 50, prefix: '$', suffix: 'M', decimals: 0, label: 'Year 1 Volume Target', sub: 'Projected throughput across Ghana P2P network' },
+  { target: 100000, prefix: '', suffix: '+', decimals: 0, label: 'Users by 2026', sub: 'Conservative estimate across expansion markets' },
+  { target: 99.9, prefix: '', suffix: '%', decimals: 1, label: 'Uptime Target', sub: 'Enterprise-grade infrastructure from day one' },
+  { target: 5, prefix: '<', suffix: 's', decimals: 0, label: 'Trade Settlement', sub: 'From escrow lock to wallet credit, end-to-end' },
 ]
 
 export default function StatsSection() {
@@ -73,6 +73,7 @@ export default function StatsSection() {
   return (
     <section
       ref={ref}
+      id="stats"
       className="relative py-24 lg:py-40 overflow-hidden border-y"
       style={{ backgroundColor: theme.background, borderColor: theme.border }}
     >
@@ -117,9 +118,7 @@ export default function StatsSection() {
             className="max-w-2xl mx-auto mt-5 text-base lg:text-lg leading-relaxed"
             style={{ color: theme.textSecondary }}
           >
-            Africa's digital economy is accelerating fast. These are the numbers Azaman is
-            engineered to reach as we expand across the continent — our projected potential, not
-            today's totals.
+            The numbers behind the vision. Real infrastructure. Real ambition.
           </p>
         </motion.div>
 
@@ -143,6 +142,11 @@ export default function StatsSection() {
             </motion.div>
           ))}
         </div>
+
+        <p className="text-[11px] text-center max-w-lg mx-auto mt-8" style={{ color: theme.textMuted }}>
+          * Forward-looking projections. These represent targets, not current metrics.
+          See our investor brief for full methodology and assumptions.
+        </p>
       </div>
     </section>
   )

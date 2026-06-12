@@ -34,7 +34,7 @@ export default function BentoEcosystem() {
     <section
       ref={sectionRef}
       id="ecosystem"
-      className="relative py-24 lg:py-40 overflow-hidden"
+      className="relative py-16 lg:py-40 overflow-hidden"
       style={{ backgroundColor: theme.background }}
     >
       <AmbientOrbs count={2} />
@@ -92,7 +92,7 @@ export default function BentoEcosystem() {
             "hologram"
             "oracle";
         }
-        @media (min-width: 768px) {
+        @media (min-width: 640px) {
           .bento-grid {
             grid-template-columns: 1fr 1fr;
             grid-template-areas:
@@ -212,7 +212,7 @@ function ThemesCell() {
       <div className="flex flex-col h-full gap-3">
         <div className="flex items-center gap-2">
           <Palette size={14} style={{ color: theme.accent }} />
-          <span className="text-xs uppercase tracking-[0.2em]" style={{ color: theme.textMuted }}>11 Themes</span>
+          <span className="text-xs uppercase tracking-[0.2em]" style={{ color: theme.textMuted }}>3 Themes</span>
         </div>
         <h3 className="text-lg font-bold" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
           Tap to <span style={{ color: theme.accent }}>repaint.</span>

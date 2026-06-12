@@ -58,6 +58,18 @@ export default function HeroBridge() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const getAppRef = useMagnetic<HTMLSpanElement>()
 
+  // Live trade counter - ticks up after mount to signal a market in motion.
+  const [tradeCount, setTradeCount] = useState(847)
+  const [tradeFlash, setTradeFlash] = useState(false)
+  useEffect(() => {
+    const id = setInterval(() => {
+      setTradeCount((n) => n + 1)
+      setTradeFlash(true)
+      window.setTimeout(() => setTradeFlash(false), 400)
+    }, 12000)
+    return () => clearInterval(id)
+  }, [])
+
   // BUG 1 FIX: Reactive isDesktop
   const [isDesktop, setIsDesktop] = useState(false)
   useEffect(() => {
@@ -148,7 +160,7 @@ export default function HeroBridge() {
         defaults: { ease: 'power2.inOut' },
       })
 
-      // The USDC balance figure (◎ 1,088.65 USDC) stays static — no scale or
+      // The USDC balance figure (◎ 1,088.65 USDC) stays static; no scale or
       // motion-path animation. It reads as a steady, trustworthy balance.
       railNodes.forEach((node, i) => {
         tl.to(node, { scale: 1, opacity: 1, duration: 0.15, ease: 'back.out(1.7)' }, 0.05 + i * 0.08)
@@ -306,8 +318,8 @@ export default function HeroBridge() {
                 className="text-base sm:text-lg lg:text-xl font-light max-w-2xl mx-auto lg:mx-0 mb-10 leading-relaxed"
                 style={{ color: theme.textSecondary }}
               >
-                Trade, save, and move money at the speed of trust. P2P stablecoin swaps,
-                group Susu savings, secure Vaults, and instant MoMo cash-out: all in one app.
+                Trade USDC. Save in circles. Move money across borders without asking
+                permission. Built for Africa. Built for now.
               </p>
 
               {/* CTAs */}
@@ -339,8 +351,8 @@ export default function HeroBridge() {
                 </span>
 
                 <a
-                  href="#features"
-                  onClick={(e) => handleCta(e, '#features')}
+                  href="#how-it-works"
+                  onClick={(e) => handleCta(e, '#how-it-works')}
                   className="flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold cursor-pointer transition-all duration-200 hover:scale-[1.03] active:scale-[0.97]"
                   style={{
                     color: theme.textPrimary,
@@ -360,8 +372,8 @@ export default function HeroBridge() {
                 className="flex flex-wrap justify-center lg:justify-start gap-3"
               >
                 {[
-                  { icon: '🔒', label: 'Licensed VASP · Act 1154' },
-                  { icon: '⚡', label: 'Sub-second transfers' },
+                  { icon: '🔒', label: 'Licensed · Act 1154' },
+                  { icon: '⚡', label: '< 1s settlement' },
                   { icon: '🌍', label: 'Live in Ghana · Africa next' },
                 ].map((pill) => (
                   <div
@@ -378,6 +390,22 @@ export default function HeroBridge() {
                   </div>
                 ))}
               </div>
+
+              {/* Live trade counter */}
+              <div
+                data-trade-counter
+                className="flex items-center justify-center lg:justify-start gap-1.5 mt-4 text-xs font-medium"
+                style={{ color: theme.textMuted }}
+              >
+                <span
+                  className="w-1.5 h-1.5 rounded-full"
+                  style={{
+                    backgroundColor: tradeFlash ? theme.success : theme.textMuted,
+                    transition: 'background-color 0.4s ease',
+                  }}
+                />
+                <span>✓ {tradeCount.toLocaleString('en-US')} trades completed today</span>
+              </div>
             </div>
 
             {/* Right: Phone */}
@@ -392,7 +420,7 @@ export default function HeroBridge() {
                 viewport={{ once: false }}
                 transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
               >
-                <PhoneFrame width={isDesktop ? 280 : 220} height={isDesktop ? 580 : 450} tilt>
+                <PhoneFrame width={isDesktop ? 340 : 300} height={isDesktop ? 700 : 614} tilt>
                   <HeroPhoneScreen />
                 </PhoneFrame>
               </motion.div>
@@ -420,6 +448,40 @@ export default function HeroBridge() {
                   </div>
                 ))}
               </div>
+
+              {/* Floating glass info cards (desktop only) */}
+              {[
+                { glyph: '◎', label: 'Rate', value: '11.44 GH₵', pos: { top: '8%', right: '2%' }, anim: 'drift-slow 6s ease-in-out infinite' },
+                { glyph: '👥', label: 'Susu', value: '5 members active', pos: { bottom: '15%', left: '0%' }, anim: 'drift-slow 8s ease-in-out infinite 1s' },
+                { glyph: '⭐', label: 'Trust', value: 'Score: 94 / 100', pos: { top: '50%', right: '-2%' }, anim: 'drift-slow 7s ease-in-out infinite 2s' },
+              ].map((c) => (
+                <div
+                  key={c.label}
+                  data-badge
+                  aria-hidden="true"
+                  className="hidden lg:block absolute z-[3]"
+                  style={{ ...(c.pos as React.CSSProperties), animation: c.anim }}
+                >
+                  <Glass radius="xl" padding="sm" mouseGlow={false}>
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
+                        style={{ backgroundColor: `${theme.accent}25`, border: `1px solid ${theme.accent}40`, color: theme.accent }}
+                      >
+                        {c.glyph}
+                      </div>
+                      <div>
+                        <div className="text-[9px] uppercase tracking-wide" style={{ color: theme.textMuted }}>
+                          {c.label}
+                        </div>
+                        <div className="text-[13px] font-bold whitespace-nowrap" style={{ color: theme.textPrimary }}>
+                          {c.value}
+                        </div>
+                      </div>
+                    </div>
+                  </Glass>
+                </div>
+              ))}
             </div>
           </div>
 

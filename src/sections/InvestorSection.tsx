@@ -1,7 +1,55 @@
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { TrendingUp, Users, Shield, Cpu, Globe, Coins, CheckCircle2, Rocket } from 'lucide-react'
+import { TrendingUp, Users, Shield, Cpu, Globe, Coins, CheckCircle2, Rocket, ArrowRight } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeContext'
 import AmbientOrbs from '@/components/AmbientOrbs'
+import Glass from '@/components/Glass'
+import HScrollRail from '@/components/HScrollRail'
+
+// Compact count-up for the "scale we're building toward" strip (merged in from
+// the old standalone Stats section to keep the page shorter).
+function Counter({ target, prefix = '', suffix = '', decimals = 0 }: {
+  target: number; prefix?: string; suffix?: string; decimals?: number
+}) {
+  const { theme } = useTheme()
+  const [count, setCount] = useState(0)
+  const ref = useRef<HTMLDivElement>(null)
+  const started = useRef(false)
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setCount(target); return }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !started.current) {
+        started.current = true
+        const duration = 2000, fps = 60
+        const totalFrames = (duration / 1000) * fps
+        let frame = 0
+        const timer = setInterval(() => {
+          frame++
+          const eased = 1 - Math.pow(1 - frame / totalFrames, 3)
+          setCount(target * eased)
+          if (frame >= totalFrames) { setCount(target); clearInterval(timer) }
+        }, 1000 / fps)
+      }
+    }, { threshold: 0.4 })
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [target])
+  const display = decimals > 0 ? count.toFixed(decimals) : Math.floor(count).toLocaleString('en-US')
+  return (
+    <div ref={ref}>
+      <span className="text-2xl sm:text-3xl font-black" style={{ fontFamily: 'Space Grotesk', color: theme.textPrimary }}>
+        {prefix}{display}{suffix}
+      </span>
+    </div>
+  )
+}
+
+const SCALE_STATS = [
+  { target: 50, prefix: '$', suffix: 'M', decimals: 0, label: 'Yr 1 volume target' },
+  { target: 100000, prefix: '', suffix: '+', decimals: 0, label: 'Users by 2026' },
+  { target: 99.9, prefix: '', suffix: '%', decimals: 1, label: 'Uptime target' },
+  { target: 5, prefix: '<', suffix: 's', decimals: 0, label: 'Trade settlement' },
+]
 
 const REVENUE_STREAMS = [
   { label: 'Arbitrage Spread', desc: 'Buy USDC at corporate rates, sell at retail', pct: '40%' },
@@ -55,6 +103,24 @@ export default function InvestorSection() {
           </p>
         </motion.div>
 
+        {/* Scale strip - the numbers we're building toward */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-16"
+        >
+          {SCALE_STATS.map((s) => (
+            <Glass key={s.label} radius="xl" padding="none">
+              <div className="text-center px-3 py-5">
+                <Counter target={s.target} prefix={s.prefix} suffix={s.suffix} decimals={s.decimals} />
+                <div className="text-xs mt-1" style={{ color: theme.textMuted }}>{s.label}</div>
+              </div>
+            </Glass>
+          ))}
+        </motion.div>
+
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -67,15 +133,13 @@ export default function InvestorSection() {
           <h3 className="text-xl font-bold mb-6" style={{ color: theme.accent, fontFamily: 'Space Grotesk' }}>
             Revenue Model
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {REVENUE_STREAMS.map((stream, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className="p-4 rounded-xl"
+          <HScrollRail
+            gridClass="md:grid-cols-2 lg:grid-cols-4"
+            itemClass="w-[70%] sm:w-[260px]"
+            items={REVENUE_STREAMS.map((stream) => (
+              <div
+                key={stream.label}
+                className="h-full p-4 rounded-xl"
                 style={{ backgroundColor: theme.card, border: `1px solid ${theme.border}` }}
               >
                 <div className="text-2xl font-bold mb-1" style={{ color: theme.accent, fontFamily: 'Space Grotesk' }}>
@@ -87,9 +151,9 @@ export default function InvestorSection() {
                 <div className="text-xs" style={{ color: theme.textMuted }}>
                   {stream.desc}
                 </div>
-              </motion.div>
+              </div>
             ))}
-          </div>
+          />
           <div
             className="mt-6 p-4 rounded-xl"
             style={{ backgroundColor: `${theme.accent}08`, border: `1px solid ${theme.accent}20` }}
@@ -110,18 +174,15 @@ export default function InvestorSection() {
           <h3 className="text-xl font-bold mb-8 text-center" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
             Competitive Moats
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {MOATS.map((moat, i) => {
+          <HScrollRail
+            gridClass="md:grid-cols-2 lg:grid-cols-3"
+            itemClass="w-[72%] sm:w-[280px]"
+            items={MOATS.map((moat) => {
               const Icon = moat.icon
               return (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                  whileHover={{ y: -4 }}
-                  className="p-5 rounded-xl transition-colors"
+                <div
+                  key={moat.title}
+                  className="h-full p-5 rounded-xl"
                   style={{ backgroundColor: theme.surface, border: `1px solid ${theme.border}` }}
                 >
                   <Icon size={20} style={{ color: theme.accent }} className="mb-3" />
@@ -131,10 +192,79 @@ export default function InvestorSection() {
                   <p className="text-xs leading-relaxed" style={{ color: theme.textMuted }}>
                     {moat.desc}
                   </p>
-                </motion.div>
+                </div>
               )
             })}
-          </div>
+          />
+        </motion.div>
+
+        {/* Early traction - the product is built */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-16"
+        >
+          <Glass radius="2xl" padding="lg" elevated mouseGlow>
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-center">
+              {/* Left */}
+              <div className="lg:col-span-3">
+                <div
+                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4 text-xs font-semibold uppercase tracking-[0.2em]"
+                  style={{ backgroundColor: `${theme.accent}10`, border: `1px solid ${theme.accent}30`, color: theme.accent }}
+                >
+                  ✦ Early Traction
+                </div>
+                <h3 className="text-2xl font-bold" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
+                  The product is built.
+                </h3>
+                <p className="text-base mt-2 mb-6 max-w-md" style={{ color: theme.textSecondary }}>
+                  Not a pitch deck. Not a prototype. A fully-functioning platform, ready to launch.
+                </p>
+                <div className="flex flex-col gap-3">
+                  {[
+                    'Android & iOS app, built, tested, and store-ready',
+                    'Backend API live on production infrastructure',
+                    'KYC pipeline integrated with Dojah Ghana',
+                    'P2P escrow system operational end-to-end',
+                  ].map((item) => (
+                    <div key={item} className="flex items-start gap-3">
+                      <CheckCircle2 size={20} style={{ color: theme.success, flexShrink: 0 }} />
+                      <span className="text-sm" style={{ color: theme.textPrimary }}>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right */}
+              <div className="lg:col-span-2 flex items-center justify-center">
+                <Glass radius="xl" padding="lg" mouseGlow={false} className="w-full">
+                  <div className="flex flex-col items-center text-center">
+                    <Rocket size={32} style={{ color: theme.accent }} />
+                    <h4 className="text-xl font-bold mt-3" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
+                      Ready to talk?
+                    </h4>
+                    <p className="text-sm mt-2 mb-5" style={{ color: theme.textMuted }}>
+                      Schedule a call with the founding team.
+                    </p>
+                    <a
+                      href="mailto:team@azaman.app"
+                      className="flex items-center justify-center gap-2 w-full px-6 py-3 rounded-xl font-semibold"
+                      style={{
+                        background: `linear-gradient(135deg, ${theme.accent}, ${theme.glow})`,
+                        color: theme.isDark ? '#000' : '#fff',
+                      }}
+                      data-cursor="hover"
+                    >
+                      Schedule a Call
+                      <ArrowRight size={16} />
+                    </a>
+                  </div>
+                </Glass>
+              </div>
+            </div>
+          </Glass>
         </motion.div>
 
         <motion.div
@@ -177,11 +307,11 @@ export default function InvestorSection() {
             From zero to live in West Africa - and scaling.
           </p>
 
-          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-4">
-            {/* Gradient connector line (desktop) - sits behind the nodes */}
+          <div className="relative grid grid-cols-3 gap-2 md:gap-4">
+            {/* Gradient connector line - sits behind the nodes */}
             <div
               aria-hidden
-              className="hidden md:block absolute top-[34px] left-[16%] right-[16%] h-[2px] rounded-full"
+              className="absolute top-[26px] md:top-[34px] left-[16%] right-[16%] h-[2px] rounded-full"
               style={{
                 background: `linear-gradient(90deg, ${theme.success}, ${theme.accent}, ${theme.warning})`,
                 opacity: 0.45,
@@ -204,16 +334,17 @@ export default function InvestorSection() {
                 >
                   {/* Phase node */}
                   <div
-                    className="relative z-10 w-[68px] h-[68px] rounded-full flex items-center justify-center mb-5"
+                    className="relative z-10 w-12 h-12 md:w-[68px] md:h-[68px] rounded-full flex items-center justify-center mb-3 md:mb-5"
                     style={{
                       background: `radial-gradient(circle at 30% 30%, ${p.color}, ${theme.surface})`,
                       border: `1px solid ${p.color}66`,
                       boxShadow: `0 0 28px ${p.color}44`,
                     }}
                   >
-                    <Icon size={26} style={{ color: '#fff' }} />
+                    <Icon size={20} className="md:hidden" style={{ color: '#fff' }} />
+                    <Icon size={26} className="hidden md:block" style={{ color: '#fff' }} />
                     <span
-                      className="absolute -bottom-1 -right-1 text-[9px] font-black px-1.5 py-0.5 rounded-full"
+                      className="absolute -bottom-1 -right-1 text-[8px] md:text-[9px] font-black px-1 md:px-1.5 py-0.5 rounded-full"
                       style={{ backgroundColor: theme.background, color: p.color, border: `1px solid ${p.color}` }}
                     >
                       {String(i + 1).padStart(2, '0')}
@@ -222,16 +353,16 @@ export default function InvestorSection() {
 
                   {/* Status pill */}
                   <span
-                    className="text-[10px] uppercase tracking-[0.2em] font-bold px-3 py-1 rounded-full mb-3"
+                    className="text-[8px] md:text-[10px] uppercase tracking-[0.15em] md:tracking-[0.2em] font-bold px-2 md:px-3 py-0.5 md:py-1 rounded-full mb-2 md:mb-3 whitespace-nowrap"
                     style={{ color: p.color, backgroundColor: `${p.color}15`, border: `1px solid ${p.color}40` }}
                   >
                     {p.status}
                   </span>
 
-                  <h4 className="font-bold text-base mb-1.5" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
+                  <h4 className="font-bold text-xs md:text-base mb-1 md:mb-1.5 leading-tight" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
                     {p.title}
                   </h4>
-                  <p className="text-xs leading-relaxed max-w-[260px]" style={{ color: theme.textMuted }}>
+                  <p className="text-[10px] md:text-xs leading-relaxed max-w-[260px]" style={{ color: theme.textMuted }}>
                     {p.desc}
                   </p>
                 </motion.div>
