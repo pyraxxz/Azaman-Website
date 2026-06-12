@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Azaman - The Future of P2P Finance in Africa</title>
+    <meta name="description" content="Azaman - Buy and sell USDC at the best rates in Ghana. Zero internal fees. Escrow-protected. Licensed VASP under Act 1154." />
+    <meta name="keywords" content="P2P exchange, USDC, Ghana, Africa, fintech, neo-bank, crypto, mobile money" />
+    <link rel="canonical" href="https://azaman.me" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Azaman - The Future of African Finance" />
+    <meta property="og:description" content="Buy and sell USDC at the best rates in Ghana. Zero internal fees. Escrow-protected. Licensed VASP under Act 1154." />
+    <meta property="og:url" content="https://azaman.me" />
+    <meta property="og:image" content="https://azaman.me/og-image.png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Azaman - The Future of African Finance" />
+    <meta name="twitter:description" content="Buy and sell USDC at the best rates in Ghana. Zero internal fees. Escrow-protected." />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <!--
+      SPA redirect decoder - pairs with public/404.html. If we landed via
+      the GitHub Pages 404 fallback, our path was encoded into ?p=/...,
+      so we decode it back into a real URL before React Router boots. No
+      reload, no flash. Source: github.com/rafgraph/spa-github-pages (MIT).
+    -->
+    <script type="text/javascript">
+      ;(function (l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search
+            .slice(1)
+            .split('&')
+            .map(function (s) {
+              return s.replace(/~and~/g, '&')
+            })
+            .join('?')
+          window.history.replaceState(null, '', l.pathname.slice(0, -1) + decoded + l.hash)
+        }
+      })(window.location)
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
