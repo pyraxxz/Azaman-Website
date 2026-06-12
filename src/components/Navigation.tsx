@@ -14,7 +14,7 @@ import { useMagnetic } from '@/hooks/use-magnetic'
 import { gsap, prefersReducedMotion } from '@/lib/gsap'
 
 const NAV_LINKS = [
-  { label: 'Features', href: '#features' },
+  { label: 'Features', href: '#ecosystem' },
   { label: 'Susu', href: '#susu' },
   { label: 'Vendors', href: '/vendors' },
   { label: 'Investors', href: '#investors' },
@@ -83,7 +83,7 @@ export default function Navigation() {
   useEffect(() => {
     if (location.pathname !== '/') return
 
-    const sectionIds = ['features', 'susu', 'vendors', 'investors', 'faq', 'ecosystem', 'auction', 'stats']
+    const sectionIds = ['buy-direct', 'how-it-works', 'live-market', 'ecosystem', 'susu', 'infrastructure', 'africa', 'auction', 'investors', 'faq']
     const observers: IntersectionObserver[] = []
 
     const handleIntersect = (entries: IntersectionObserverEntry[]) => {

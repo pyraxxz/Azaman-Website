@@ -30,9 +30,6 @@ const SEED_VENDORS: Vendor[] = [
   { id: '1', name: 'KwameGold', level: 'LEGEND', xp: 24500, trades: 1248, volume: '$284K', bid: 12400, completion: 99.2, streak: 47 },
   { id: '2', name: 'AkosuaSwap', level: 'DIAMOND', xp: 18200, trades: 892, volume: '$192K', bid: 11200, completion: 98.7, streak: 31 },
   { id: '3', name: 'NanaTrades', level: 'DIAMOND', xp: 15840, trades: 743, volume: '$165K', bid: 9800, completion: 98.1, streak: 28 },
-  { id: '4', name: 'AmaCrypto', level: 'GOLD', xp: 12100, trades: 612, volume: '$128K', bid: 8400, completion: 97.4, streak: 22 },
-  { id: '5', name: 'KojoExchange', level: 'GOLD', xp: 10300, trades: 547, volume: '$112K', bid: 7100, completion: 96.8, streak: 18 },
-  { id: '6', name: 'YawCash', level: 'SILVER', xp: 7840, trades: 412, volume: '$87K', bid: 5400, completion: 95.2, streak: 14 },
 ]
 
 const LEVEL_COLORS: Record<Vendor['level'], string> = {
@@ -63,7 +60,7 @@ export default function AzmAuctionSection() {
         if (!listRef.current) return prev
         // Pin the list height before the reorder. Without this the Flip below
         // (which lifts rows to position:absolute) collapses the container to 0,
-        // yanking everything beneath the leaderboard up and back — a visible
+        // yanking everything beneath the leaderboard up and back, a visible
         // page jump on every refresh. Locking the height keeps the page steady.
         const listEl = listRef.current
         listEl.style.minHeight = `${listEl.offsetHeight}px`

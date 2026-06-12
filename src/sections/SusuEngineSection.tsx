@@ -85,16 +85,23 @@ export default function SusuEngineSection() {
     if (cycleBadge) g.set(cycleBadge, { opacity: 0, y: 8 })
     if (poolClip) g.set(poolClip, { attr: { height: 0 } })
 
-    const tl = g.timeline({
-      scrollTrigger: {
-        trigger: root,
-        start: 'top 20%',
-        end: '+=300%',
-        pin: true,
-        scrub: 1,
-        anticipatePin: 1,
+    // Self-playing loop. No pin, no scrub, no scroll-track. The timeline runs on
+    // its own and simply plays/pauses based on whether the section is on screen.
+    // This sidesteps every pin/measurement bug from heavy lazy siblings above.
+    const tl = g.timeline({ repeat: -1, repeatDelay: 1.4, paused: true })
+    tl.timeScale(0.55) // slow the ~1s authored timeline to a watchable pace
+
+    // Play only while on screen (IntersectionObserver is independent of Lenis /
+    // ScrollTrigger, so it can never be thrown off by sibling measurement bugs).
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries[0]?.isIntersecting
+        if (visible) tl.play()
+        else tl.pause()
       },
-    })
+      { threshold: 0.25 }
+    )
+    io.observe(root)
 
     // Act 1 (0-0.25): Avatars enter one by one
     avatars.forEach((a, i) => {
@@ -135,7 +142,7 @@ export default function SusuEngineSection() {
     if (cycleText) tl.fromTo(cycleText, { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.1 }, 0.87)
     if (avatars[nextPayeeIdx]) tl.to(avatars[nextPayeeIdx], { attr: { 'stroke-width': '0.8' }, duration: 0.1 }, 0.9)
 
-    return () => { tl.scrollTrigger?.kill(); tl.kill() }
+    return () => { io.disconnect(); tl.kill() }
   })
 
   return (
@@ -148,8 +155,8 @@ export default function SusuEngineSection() {
       <AmbientOrbs count={2} />
 
       <div className="relative max-w-[1280px] mx-auto px-5 lg:px-12">
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }} className="text-center mb-12">
+        {/* Header - mobile only (desktop renders its own heading inside the pinned stage) */}
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }} className="text-center mb-12 lg:hidden">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4 text-xs font-semibold uppercase tracking-[0.2em]" style={{ backgroundColor: `${theme.accent}10`, border: `1px solid ${theme.accent}30`, color: theme.accent }}>
             <Users size={12} />
             Susu Engine
@@ -162,11 +169,25 @@ export default function SusuEngineSection() {
           </p>
         </motion.div>
 
-        {/* Desktop: 50/50 layout */}
-        <div className="hidden lg:grid grid-cols-2 gap-12 items-start">
-          <div ref={stageRef}>
+        {/* Desktop: normal in-flow block (no pin, no scroll-track). The circle
+            animation self-plays via IntersectionObserver when scrolled into view. */}
+        <div ref={stageRef} className="hidden lg:block">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4 text-xs font-semibold uppercase tracking-[0.2em]" style={{ backgroundColor: `${theme.accent}10`, border: `1px solid ${theme.accent}30`, color: theme.accent }}>
+              <Users size={12} />
+              Susu Engine
+            </div>
+            <h2 className="text-4xl lg:text-5xl font-bold mb-4" style={{ color: theme.textPrimary, fontFamily: 'Space Grotesk' }}>
+              The Savings Circle. <span className="text-gradient-flow">Reimagined.</span>
+            </h2>
+            <p className="text-lg max-w-2xl mx-auto" style={{ color: theme.textMuted }}>
+              Susu is the oldest savings system in Africa. We just made it trustless, digital, and powered by USDC. Your group. Your rules. Your payout.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-12 items-center">
+          <div>
             <Glass radius="2xl" padding="lg" elevated mouseGlow className="overflow-hidden">
-              <div className="aspect-square w-full max-w-[480px] mx-auto relative">
+              <div className="aspect-square w-full max-w-[420px] mx-auto relative">
                 <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible">
                   <defs>
                     <radialGradient id="susu-pool-grad">
@@ -220,6 +241,7 @@ export default function SusuEngineSection() {
               </motion.div>
             ))}
           </div>
+          </div>
         </div>
 
         {/* Mobile: horizontal snap-scroll */}
@@ -245,9 +267,32 @@ function MobileSnapScroll({ theme }: { theme: ReturnType<typeof useTheme>['theme
     if (!hasScrolled) setHasScrolled(true)
     const el = scrollRef.current
     if (!el) return
-    const idx = Math.round(el.scrollLeft / (el.scrollWidth / 4))
-    setActiveCard(Math.min(3, Math.max(0, idx)))
+    // Lock onto whichever card sits nearest the horizontal centre.
+    const cards = el.querySelectorAll<HTMLElement>('[data-susu-card]')
+    const center = el.scrollLeft + el.clientWidth / 2
+    let best = 0
+    let bestDist = Infinity
+    cards.forEach((c, i) => {
+      const cc = c.offsetLeft + c.offsetWidth / 2
+      const d = Math.abs(cc - center)
+      if (d < bestDist) { bestDist = d; best = i }
+    })
+    setActiveCard(best)
   }
+
+  const goToCard = (i: number) => {
+    scrollRef.current?.querySelectorAll<HTMLElement>('[data-susu-card]')[i]
+      ?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+  }
+
+  const cardStyle = (i: number) => ({
+    width: 'min(85vw, 320px)',
+    scrollSnapAlign: 'center' as const,
+    transform: `scale(${activeCard === i ? 1 : 0.9})`,
+    opacity: activeCard === i ? 1 : 0.5,
+    filter: activeCard === i ? 'none' : 'saturate(0.7)',
+    transition: 'transform 0.5s ease, opacity 0.5s ease, filter 0.5s ease',
+  })
 
   // Member positions for SVGs (80x80 viewBox, radius 28, center 40,40)
   const R = 28
@@ -282,12 +327,13 @@ function MobileSnapScroll({ theme }: { theme: ReturnType<typeof useTheme>['theme
         <div
           ref={scrollRef}
           onScroll={handleScroll}
-          className="-mx-5 px-5 overflow-x-auto"
-          style={{ scrollSnapType: 'x mandatory', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
+          className="-mx-5 overflow-x-auto snap-x snap-mandatory"
+          style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
         >
           <div className="flex gap-4 w-max">
+            <div className="flex-shrink-0" style={{ width: 'calc(50% - min(85vw, 320px) / 2)' }} aria-hidden="true" />
             {/* Card 1: Build Your Circle */}
-            <div className="flex-shrink-0" style={{ width: '85vw', maxWidth: 340, scrollSnapAlign: 'start' }}>
+            <div className="flex-shrink-0" data-susu-card style={cardStyle(0)}>
               <Glass radius="2xl" padding="lg" tilt tiltMax={5} className="h-[280px]">
                 <div className="flex flex-col h-full">
                   <svg width="80" height="80" viewBox="0 0 80 80" className="mb-2">
@@ -307,7 +353,7 @@ function MobileSnapScroll({ theme }: { theme: ReturnType<typeof useTheme>['theme
             </div>
 
             {/* Card 2: Everyone Contributes - dots animate toward center */}
-            <div className="flex-shrink-0" style={{ width: '85vw', maxWidth: 340, scrollSnapAlign: 'start' }}>
+            <div className="flex-shrink-0" data-susu-card style={cardStyle(1)}>
               <Glass radius="2xl" padding="lg" tilt tiltMax={5} className="h-[280px]">
                 <div className="flex flex-col h-full">
                   <svg width="80" height="80" viewBox="0 0 80 80" className="mb-2">
@@ -341,7 +387,7 @@ function MobileSnapScroll({ theme }: { theme: ReturnType<typeof useTheme>['theme
             </div>
 
             {/* Card 3: Payout Time - pulse ring + crown */}
-            <div className="flex-shrink-0" style={{ width: '85vw', maxWidth: 340, scrollSnapAlign: 'start' }}>
+            <div className="flex-shrink-0" data-susu-card style={cardStyle(2)}>
               <Glass radius="2xl" padding="lg" tilt tiltMax={5} className="h-[280px]">
                 <div className="flex flex-col h-full">
                   <svg width="80" height="80" viewBox="0 0 80 80" className="mb-2">
@@ -365,7 +411,7 @@ function MobileSnapScroll({ theme }: { theme: ReturnType<typeof useTheme>['theme
             </div>
 
             {/* Card 4: Cycle Resets - highlighted member + "Cycle 2" text */}
-            <div className="flex-shrink-0" style={{ width: '85vw', maxWidth: 340, scrollSnapAlign: 'start' }}>
+            <div className="flex-shrink-0" data-susu-card style={cardStyle(3)}>
               <Glass radius="2xl" padding="lg" tilt tiltMax={5} className="h-[280px]">
                 <div className="flex flex-col h-full">
                   <svg width="80" height="80" viewBox="0 0 80 80" className="mb-2">
@@ -384,6 +430,7 @@ function MobileSnapScroll({ theme }: { theme: ReturnType<typeof useTheme>['theme
                 </div>
               </Glass>
             </div>
+            <div className="flex-shrink-0" style={{ width: 'calc(50% - min(85vw, 320px) / 2)' }} aria-hidden="true" />
           </div>
         </div>
       </motion.div>
@@ -391,13 +438,17 @@ function MobileSnapScroll({ theme }: { theme: ReturnType<typeof useTheme>['theme
       {/* Progress dot strip */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 16 }}>
         {[0, 1, 2, 3].map((i) => (
-          <div
+          <button
             key={i}
+            onClick={() => goToCard(i)}
+            aria-label={`Go to step ${i + 1}`}
+            data-cursor="hover"
             style={{
-              height: 6,
-              width: i === activeCard ? 20 : 6,
+              height: 8,
+              width: i === activeCard ? 24 : 8,
               borderRadius: 99,
               backgroundColor: i === activeCard ? theme.accent : theme.border,
+              boxShadow: i === activeCard ? `0 0 12px ${theme.accent}80` : 'none',
               transition: 'all 0.3s ease',
             }}
           />

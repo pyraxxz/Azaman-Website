@@ -13,14 +13,33 @@ export default function ClosingSection() {
   const { theme } = useTheme()
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    // TODO: Replace YOUR_FORM_ID with actual Formspree form ID from formspree.io
     e.preventDefault()
     if (!email.trim()) return
-    console.log('Email captured:', email)
-    setSubmitted(true)
-    setEmail('')
-    setTimeout(() => setSubmitted(false), 4000)
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ email, source: 'azaman_website_waitlist' }),
+      })
+      if (res.ok) {
+        setSubmitted(true)
+        setEmail('')
+        setTimeout(() => setSubmitted(false), 5000)
+      } else {
+        setError('Something went wrong. Please try again.')
+      }
+    } catch {
+      setError('Network error. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -92,15 +111,23 @@ export default function ClosingSection() {
                 />
                 <button
                   type="submit"
-                  className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform hover:scale-105 active:scale-[0.97]"
+                  disabled={loading}
+                  className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform hover:scale-105 active:scale-[0.97] disabled:opacity-70"
                   style={{ backgroundColor: theme.accent, color: theme.isDark ? '#000' : '#fff' }}
                   data-cursor="hover"
                 >
-                  <ArrowRight size={18} />
+                  {loading ? (
+                    <span className="w-[14px] h-[14px] border border-current border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <ArrowRight size={18} />
+                  )}
                 </button>
               </div>
             </Glass>
           </form>
+          {error && (
+            <p className="text-sm mt-2" style={{ color: theme.danger }}>{error}</p>
+          )}
           {submitted && (
             <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-sm mb-4" style={{ color: theme.success }}>
               You're on the list. We'll reach out.

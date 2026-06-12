@@ -15,16 +15,12 @@ interface FAQItem {
 }
 
 const FAQS: FAQItem[] = [
-  { category: 'general', question: 'What is Azaman and how does it work?', answer: 'Azaman is a P2P finance platform built for Africa. Buy/sell USDC at competitive rates, send money instantly for free, and protect savings from devaluation. Verified vendors + smart escrow = secure trades.' },
-  { category: 'fees', question: 'Does Azaman charge fees?', answer: 'Internal transfers are free. Revenue comes from the spread between corporate and retail rates - users never see explicit fees. 2% exit fee only on fiat/crypto withdrawals.' },
-  { category: 'security', question: 'How are my funds protected?', answer: 'Biometric auth, multi-sig cold storage, ACID transactions, rate limiting, real-time fraud detection. Every P2P trade locked in escrow. Licensed under Act 1154 (2025).' },
-  { category: 'general', question: 'How fast are transactions?', answer: 'Internal: under 0.3s. P2P trades: 2-5 minutes after payment confirmation. Crypto withdrawals: 1-3 minutes depending on network.' },
-  { category: 'vendors', question: 'How do I become a vendor?', answer: 'Complete KYC, pass background check, apply in-app. Set your own margins. Keep 40-50% of margin profit per trade. Top vendors earn $500+/month.' },
-  { category: 'security', question: 'What happens in a dispute?', answer: 'Funds frozen in escrow. AI-powered evidence review + human moderation. Most resolved in under 30 minutes. Fraudulent vendors permanently banned.' },
-  { category: 'fees', question: 'Why deposit GHS first?', answer: 'Pre-funding means instant access to best rates. Deposits free via MoMo or bank. Credited within 60 seconds. Withdraw anytime (2% exit fee).' },
-  { category: 'general', question: 'Which countries are supported?', answer: 'Live in Ghana. Nigeria, Kenya, South Africa launching Q2 2026. Hologram system scales to 40+ African currencies.' },
-  { category: 'general', question: 'Is there a mobile app?', answer: 'Native iOS and Android with full feature parity. Available on App Store and Google Play. Real-time sync via WebSocket.' },
-  { category: 'fees', question: 'Can I get my money back?', answer: 'Yes. Failed vendor releases trigger automatic escrow refund. Unauthorized access covered by internal insurance up to $5,000 USDC per incident.' },
+  { category: 'general', question: 'What is Azaman?', answer: 'Azaman is a Gen-Z social finance platform built for Africa. It combines a P2P USDC trading marketplace, community savings groups (Susu), digital vaults, and social chat, all in one app. Think of it as your bank, your savings group, and your trading desk, in your pocket.' },
+  { category: 'general', question: 'How does P2P trading work on Azaman?', answer: 'You browse live ads from KYC-verified vendors offering to buy or sell USDC. When you start a trade, USDC is locked in Azaman\'s smart escrow. You pay the vendor via any supported method (Cash App, Zelle, MoMo, bank transfer, and more). Once payment is confirmed, escrow releases in seconds. The whole process takes under 5 minutes for new users and under 30 seconds for experienced ones.' },
+  { category: 'general', question: 'What is Susu and how is it different from a regular savings app?', answer: 'Susu is a traditional West African rotating savings system (called tontine elsewhere). Azaman digitizes it: a group of 5-20 people contribute a fixed amount of USDC each cycle, and one member receives the full pot. Azaman adds escrow protection, trust scoring, KYC identity gates, and automatic cycle management, so the system that has worked for generations is now secured by smart contracts.' },
+  { category: 'security', question: 'Is my money safe? What if a trade goes wrong?', answer: 'Every trade uses non-custodial escrow. USDC is locked before any payment changes hands. If a dispute arises, Azaman\'s admin team reviews the chat history and proof of payment. Most disputes are resolved in under 30 minutes. Vendors are KYC-verified and carry trust scores based on their trade history.' },
+  { category: 'vendors', question: 'How do I become a vendor?', answer: 'Visit our Vendors page for the full application process. Vendors go through enhanced KYC, a document verification step, and a probationary period before their ads are published. In return, vendors earn XP, achievements, and AZM tokens, plus access to Azaman\'s growing user base.' },
+  { category: 'fees', question: 'What are AZM tokens?', answer: 'AZM is Azaman\'s reward token. You earn AZM by trading, saving, referring friends, and maintaining streaks. AZM can be spent on fee discounts, ad boosts, and won-in-auction rewards. It is not a cryptocurrency; it is an in-app loyalty currency.' },
 ]
 
 const CATEGORIES = [
@@ -37,7 +33,7 @@ const CATEGORIES = [
 
 export default function FAQSection() {
   const { theme } = useTheme()
-  const [open, setOpen] = useState<number | null>(0)
+  const [open, setOpen] = useState<string | null>(FAQS[0].question)
   const [category, setCategory] = useState<string>('all')
   const [search, setSearch] = useState('')
 
@@ -52,7 +48,7 @@ export default function FAQSection() {
   }, [category, search])
 
   return (
-    <section id="faq" className="relative py-24 lg:py-40 overflow-hidden" style={{ backgroundColor: theme.background }}>
+    <section id="faq" className="relative py-16 lg:py-40 overflow-hidden" style={{ backgroundColor: theme.background }}>
       <div className="relative max-w-[1200px] mx-auto px-5 lg:px-12">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }} className="text-center mb-12">
@@ -90,7 +86,7 @@ export default function FAQSection() {
               {CATEGORIES.map((cat) => (
                 <button
                   key={cat.id}
-                  onClick={() => { setCategory(cat.id); setOpen(null) }}
+                  onClick={() => setCategory(cat.id)}
                   data-cursor="hover"
                   className="transition-transform active:scale-[0.97]"
                 >
@@ -115,7 +111,7 @@ export default function FAQSection() {
           <div className="lg:col-span-8 space-y-3">
             <AnimatePresence mode="popLayout">
               {filtered.map((faq, i) => {
-                const isOpen = open === i
+                const isOpen = open === faq.question
                 return (
                   <motion.div
                     key={`${category}-${faq.question}`}
@@ -131,7 +127,7 @@ export default function FAQSection() {
                         style={{ borderColor: isOpen ? theme.accent : 'transparent', borderWidth: '1px', borderStyle: 'solid', borderRadius: 'inherit' }}
                       >
                         <button
-                          onClick={() => setOpen(isOpen ? null : i)}
+                          onClick={() => setOpen(isOpen ? null : faq.question)}
                           className="w-full flex items-center justify-between gap-4 p-5 text-left transition-transform active:scale-[0.99]"
                           data-cursor="hover"
                         >
